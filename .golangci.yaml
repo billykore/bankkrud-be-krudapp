@@ -1,0 +1,56 @@
+version: "2"
+run:
+  timeout: 5m
+  concurrency: 2
+linters:
+  default: none
+  enable:
+    - copyloopvar
+    - depguard
+    - errcheck
+    - errorlint
+    - funlen
+    - gocritic
+    - gocyclo
+    - gomodguard
+    - govet
+    - ineffassign
+    - lll
+    - misspell
+    - nakedret
+    - nolintlint
+    - revive
+    - staticcheck
+    - testifylint
+    - unconvert
+    - unparam
+    - unused
+  exclusions:
+    paths:
+      - _test.go
+  settings:
+    depguard:
+      rules:
+        all:
+          deny:
+            - pkg: io/ioutil
+              desc: io/ioutil package has been deprecated
+    funlen:
+      lines: 60
+      statements: -1
+      ignore-comments: false
+    lll:
+      line-length: 200
+    revive:
+      severity: warning
+      rules:
+        - name: var-naming
+        - name: indent-error-flow
+        - name: error-return
+formatters:
+  enable:
+    - gofmt
+    - goimports
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0

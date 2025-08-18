@@ -1,0 +1,78 @@
+basePath: /api/v1
+definitions:
+  response.ErrorResponse:
+    properties:
+      message:
+        type: string
+      name:
+        type: string
+    type: object
+  response.Response:
+    properties:
+      data: {}
+      error:
+        $ref: '#/definitions/response.ErrorResponse'
+      success:
+        type: boolean
+    type: object
+  tapmoney.InquiryRequest:
+    properties:
+      amount:
+        type: integer
+      cardNumber:
+        type: string
+      pocketID:
+        type: integer
+    type: object
+host: api.bankkrud.com
+info:
+  contact:
+    email: billyimmcul2010@gmail.com
+    name: Billy Kore
+    url: https://www.swagger.io/support
+  description: TapMoney service API specification.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: https://swagger.io/terms/
+  title: API Specification
+  version: "1.0"
+paths:
+  /tapmoney/inquiry:
+    post:
+      consumes:
+      - application/json
+      description: Inquiry TapMoney transaction
+      parameters:
+      - description: Inquiry Request
+        in: body
+        name: InquiryRequest
+        required: true
+        schema:
+          $ref: '#/definitions/tapmoney.InquiryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Inquiry TapMoney transaction
+      tags:
+      - example
+schemes:
+- http
+- https
+swagger: "2.0"
