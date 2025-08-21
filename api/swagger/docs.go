@@ -26,7 +26,7 @@ const docTemplate = `{
     "paths": {
         "/tapmoney/inquiry": {
             "post": {
-                "description": "Inquiry TapMoney transaction",
+                "description": "TapMoney transaction inquiry process",
                 "consumes": [
                     "application/json"
                 ],
@@ -36,7 +36,7 @@ const docTemplate = `{
                 "tags": [
                     "example"
                 ],
-                "summary": "Inquiry TapMoney transaction",
+                "summary": "TapMoney inquiry",
                 "parameters": [
                     {
                         "description": "Inquiry Request",
@@ -45,6 +45,58 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/tapmoney.InquiryRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/tapmoney/payment": {
+            "post": {
+                "description": "TapMoney transaction payment process",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "example"
+                ],
+                "summary": "TapMoney payment",
+                "parameters": [
+                    {
+                        "description": "Payment Request",
+                        "name": "PaymentRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/tapmoney.PaymentRequest"
                         }
                     }
                 ],
@@ -112,6 +164,20 @@ const docTemplate = `{
                 },
                 "pocketID": {
                     "type": "integer"
+                }
+            }
+        },
+        "tapmoney.PaymentRequest": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "integer"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "transactionID": {
+                    "type": "string"
                 }
             }
         }

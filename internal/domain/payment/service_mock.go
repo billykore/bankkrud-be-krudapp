@@ -79,6 +79,63 @@ func (_c *MockService_Inquiry_Call) RunAndReturn(run func(context.Context, Chann
 	return _c
 }
 
+// Payment provides a mock function with given fields: ctx, Bill1
+func (_m *MockService) Payment(ctx context.Context, Bill1 Bill) (Payment, error) {
+	ret := _m.Called(ctx, Bill1)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Payment")
+	}
+
+	var r0 Payment
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, Bill) (Payment, error)); ok {
+		return rf(ctx, Bill1)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, Bill) Payment); ok {
+		r0 = rf(ctx, Bill1)
+	} else {
+		r0 = ret.Get(0).(Payment)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, Bill) error); ok {
+		r1 = rf(ctx, Bill1)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockService_Payment_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Payment'
+type MockService_Payment_Call struct {
+	*mock.Call
+}
+
+// Payment is a helper method to define mock.On call
+//   - ctx context.Context
+//   - Bill1 Bill
+func (_e *MockService_Expecter) Payment(ctx interface{}, Bill1 interface{}) *MockService_Payment_Call {
+	return &MockService_Payment_Call{Call: _e.mock.On("Payment", ctx, Bill1)}
+}
+
+func (_c *MockService_Payment_Call) Run(run func(ctx context.Context, Bill1 Bill)) *MockService_Payment_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(Bill))
+	})
+	return _c
+}
+
+func (_c *MockService_Payment_Call) Return(_a0 Payment, _a1 error) *MockService_Payment_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockService_Payment_Call) RunAndReturn(run func(context.Context, Bill) (Payment, error)) *MockService_Payment_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // NewMockService creates a new instance of MockService. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewMockService(t interface {

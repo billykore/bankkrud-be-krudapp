@@ -21,8 +21,8 @@ func NewTapMoneyHandler(va *validation.Validator, uc *tapmoney.Usecase) *TapMone
 
 // Inquiry swaggo annotation.
 //
-//	@Summary		Inquiry TapMoney transaction
-//	@Description	Inquiry TapMoney transaction
+//	@Summary		TapMoney inquiry
+//	@Description	TapMoney transaction inquiry process
 //	@Tags			example
 //	@Accept			json
 //	@Produce		json
@@ -34,7 +34,7 @@ func NewTapMoneyHandler(va *validation.Validator, uc *tapmoney.Usecase) *TapMone
 //	@Router			/tapmoney/inquiry [post]
 func (h *TapMoneyHandler) Inquiry(ctx echo.Context) error {
 	req := new(tapmoney.InquiryRequest)
-	err := ctx.Bind(&req)
+	err := ctx.Bind(req)
 	if err != nil {
 		return ctx.JSON(response.BadRequest(err))
 	}
@@ -43,6 +43,36 @@ func (h *TapMoneyHandler) Inquiry(ctx echo.Context) error {
 		return ctx.JSON(response.BadRequest(err))
 	}
 	resp, err := h.uc.Inquiry(ctx.Request().Context(), req)
+	if err != nil {
+		return ctx.JSON(response.Error(err))
+	}
+	return ctx.JSON(response.Success(resp))
+}
+
+// Payment swaggo annotation.
+//
+//	@Summary		TapMoney payment
+//	@Description	TapMoney transaction payment process
+//	@Tags			example
+//	@Accept			json
+//	@Produce		json
+//	@Param			PaymentRequest	body		tapmoney.PaymentRequest	true	"Payment Request"
+//	@Success		200				{object}	response.Response
+//	@Failure		400				{object}	response.Response
+//	@Failure		404				{object}	response.Response
+//	@Failure		500				{object}	response.Response
+//	@Router			/tapmoney/payment [post]
+func (h *TapMoneyHandler) Payment(ctx echo.Context) error {
+	req := new(tapmoney.PaymentRequest)
+	err := ctx.Bind(req)
+	if err != nil {
+		return ctx.JSON(response.BadRequest(err))
+	}
+	err = h.va.Validate(req)
+	if err != nil {
+		return ctx.JSON(response.BadRequest(err))
+	}
+	resp, err := h.uc.Payment(ctx.Request().Context(), req)
 	if err != nil {
 		return ctx.JSON(response.Error(err))
 	}

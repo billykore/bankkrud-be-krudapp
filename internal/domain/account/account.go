@@ -8,3 +8,7 @@ type Account struct {
 	Type          string
 	Balance       int64
 }
+
+func (acc Account) CanTransfer(amount int64) bool {
+	return acc.Balance >= amount
+}

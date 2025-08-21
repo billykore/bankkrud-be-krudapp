@@ -24,6 +24,15 @@ definitions:
       pocketID:
         type: integer
     type: object
+  tapmoney.PaymentRequest:
+    properties:
+      amount:
+        type: integer
+      notes:
+        type: string
+      transactionID:
+        type: string
+    type: object
 host: api.bankkrud.com
 info:
   contact:
@@ -42,7 +51,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Inquiry TapMoney transaction
+      description: TapMoney transaction inquiry process
       parameters:
       - description: Inquiry Request
         in: body
@@ -69,7 +78,41 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/response.Response'
-      summary: Inquiry TapMoney transaction
+      summary: TapMoney inquiry
+      tags:
+      - example
+  /tapmoney/payment:
+    post:
+      consumes:
+      - application/json
+      description: TapMoney transaction payment process
+      parameters:
+      - description: Payment Request
+        in: body
+        name: PaymentRequest
+        required: true
+        schema:
+          $ref: '#/definitions/tapmoney.PaymentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: TapMoney payment
       tags:
       - example
 schemes:

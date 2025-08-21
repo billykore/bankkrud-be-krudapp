@@ -6,6 +6,10 @@ const (
 	InquirySuccess = "inq-success"
 )
 
+const (
+	StatusPending = "pending"
+)
+
 // Transaction represents a bank transaction entity.
 type Transaction struct {
 	UUID                 string
@@ -16,4 +20,5 @@ type Transaction struct {
 	Fee                  int64
 	Status               string
 	PaymentID            string
+	Notes                string
 }

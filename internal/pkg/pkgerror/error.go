@@ -21,6 +21,7 @@ func New(c codes.Code) *Error {
 	}
 }
 
+// BadRequest returns a new Error with BadRequest code.
 func BadRequest() *Error {
 	return New(codes.BadRequest)
 }
