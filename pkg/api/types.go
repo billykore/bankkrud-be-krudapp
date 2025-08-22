@@ -1,14 +1,10 @@
 package api
 
-// Data represents the data structure
-// for HTTP responses in the TapMoney service.
-type Data any
-
 // Response represents the response structure
 // for HTTP responses in the TapMoney service.
-type Response[T Data] struct {
+type Response[T any] struct {
 	Success bool           `json:"success"`
-	Data    Data           `json:"data,omitempty"`
+	Data    T              `json:"data,omitempty"`
 	Error   *ErrorResponse `json:"error,omitempty"`
 }
 
@@ -36,4 +32,24 @@ type InquiryResponse struct {
 	Amount         int64  `json:"amount"`
 	CardNumber     string `json:"cardNumber"`
 	PocketID       int64  `json:"pocketID"`
+}
+
+// PaymentRequest represents the request structure
+// for a payment operation in the TapMoney system.
+type PaymentRequest struct {
+	TransactionID string `json:"transactionID"`
+	Amount        int64  `json:"amount"`
+	Notes         string `json:"notes"`
+}
+
+// PaymentResponse represents the response structure
+// for a payment operation in the TapMoney system.
+type PaymentResponse struct {
+	TransactionID string `json:"transactionID"`
+	Message       string `json:"message"`
+	Status        string `json:"status"`
+	Amount        int64  `json:"amount"`
+	CardNumber    string `json:"cardNumber"`
+	Notes         string `json:"notes"`
+	Fee           int64  `json:"fee"`
 }

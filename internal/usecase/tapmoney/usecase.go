@@ -69,7 +69,7 @@ func (uc *Usecase) Inquiry(ctx context.Context, req *InquiryRequest) (*InquiryRe
 		return nil, pkgerror.NotFound().SetMsg("Pocket not found")
 	}
 
-	paymentRes, err := uc.paymentSvc.Inquiry(ctx, tapMoneyChannel, payment.Bill{
+	result, err := uc.paymentSvc.Inquiry(ctx, tapMoneyChannel, payment.Bill{
 		DestinationAccount: req.CardNumber,
 		BillerCode:         tapMoneyBillerCode,
 		Amount:             req.Amount,
@@ -86,7 +86,7 @@ func (uc *Usecase) Inquiry(ctx context.Context, req *InquiryRequest) (*InquiryRe
 		DestinationAccount: req.CardNumber,
 		Amount:             req.Amount,
 		Status:             transaction.InquirySuccess,
-		PaymentID:          paymentRes.ID,
+		PaymentID:          result.ID,
 	}
 
 	err = uc.txRepo.Create(ctx, tx)
@@ -97,7 +97,7 @@ func (uc *Usecase) Inquiry(ctx context.Context, req *InquiryRequest) (*InquiryRe
 
 	return &InquiryResponse{
 		TransactionID: tx.UUID,
-		PaymentID:     paymentRes.ID,
+		PaymentID:     result.ID,
 		Status:        tx.Status,
 		Amount:        tx.Amount,
 		CardNumber:    req.CardNumber,
