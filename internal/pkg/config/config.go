@@ -9,12 +9,19 @@ import (
 
 // Configs hold the application configurations.
 type Configs struct {
-	App      internal.App
+	// App defines the application configuration.
+	App internal.App
+	// Postgres defines the postgres database configuration.
 	Postgres internal.Postgres
-	Token    internal.Token
-	DBD      internal.DBD
+	// Token defines the token configuration.
+	Token internal.Token
+	// CBS defines the core banking system configuration.
+	CBS internal.CBS
+	// DBD defines the digital banking delivery system configuration.
+	DBD internal.DBD
 }
 
+// Config holds the application configuration.
 type Config struct {
 	Name    string
 	Version string

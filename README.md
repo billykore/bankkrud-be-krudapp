@@ -1,9 +1,8 @@
-# Go Project Template
+# TapMoney Backend Service
 
-Template for Go backend application.
-
-This is a boilerplate template for building scalable and maintainable Go applications.
-Designed with hexagonal architecture principles and modern Go development practices.
+This is a sample backend service for a fictional electronic money application called TapMoney.
+It demonstrates the implementation of a RESTful API using Go, 
+following best practices and design patterns.
 
 # Hexagonal Architecture
 

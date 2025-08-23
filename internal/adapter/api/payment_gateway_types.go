@@ -1,10 +1,10 @@
 package api
 
 const (
-	SuccessResponseCode = "00"
+	DBDSuccessResponseCode = "00"
 )
 
-type DBDInquiryRequest struct {
+type PaymentGatewayInquiryRequest struct {
 	ChannelID      string                       `json:"ChannelId"`
 	CoreInfo       CoreInfoInquiryRequest       `json:"CoreInfo"`
 	ThirdPartyInfo ThirdPartyInfoInquiryRequest `json:"ThirdPartyInfo"`
@@ -22,7 +22,7 @@ type ThirdPartyInfoInquiryRequest struct {
 	Month              string `json:"Month"`
 }
 
-type DBDInquiryResponse struct {
+type PaymentGatewayInquiryResponse struct {
 	ResponseCode        string                        `json:"ResponseCode"`
 	ResponseDescription string                        `json:"ResponseDescription"`
 	TraceID             string                        `json:"TraceId"`

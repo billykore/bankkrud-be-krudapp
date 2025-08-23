@@ -63,6 +63,7 @@ func TestInquiry_Success(t *testing.T) {
 	pocketRepo.AssertExpectations(t)
 	txRepo.AssertExpectations(t)
 	paymentSvc.AssertExpectations(t)
+	accountRepo.AssertExpectations(t)
 }
 
 func TestInquiry_GetCbsFailed(t *testing.T) {
@@ -124,9 +125,11 @@ func TestInquiry_GetPocketFailed(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, pkgerror.NotFound().SetMsg("Pocket not found"), err)
 
+	cbsService.AssertExpectations(t)
 	pocketRepo.AssertExpectations(t)
 	txRepo.AssertExpectations(t)
 	paymentSvc.AssertExpectations(t)
+	accountRepo.AssertExpectations(t)
 }
 
 func TestPayment_Success(t *testing.T) {
@@ -185,6 +188,7 @@ func TestPayment_Success(t *testing.T) {
 	t.Log(resp)
 
 	cbsService.AssertExpectations(t)
+	pocketRepo.AssertExpectations(t)
 	txRepo.AssertExpectations(t)
 	paymentSvc.AssertExpectations(t)
 	accountRepo.AssertExpectations(t)
