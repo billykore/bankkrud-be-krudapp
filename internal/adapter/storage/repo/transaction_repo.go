@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"go.bankkrud.com/backend/svc/tapmoney/internal/adapter/storage/model"
 	"go.bankkrud.com/backend/svc/tapmoney/internal/domain/transaction"
 	"gorm.io/gorm"
 )
@@ -27,5 +28,9 @@ func (r *TransactionRepo) Create(ctx context.Context, tx transaction.Transaction
 }
 
 func (r *TransactionRepo) Update(ctx context.Context, tx transaction.Transaction) error {
-	return errors.New("not implemented")
+	res := r.db.WithContext(ctx).Where(`"UUID" = ?`, tx.UUID).
+		Updates(&model.Transaction{
+			Status: tx.Status,
+		})
+	return res.Error
 }

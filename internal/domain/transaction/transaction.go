@@ -4,6 +4,8 @@ package transaction
 const (
 	// InquirySuccess represents a successful transaction status.
 	InquirySuccess = "inq-success"
+	// Success represents a successful transaction status.
+	Success = "success"
 )
 
 const (

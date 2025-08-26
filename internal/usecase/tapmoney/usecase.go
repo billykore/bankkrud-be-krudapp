@@ -149,6 +149,15 @@ func (uc *Usecase) Payment(ctx context.Context, req *PaymentRequest) (*PaymentRe
 		return nil, pkgerror.InternalServerError()
 	}
 
+	err = uc.txRepo.Update(ctx, transaction.Transaction{
+		UUID:   req.TransactionID,
+		Status: transaction.Success,
+	})
+	if err != nil {
+		l.Errorf("Update transaction failed: %v", err)
+		return nil, pkgerror.InternalServerError()
+	}
+
 	return &PaymentResponse{
 		TransactionID: tx.UUID,
 		Message:       SuccessfulMessage,

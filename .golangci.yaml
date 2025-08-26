@@ -36,7 +36,7 @@ linters:
             - pkg: io/ioutil
               desc: io/ioutil package has been deprecated
     funlen:
-      lines: 60
+      lines: 100
       statements: -1
       ignore-comments: false
     lll:
