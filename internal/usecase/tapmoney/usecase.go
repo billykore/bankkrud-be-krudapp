@@ -2,8 +2,8 @@ package tapmoney
 
 import (
 	"context"
+	"errors"
 
-	"github.com/google/uuid"
 	"go.bankkrud.com/backend/svc/tapmoney/internal/domain/account"
 	"go.bankkrud.com/backend/svc/tapmoney/internal/domain/cbs"
 	"go.bankkrud.com/backend/svc/tapmoney/internal/domain/payment"
@@ -14,8 +14,9 @@ import (
 )
 
 const (
-	tapMoneyChannelID  = "01"
-	tapMoneyBillerCode = "99999"
+	tapMoneyChannelID       = "01"
+	tapMoneyBillerCode      = "99999"
+	tapMoneyTransactionType = "tapmoney"
 )
 
 // tapMoneyChannel represents the payment channel for Tap Money transactions.
@@ -64,9 +65,13 @@ func (uc *Usecase) Inquiry(ctx context.Context, req *InquiryRequest) (*InquiryRe
 	}
 
 	thePocket, err := uc.pocketRepo.Get(ctx, req.PocketID)
-	if err != nil {
+	if err != nil && errors.Is(err, pocket.ErrNotFound) {
 		l.Errorf("Failed to Get pocket: %v", err)
 		return nil, pkgerror.NotFound().SetMsg("Pocket not found")
+	}
+	if err != nil {
+		l.Errorf("Failed to Get pocket: %v", err)
+		return nil, pkgerror.InternalServerError()
 	}
 
 	result, err := uc.paymentSvc.Inquiry(ctx, tapMoneyChannel, payment.Bill{
@@ -81,12 +86,12 @@ func (uc *Usecase) Inquiry(ctx context.Context, req *InquiryRequest) (*InquiryRe
 	}
 
 	tx := transaction.Transaction{
-		UUID:               uuid.NewString(),
+		TransactionType:    tapMoneyTransactionType,
 		SourceAccount:      thePocket.AccountNumber,
 		DestinationAccount: req.CardNumber,
-		Amount:             req.Amount,
-		Status:             transaction.InquirySuccess,
+		Status:             transaction.StatusInquirySuccess,
 		PaymentID:          result.ID,
+		Amount:             req.Amount,
 	}
 
 	err = uc.txRepo.Create(ctx, tx)
@@ -151,7 +156,7 @@ func (uc *Usecase) Payment(ctx context.Context, req *PaymentRequest) (*PaymentRe
 
 	err = uc.txRepo.Update(ctx, transaction.Transaction{
 		UUID:   req.TransactionID,
-		Status: transaction.Success,
+		Status: transaction.StatusSuccess,
 	})
 	if err != nil {
 		l.Errorf("Update transaction failed: %v", err)

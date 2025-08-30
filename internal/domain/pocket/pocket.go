@@ -3,7 +3,7 @@ package pocket
 
 // Pocket represents a financial pocket entity.
 type Pocket struct {
-	ID            int64
+	ID            uint64
 	AccountNumber string
 	Name          string
 	Status        string

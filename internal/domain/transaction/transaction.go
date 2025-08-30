@@ -2,14 +2,12 @@
 package transaction
 
 const (
-	// InquirySuccess represents a successful transaction status.
-	InquirySuccess = "inq-success"
-	// Success represents a successful transaction status.
-	Success = "success"
-)
-
-const (
+	// StatusPending represents a pending transaction status.
 	StatusPending = "pending"
+	// StatusInquirySuccess represents a successful transaction status.
+	StatusInquirySuccess = "inq-success"
+	// StatusSuccess represents a successful transaction status.
+	StatusSuccess = "success"
 )
 
 // Transaction represents a bank transaction entity.
@@ -18,9 +16,10 @@ type Transaction struct {
 	TransactionReference string
 	SourceAccount        string
 	DestinationAccount   string
-	Amount               int64
-	Fee                  int64
+	TransactionType      string
 	Status               string
 	PaymentID            string
 	Notes                string
+	Amount               int64
+	Fee                  int64
 }

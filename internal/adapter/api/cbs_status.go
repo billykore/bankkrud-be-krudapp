@@ -34,7 +34,7 @@ func NewCBSStatusAPI(cfg *config.Configs, client *http.Client, cbsAuth *CBSAuth)
 func (cs *CBSStatusAPI) GetStatus(ctx context.Context) (cbs.Status, error) {
 	statusUrl := cs.addr + "/api/ref/core-status"
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, statusUrl, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, statusUrl, nil)
 	if err != nil {
 		return cbs.Status{}, err
 	}

@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"errors"
 
 	"go.bankkrud.com/backend/svc/tapmoney/internal/adapter/storage/model"
 	"go.bankkrud.com/backend/svc/tapmoney/internal/domain/pocket"
@@ -19,18 +20,20 @@ func NewPocketRepo(db *gorm.DB) *PocketRepo {
 }
 
 func (r *PocketRepo) Get(ctx context.Context, id int64) (pocket.Pocket, error) {
-	var saku model.SakuRaya
+	var m model.Pocket
 	res := r.db.WithContext(ctx).
-		Where(`"ID" = ?`, id).
-		Where(`"STATUS" = ?`, model.SakuStatusOpened).
-		First(&saku)
-	if err := res.Error; err != nil {
-		return pocket.Pocket{}, err
+		Where("id = ?", id).
+		First(&m)
+	if res.Error != nil && errors.Is(res.Error, gorm.ErrRecordNotFound) {
+		return pocket.Pocket{}, pocket.ErrNotFound
+	}
+	if res.Error != nil {
+		return pocket.Pocket{}, res.Error
 	}
 	return pocket.Pocket{
-		ID:            saku.ID,
-		AccountNumber: saku.CoreCode,
-		Name:          saku.Name,
-		Status:        saku.Status,
+		ID:            uint64(m.ID),
+		AccountNumber: m.AccountNumber,
+		Name:          m.Name,
+		Status:        m.Status,
 	}, nil
 }

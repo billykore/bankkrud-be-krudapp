@@ -24,13 +24,19 @@ func (r *TransactionRepo) Get(ctx context.Context, uuid string) (transaction.Tra
 }
 
 func (r *TransactionRepo) Create(ctx context.Context, tx transaction.Transaction) error {
-	return errors.New("not implemented")
+	res := r.db.WithContext(ctx).Create(&model.Transaction{
+		SourceAccount:        tx.SourceAccount,
+		DestinationAccount:   tx.DestinationAccount,
+		TransactionType:      tx.TransactionType,
+		TransactionReference: tx.TransactionReference,
+		Status:               tx.Status,
+		Note:                 tx.Notes,
+		Amount:               tx.Amount,
+		Fee:                  tx.Fee,
+	})
+	return res.Error
 }
 
 func (r *TransactionRepo) Update(ctx context.Context, tx transaction.Transaction) error {
-	res := r.db.WithContext(ctx).Where(`"UUID" = ?`, tx.UUID).
-		Updates(&model.Transaction{
-			Status: tx.Status,
-		})
-	return res.Error
+	return errors.New("not implemented")
 }

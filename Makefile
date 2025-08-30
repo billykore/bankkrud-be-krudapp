@@ -22,21 +22,21 @@ run:
 .PHONY: create-migration
 create-migration:
 	@echo "Create migration..."
-	@migrate create -ext sql -dir pkg/db/migrations -seq $(name)
+	@migrate create -ext sql -dir internal/pkg/db/migrations -seq $(name)
 
 # Examples:
 # make migrate-up dsn='postgres://user:password@localhost:5432/db?sslmode=disable' step=1
 .PHONY: migrate-up
 migrate-up:
 	@echo "Migrate up..."
-	@migrate -path pkg/db/migrations -database $(dsn) -verbose up $(step)
+	@migrate -path internal/pkg/db/migrations -database $(dsn) -verbose up $(step)
 
 # Examples:
 # make migrate-down dsn='postgres://user:password@localhost:5432/db?sslmode=disable' step=1
 .PHONY: migrate-down
 migrate-down:
 	@echo "Migrate down..."
-	@migrate -path pkg/db/migrations -database $(dsn) -verbose down $(step)
+	@migrate -path internal/pkg/db/migrations -database $(dsn) -verbose down $(step)
 
 # Examples:
 # make generate-swagger
