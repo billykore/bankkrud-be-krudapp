@@ -19,10 +19,10 @@ func NewPocketRepo(db *gorm.DB) *PocketRepo {
 	}
 }
 
-func (r *PocketRepo) Get(ctx context.Context, id int64) (pocket.Pocket, error) {
+func (r *PocketRepo) GetByAccountNumber(ctx context.Context, accountNumber string) (pocket.Pocket, error) {
 	var m model.Pocket
 	res := r.db.WithContext(ctx).
-		Where("id = ?", id).
+		Where("account_number = ?", accountNumber).
 		First(&m)
 	if res.Error != nil && errors.Is(res.Error, gorm.ErrRecordNotFound) {
 		return pocket.Pocket{}, pocket.ErrNotFound

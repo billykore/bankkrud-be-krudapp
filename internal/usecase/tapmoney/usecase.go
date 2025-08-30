@@ -64,7 +64,7 @@ func (uc *Usecase) Inquiry(ctx context.Context, req *InquiryRequest) (*InquiryRe
 		return nil, pkgerror.InternalServerError()
 	}
 
-	thePocket, err := uc.pocketRepo.Get(ctx, req.PocketID)
+	thePocket, err := uc.pocketRepo.GetByAccountNumber(ctx, req.SourceAccount)
 	if err != nil && errors.Is(err, pocket.ErrNotFound) {
 		l.Errorf("Failed to Get pocket: %v", err)
 		return nil, pkgerror.NotFound().SetMsg("Pocket not found")
@@ -104,9 +104,9 @@ func (uc *Usecase) Inquiry(ctx context.Context, req *InquiryRequest) (*InquiryRe
 		TransactionID: tx.UUID,
 		PaymentID:     result.ID,
 		Status:        tx.Status,
-		Amount:        tx.Amount,
 		CardNumber:    req.CardNumber,
-		PocketID:      req.PocketID,
+		SourceAccount: req.SourceAccount,
+		Amount:        tx.Amount,
 	}, nil
 }
 

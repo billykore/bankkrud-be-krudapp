@@ -21,27 +21,27 @@ func (_m *MockRepository) EXPECT() *MockRepository_Expecter {
 	return &MockRepository_Expecter{mock: &_m.Mock}
 }
 
-// Get provides a mock function with given fields: ctx, id
-func (_m *MockRepository) Get(ctx context.Context, id int64) (Pocket, error) {
-	ret := _m.Called(ctx, id)
+// GetByAccountNumber provides a mock function with given fields: ctx, accountNumber
+func (_m *MockRepository) GetByAccountNumber(ctx context.Context, accountNumber string) (Pocket, error) {
+	ret := _m.Called(ctx, accountNumber)
 
 	if len(ret) == 0 {
-		panic("no return value specified for Get")
+		panic("no return value specified for GetByAccountNumber")
 	}
 
 	var r0 Pocket
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64) (Pocket, error)); ok {
-		return rf(ctx, id)
+	if rf, ok := ret.Get(0).(func(context.Context, string) (Pocket, error)); ok {
+		return rf(ctx, accountNumber)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int64) Pocket); ok {
-		r0 = rf(ctx, id)
+	if rf, ok := ret.Get(0).(func(context.Context, string) Pocket); ok {
+		r0 = rf(ctx, accountNumber)
 	} else {
 		r0 = ret.Get(0).(Pocket)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
-		r1 = rf(ctx, id)
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, accountNumber)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -49,31 +49,31 @@ func (_m *MockRepository) Get(ctx context.Context, id int64) (Pocket, error) {
 	return r0, r1
 }
 
-// MockRepository_Get_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Get'
-type MockRepository_Get_Call struct {
+// MockRepository_GetByAccountNumber_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetByAccountNumber'
+type MockRepository_GetByAccountNumber_Call struct {
 	*mock.Call
 }
 
-// Get is a helper method to define mock.On call
+// GetByAccountNumber is a helper method to define mock.On call
 //   - ctx context.Context
-//   - id int64
-func (_e *MockRepository_Expecter) Get(ctx interface{}, id interface{}) *MockRepository_Get_Call {
-	return &MockRepository_Get_Call{Call: _e.mock.On("Get", ctx, id)}
+//   - accountNumber string
+func (_e *MockRepository_Expecter) GetByAccountNumber(ctx interface{}, accountNumber interface{}) *MockRepository_GetByAccountNumber_Call {
+	return &MockRepository_GetByAccountNumber_Call{Call: _e.mock.On("GetByAccountNumber", ctx, accountNumber)}
 }
 
-func (_c *MockRepository_Get_Call) Run(run func(ctx context.Context, id int64)) *MockRepository_Get_Call {
+func (_c *MockRepository_GetByAccountNumber_Call) Run(run func(ctx context.Context, accountNumber string)) *MockRepository_GetByAccountNumber_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(int64))
+		run(args[0].(context.Context), args[1].(string))
 	})
 	return _c
 }
 
-func (_c *MockRepository_Get_Call) Return(_a0 Pocket, _a1 error) *MockRepository_Get_Call {
+func (_c *MockRepository_GetByAccountNumber_Call) Return(_a0 Pocket, _a1 error) *MockRepository_GetByAccountNumber_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *MockRepository_Get_Call) RunAndReturn(run func(context.Context, int64) (Pocket, error)) *MockRepository_Get_Call {
+func (_c *MockRepository_GetByAccountNumber_Call) RunAndReturn(run func(context.Context, string) (Pocket, error)) *MockRepository_GetByAccountNumber_Call {
 	_c.Call.Return(run)
 	return _c
 }

@@ -33,7 +33,7 @@ func TestInquiry_Success(t *testing.T) {
 			IsEOD:      false,
 			IsStandIn:  false,
 		}, nil)
-	pocketRepo.EXPECT().Get(mock.Anything, int64(123)).
+	pocketRepo.EXPECT().GetByAccountNumber(mock.Anything, "123").
 		Return(pocket.Pocket{
 			ID:            123,
 			AccountNumber: "001201001479315",
@@ -48,9 +48,9 @@ func TestInquiry_Success(t *testing.T) {
 		}, nil)
 
 	resp, err := uc.Inquiry(context.Background(), &InquiryRequest{
-		CardNumber: "6013501000500719",
-		PocketID:   123,
-		Amount:     10000,
+		CardNumber:    "6013501000500719",
+		SourceAccount: "123",
+		Amount:        10000,
 	})
 
 	assert.NoError(t, err)
@@ -81,9 +81,9 @@ func TestInquiry_GetCbsFailed(t *testing.T) {
 		Return(cbs.Status{}, errors.New("get cbs status failed"))
 
 	resp, err := uc.Inquiry(context.Background(), &InquiryRequest{
-		CardNumber: "6013501000500719",
-		PocketID:   123,
-		Amount:     10000,
+		CardNumber:    "6013501000500719",
+		SourceAccount: "123",
+		Amount:        10000,
 	})
 
 	assert.Nil(t, resp)
@@ -95,7 +95,7 @@ func TestInquiry_GetCbsFailed(t *testing.T) {
 	paymentSvc.AssertExpectations(t)
 }
 
-func TestInquiry_GetPocketFailed(t *testing.T) {
+func TestInquiry_PocketNotFound(t *testing.T) {
 	var (
 		zap         = log.NewZap()
 		cbsService  = cbs.NewMockService(t)
@@ -112,13 +112,13 @@ func TestInquiry_GetPocketFailed(t *testing.T) {
 			IsEOD:      false,
 			IsStandIn:  false,
 		}, nil)
-	pocketRepo.EXPECT().Get(mock.Anything, int64(123)).
-		Return(pocket.Pocket{}, errors.New("pocket not found"))
+	pocketRepo.EXPECT().GetByAccountNumber(mock.Anything, "321").
+		Return(pocket.Pocket{}, pocket.ErrNotFound)
 
 	resp, err := uc.Inquiry(context.Background(), &InquiryRequest{
-		CardNumber: "6013501000500719",
-		PocketID:   123,
-		Amount:     10000,
+		CardNumber:    "6013501000500719",
+		SourceAccount: "321",
+		Amount:        10000,
 	})
 
 	assert.Nil(t, resp)
