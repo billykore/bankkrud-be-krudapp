@@ -1,6 +1,6 @@
-# TapMoney Backend Service
+# KrudApp Backend Service
 
-This is a sample backend service for a fictional electronic money application called TapMoney.
+This is a fictional backend service for banking app of a fictional bank called Bankkrud.
 It demonstrates the implementation of a RESTful API using Go, 
 following best practices and design patterns.
 

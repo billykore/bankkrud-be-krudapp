@@ -21,8 +21,8 @@ definitions:
         type: integer
       cardNumber:
         type: string
-      pocketID:
-        type: integer
+      sourceAccount:
+        type: string
     type: object
   tapmoney.PaymentRequest:
     properties:

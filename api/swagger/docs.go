@@ -162,8 +162,8 @@ const docTemplate = `{
                 "cardNumber": {
                     "type": "string"
                 },
-                "pocketID": {
-                    "type": "integer"
+                "sourceAccount": {
+                    "type": "string"
                 }
             }
         },

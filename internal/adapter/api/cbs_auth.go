@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 
-	"go.bankkrud.com/backend/svc/tapmoney/internal/pkg/config"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/config"
 )
 
 // CBSAuth is the core banking system service API for authenticating.

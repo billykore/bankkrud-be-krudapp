@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS transactions
 (
     id                    SERIAL PRIMARY KEY,
     uuid                  UUID           NOT NULL UNIQUE DEFAULT gen_random_uuid(),
-    source_account        VARCHAR(255)   NOT NULL UNIQUE,
+    source_account        VARCHAR(255)   NOT NULL,
     destination_account   VARCHAR(255)   NOT NULL,
     transaction_type      VARCHAR(255)   NOT NULL,
     status                VARCHAR(255)   NOT NULL,

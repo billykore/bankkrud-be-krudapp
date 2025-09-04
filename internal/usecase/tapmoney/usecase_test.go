@@ -7,24 +7,23 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/adapter/log"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/domain/account"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/domain/cbs"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/domain/payment"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/domain/pocket"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/domain/transaction"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/pkg/pkgerror"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/account"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/cbs"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/payment"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/pocket"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/transaction"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/log"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/pkgerror"
 )
 
 func TestInquiry_Success(t *testing.T) {
 	var (
-		zap         = log.NewZap()
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
 		pocketRepo  = pocket.NewMockRepository(t)
 		paymentSvc  = payment.NewMockService(t)
 		accountRepo = account.NewMockRepository(t)
-		uc          = NewUsecase(zap, cbsService, txRepo, pocketRepo, paymentSvc, accountRepo)
+		uc          = NewUsecase(cbsService, txRepo, pocketRepo, paymentSvc, accountRepo)
 	)
 
 	cbsService.EXPECT().GetStatus(mock.Anything).
@@ -38,14 +37,14 @@ func TestInquiry_Success(t *testing.T) {
 			ID:            123,
 			AccountNumber: "001201001479315",
 			Name:          "Savings",
-			Status:        "Opened",
+			Status:        "active",
 		}, nil)
-	txRepo.EXPECT().Create(mock.Anything, mock.Anything).
-		Return(nil)
 	paymentSvc.EXPECT().Inquiry(mock.Anything, mock.Anything, mock.Anything).
 		Return(payment.Payment{
 			ID: "pay-123",
 		}, nil)
+	txRepo.EXPECT().Create(mock.Anything, mock.Anything).
+		Return(nil)
 
 	resp, err := uc.Inquiry(context.Background(), &InquiryRequest{
 		CardNumber:    "6013501000500719",
@@ -68,14 +67,15 @@ func TestInquiry_Success(t *testing.T) {
 
 func TestInquiry_GetCbsFailed(t *testing.T) {
 	var (
-		zap         = log.NewZap()
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
 		pocketRepo  = pocket.NewMockRepository(t)
 		paymentSvc  = payment.NewMockService(t)
 		accountRepo = account.NewMockRepository(t)
-		uc          = NewUsecase(zap, cbsService, txRepo, pocketRepo, paymentSvc, accountRepo)
+		uc          = NewUsecase(cbsService, txRepo, pocketRepo, paymentSvc, accountRepo)
 	)
+
+	log.Configure("development")
 
 	cbsService.EXPECT().GetStatus(mock.Anything).
 		Return(cbs.Status{}, errors.New("get cbs status failed"))
@@ -97,13 +97,12 @@ func TestInquiry_GetCbsFailed(t *testing.T) {
 
 func TestInquiry_PocketNotFound(t *testing.T) {
 	var (
-		zap         = log.NewZap()
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
 		pocketRepo  = pocket.NewMockRepository(t)
 		paymentSvc  = payment.NewMockService(t)
 		accountRepo = account.NewMockRepository(t)
-		uc          = NewUsecase(zap, cbsService, txRepo, pocketRepo, paymentSvc, accountRepo)
+		uc          = NewUsecase(cbsService, txRepo, pocketRepo, paymentSvc, accountRepo)
 	)
 
 	cbsService.EXPECT().GetStatus(mock.Anything).
@@ -134,13 +133,12 @@ func TestInquiry_PocketNotFound(t *testing.T) {
 
 func TestPayment_Success(t *testing.T) {
 	var (
-		zap         = log.NewZap()
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
 		pocketRepo  = pocket.NewMockRepository(t)
 		paymentSvc  = payment.NewMockService(t)
 		accountRepo = account.NewMockRepository(t)
-		uc          = NewUsecase(zap, cbsService, txRepo, pocketRepo, paymentSvc, accountRepo)
+		uc          = NewUsecase(cbsService, txRepo, pocketRepo, paymentSvc, accountRepo)
 	)
 
 	cbsService.EXPECT().GetStatus(mock.Anything).
@@ -168,6 +166,8 @@ func TestPayment_Success(t *testing.T) {
 		Return(payment.Payment{
 			Status: "success",
 		}, nil)
+	txRepo.EXPECT().Update(mock.Anything, mock.Anything).
+		Return(nil)
 
 	resp, err := uc.Payment(context.Background(), &PaymentRequest{
 		TransactionID: "trx-123",

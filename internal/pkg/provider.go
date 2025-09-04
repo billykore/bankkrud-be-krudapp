@@ -2,9 +2,9 @@ package pkg
 
 import (
 	"github.com/google/wire"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/pkg/db/postgres"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/pkg/httpclient"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/pkg/validation"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/db/postgres"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/httpclient"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/validation"
 )
 
 var ProviderSet = wire.NewSet(

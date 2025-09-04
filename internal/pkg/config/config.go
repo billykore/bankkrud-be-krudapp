@@ -4,7 +4,7 @@ package config
 
 import (
 	"github.com/spf13/viper"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/pkg/config/internal"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/config/internal"
 )
 
 // Configs hold the application configurations.

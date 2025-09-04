@@ -1,10 +1,12 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 type Transaction struct {
 	gorm.Model
-	UUID                 string
+	UUID                 string `gorm:"type:uuid;default:gen_random_uuid();uniqueIndex"`
 	SourceAccount        string
 	DestinationAccount   string
 	TransactionType      string

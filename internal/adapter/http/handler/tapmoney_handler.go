@@ -2,9 +2,9 @@ package handler
 
 import (
 	"github.com/labstack/echo/v4"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/adapter/http/response"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/pkg/validation"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/usecase/tapmoney"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/http/response"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/validation"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/tapmoney"
 )
 
 type TapMoneyHandler struct {

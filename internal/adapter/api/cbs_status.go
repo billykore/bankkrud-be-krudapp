@@ -8,8 +8,8 @@ import (
 	"io"
 	"net/http"
 
-	"go.bankkrud.com/backend/svc/tapmoney/internal/domain/cbs"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/pkg/config"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/cbs"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/config"
 )
 
 // CBSStatusAPI is the core banking system service API for getting CBSAuth status.

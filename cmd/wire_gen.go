@@ -8,22 +8,20 @@ package main
 
 import (
 	"github.com/labstack/echo/v4"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/adapter/api"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/adapter/http/handler"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/adapter/http/server"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/adapter/log"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/adapter/storage/repo"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/pkg/config"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/pkg/db/postgres"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/pkg/httpclient"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/pkg/validation"
-	tapmoney2 "go.bankkrud.com/backend/svc/tapmoney/internal/usecase/tapmoney"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/api"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/http/handler"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/http/server"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/storage/repo"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/config"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/db/postgres"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/httpclient"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/validation"
+	tapmoney2 "go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/tapmoney"
 )
 
 // Injectors from wire.go:
 
 func initTapMoney(cfg *config.Configs) *tapmoney {
-	zapLogger := log.NewZap()
 	echoEcho := echo.New()
 	validator := validation.New()
 	client := httpclient.New()
@@ -34,9 +32,9 @@ func initTapMoney(cfg *config.Configs) *tapmoney {
 	pocketRepo := repo.NewPocketRepo(db)
 	paymentGateway := api.NewPaymentGateway(cfg, client)
 	accountAPI := api.NewAccountAPI(cfg, client, cbsAuth)
-	usecase := tapmoney2.NewUsecase(zapLogger, cbsStatusAPI, transactionRepo, pocketRepo, paymentGateway, accountAPI)
+	usecase := tapmoney2.NewUsecase(cbsStatusAPI, transactionRepo, pocketRepo, paymentGateway, accountAPI)
 	tapMoneyHandler := handler.NewTapMoneyHandler(validator, usecase)
-	serverServer := server.New(cfg, zapLogger, echoEcho, tapMoneyHandler)
-	mainTapmoney := newTapMoney(serverServer)
+	serverServer := server.NewHTTP(cfg, echoEcho, tapMoneyHandler)
+	mainTapmoney := newTapMoney(serverServer, db)
 	return mainTapmoney
 }

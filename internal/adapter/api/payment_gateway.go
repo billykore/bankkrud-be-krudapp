@@ -9,8 +9,8 @@ import (
 	"io"
 	"net/http"
 
-	"go.bankkrud.com/backend/svc/tapmoney/internal/domain/payment"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/pkg/config"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/payment"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/config"
 )
 
 // PaymentGateway is a middleware payment gateway.

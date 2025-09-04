@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"go.bankkrud.com/backend/svc/tapmoney/internal/adapter/storage/model"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/domain/transaction"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/storage/model"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/transaction"
 	"gorm.io/gorm"
 )
 
@@ -25,6 +25,7 @@ func (r *TransactionRepo) Get(ctx context.Context, uuid string) (transaction.Tra
 
 func (r *TransactionRepo) Create(ctx context.Context, tx transaction.Transaction) error {
 	res := r.db.WithContext(ctx).Create(&model.Transaction{
+		UUID:                 tx.UUID,
 		SourceAccount:        tx.SourceAccount,
 		DestinationAccount:   tx.DestinationAccount,
 		TransactionType:      tx.TransactionType,

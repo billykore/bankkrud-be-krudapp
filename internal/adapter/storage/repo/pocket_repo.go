@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"go.bankkrud.com/backend/svc/tapmoney/internal/adapter/storage/model"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/domain/pocket"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/storage/model"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/pocket"
 	"gorm.io/gorm"
 )
 

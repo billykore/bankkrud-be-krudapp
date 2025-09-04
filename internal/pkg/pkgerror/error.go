@@ -1,6 +1,6 @@
 package pkgerror
 
-import "go.bankkrud.com/backend/svc/tapmoney/internal/pkg/codes"
+import "go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/codes"
 
 const DefaultMsg = "Please try again later. If the problem persists, please contact support."
 

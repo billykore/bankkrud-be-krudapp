@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 
-	"go.bankkrud.com/backend/svc/tapmoney/internal/domain/account"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/domain/cbs"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/domain/payment"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/domain/pocket"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/domain/transaction"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/pkg/log"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/pkg/pkgerror"
+	"github.com/google/uuid"
+	"github.com/rs/zerolog/log"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/account"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/cbs"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/payment"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/pocket"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/transaction"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/pkgerror"
 )
 
 const (
@@ -26,7 +27,6 @@ var tapMoneyChannel = payment.Channel{
 
 // Usecase defines the use case for handling TapMoney transactions.
 type Usecase struct {
-	log         log.Logger
 	cbs         cbs.Service
 	txRepo      transaction.Repository
 	pocketRepo  pocket.Repository
@@ -35,14 +35,12 @@ type Usecase struct {
 }
 
 func NewUsecase(
-	log log.Logger,
 	cbs cbs.Service,
 	txRepo transaction.Repository,
 	pocketRepo pocket.Repository,
 	paymentSvc payment.Service,
 	accountRepo account.Repository) *Usecase {
 	return &Usecase{
-		log:         log,
 		cbs:         cbs,
 		txRepo:      txRepo,
 		pocketRepo:  pocketRepo,
@@ -52,42 +50,47 @@ func NewUsecase(
 }
 
 func (uc *Usecase) Inquiry(ctx context.Context, req *InquiryRequest) (*InquiryResponse, error) {
-	l := uc.log.Usecase("Inquiry")
+	l := log.With().Ctx(ctx).Str("usecase", "Inquiry").Logger()
 
 	cbsStatus, err := uc.cbs.GetStatus(ctx)
 	if err != nil {
-		l.Errorf("Failed to Get CBS status: %v", err)
+		l.Error().Err(err).Msg("Failed to Get CBS status")
 		return nil, pkgerror.InternalServerError()
 	}
 	if cbsStatus.NotReady() {
-		l.Errorf("CBS is not ready for transactions")
+		l.Error().Msg("CBS is not ready for transactions")
 		return nil, pkgerror.InternalServerError()
 	}
 
 	thePocket, err := uc.pocketRepo.GetByAccountNumber(ctx, req.SourceAccount)
 	if err != nil && errors.Is(err, pocket.ErrNotFound) {
-		l.Errorf("Failed to Get pocket: %v", err)
+		l.Error().Err(err).Msg("Pocket not found")
 		return nil, pkgerror.NotFound().SetMsg("Pocket not found")
 	}
 	if err != nil {
-		l.Errorf("Failed to Get pocket: %v", err)
+		l.Error().Err(err).Msg("Failed to get pocket")
 		return nil, pkgerror.InternalServerError()
+	}
+	if thePocket.NotActive() {
+		l.Error().Str("pocket_status", thePocket.Status).Msg("Pocket is not active")
+		return nil, pkgerror.BadRequest().SetMsg("Pocket is not active")
 	}
 
 	result, err := uc.paymentSvc.Inquiry(ctx, tapMoneyChannel, payment.Bill{
 		DestinationAccount: req.CardNumber,
 		BillerCode:         tapMoneyBillerCode,
 		Amount:             req.Amount,
-		SourceAccount:      thePocket.AccountNumber,
+		SourceAccount:      req.SourceAccount,
 	})
 	if err != nil {
-		l.Errorf("Inquiry to payment service failed: %v", err)
+		l.Error().Err(err).Msg("Inquiry to payment service failed")
 		return nil, pkgerror.BadRequest().SetMsg("Invalid card number")
 	}
 
 	tx := transaction.Transaction{
+		UUID:               uuid.New().String(),
 		TransactionType:    tapMoneyTransactionType,
-		SourceAccount:      thePocket.AccountNumber,
+		SourceAccount:      req.SourceAccount,
 		DestinationAccount: req.CardNumber,
 		Status:             transaction.StatusInquirySuccess,
 		PaymentID:          result.ID,
@@ -96,7 +99,7 @@ func (uc *Usecase) Inquiry(ctx context.Context, req *InquiryRequest) (*InquiryRe
 
 	err = uc.txRepo.Create(ctx, tx)
 	if err != nil {
-		l.Errorf("Create transaction failed: %v", err)
+		l.Error().Err(err).Msg("Create transaction failed")
 		return nil, pkgerror.InternalServerError()
 	}
 
@@ -111,35 +114,38 @@ func (uc *Usecase) Inquiry(ctx context.Context, req *InquiryRequest) (*InquiryRe
 }
 
 func (uc *Usecase) Payment(ctx context.Context, req *PaymentRequest) (*PaymentResponse, error) {
-	l := uc.log.Usecase("Payment")
+	l := log.With().Ctx(ctx).Str("usecase", "Payment").Logger()
 
 	cbsStatus, err := uc.cbs.GetStatus(ctx)
 	if err != nil {
-		l.Errorf("Failed to Get CBS status: %v", err)
+		l.Error().Err(err).Msg("Failed to Get CBS status")
 		return nil, pkgerror.InternalServerError()
 	}
 	if cbsStatus.NotReady() {
-		l.Errorf("CBS is not ready for transactions")
+		l.Error().Err(err).Msg("CBS is not ready for transactions")
 		return nil, pkgerror.InternalServerError()
 	}
 
 	tx, err := uc.txRepo.Get(ctx, req.TransactionID)
 	if err != nil {
-		l.Errorf("Failed to Get transaction: %v", err)
+		l.Error().Err(err).Msg("Transaction was not found")
 		return nil, pkgerror.NotFound().SetMsg("Transaction was not found")
 	}
 	if tx.Status != transaction.StatusPending {
-		l.Errorf("Transaction is not pending. Status: %s", tx.Status)
+		l.Error().Err(err).Str("transaction_status", tx.Status).Msg("Transaction is already processed")
 		return nil, pkgerror.BadRequest().SetMsg("Transaction is already processed")
 	}
 
 	srcAccount, err := uc.accountRepo.Get(ctx, tx.SourceAccount)
 	if err != nil {
-		l.Errorf("Failed to Get account: %v", err)
+		l.Error().Err(err).Msg("Source account was not found")
 		return nil, pkgerror.NotFound().SetMsg("Source account was not found")
 	}
 	if !srcAccount.CanTransfer(tx.Amount) {
-		l.Errorf("Insufficient balance. Balance: %d, Amount: %d", srcAccount.Balance, tx.Amount)
+		l.Error().
+			Int64("balance", srcAccount.Balance).
+			Int64("amount", tx.Amount).
+			Msg("Insufficient balance")
 		return nil, pkgerror.BadRequest().SetMsg("Insufficient balance")
 	}
 
@@ -150,7 +156,7 @@ func (uc *Usecase) Payment(ctx context.Context, req *PaymentRequest) (*PaymentRe
 		SourceAccount:      tx.SourceAccount,
 	})
 	if err != nil {
-		l.Errorf("Payment to payment service failed: %v", err)
+		l.Error().Err(err).Msg("Payment to payment service failed")
 		return nil, pkgerror.InternalServerError()
 	}
 
@@ -159,7 +165,7 @@ func (uc *Usecase) Payment(ctx context.Context, req *PaymentRequest) (*PaymentRe
 		Status: transaction.StatusSuccess,
 	})
 	if err != nil {
-		l.Errorf("Update transaction failed: %v", err)
+		l.Error().Err(err).Msg("Update transaction failed")
 		return nil, pkgerror.InternalServerError()
 	}
 

@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS pockets
     name           VARCHAR(255) NOT NULL,
     account_number VARCHAR(255) NOT NULL,
     saving_type    INTEGER      NOT NULL,
+    status         VARCHAR(255) NOT NULL,
     created_at     TIMESTAMP WITH TIME ZONE     DEFAULT CURRENT_TIMESTAMP,
     updated_at     TIMESTAMP WITH TIME ZONE     DEFAULT CURRENT_TIMESTAMP,
     deleted_at     TIMESTAMP WITH TIME ZONE     DEFAULT NULL

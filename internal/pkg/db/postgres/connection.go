@@ -1,7 +1,7 @@
 package postgres
 
 import (
-	"go.bankkrud.com/backend/svc/tapmoney/internal/pkg/config"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -14,4 +14,12 @@ func New(cfg *config.Configs) *gorm.DB {
 		panic(err)
 	}
 	return db
+}
+
+func Close(db *gorm.DB) error {
+	sql, err := db.DB()
+	if err != nil {
+		return err
+	}
+	return sql.Close()
 }

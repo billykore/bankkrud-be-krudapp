@@ -9,8 +9,8 @@ import (
 	"io"
 	"net/http"
 
-	"go.bankkrud.com/backend/svc/tapmoney/internal/domain/account"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/pkg/config"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/account"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/config"
 )
 
 const TransactionTypeInquiry = "inquiry"

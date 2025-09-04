@@ -1,6 +1,6 @@
 package server
 
-func (srv *Server) registerRoutes() {
-	v1 := srv.router.Group("/api/v1")
-	v1.POST("/tapmoney/inquiry", srv.th.Inquiry)
+func (hs *HTTPServer) registerRoutes() {
+	v1 := hs.router.Group("/api/v1")
+	v1.POST("/tapmoney/inquiry", hs.th.Inquiry)
 }

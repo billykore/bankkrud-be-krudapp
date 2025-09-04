@@ -6,10 +6,10 @@ package main
 import (
 	"github.com/google/wire"
 	"github.com/labstack/echo/v4"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/adapter"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/pkg"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/pkg/config"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/usecase"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/config"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase"
 )
 
 func initTapMoney(cfg *config.Configs) *tapmoney {

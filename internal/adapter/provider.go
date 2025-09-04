@@ -2,21 +2,18 @@ package adapter
 
 import (
 	"github.com/google/wire"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/adapter/api"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/adapter/http/handler"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/adapter/http/server"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/adapter/log"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/adapter/storage/repo"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/domain/account"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/domain/cbs"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/domain/payment"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/domain/pocket"
-	"go.bankkrud.com/backend/svc/tapmoney/internal/domain/transaction"
-	pkglog "go.bankkrud.com/backend/svc/tapmoney/internal/pkg/log"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/api"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/http/handler"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/http/server"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/storage/repo"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/account"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/cbs"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/payment"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/pocket"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/transaction"
 )
 
 var ProviderSet = wire.NewSet(
-	log.NewZap, wire.Bind(new(pkglog.Logger), new(*log.ZapLogger)),
 	api.NewCBS,
 	api.NewAccountAPI, wire.Bind(new(account.Repository), new(*api.AccountAPI)),
 	api.NewCBSStatusAPI, wire.Bind(new(cbs.Service), new(*api.CBSStatusAPI)),
@@ -24,5 +21,5 @@ var ProviderSet = wire.NewSet(
 	repo.NewTransactionRepo, wire.Bind(new(transaction.Repository), new(*repo.TransactionRepo)),
 	repo.NewPocketRepo, wire.Bind(new(pocket.Repository), new(*repo.PocketRepo)),
 	handler.NewTapMoneyHandler,
-	server.New,
+	server.NewHTTP,
 )

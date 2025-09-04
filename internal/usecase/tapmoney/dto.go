@@ -9,13 +9,12 @@ type InquiryRequest struct {
 }
 
 type InquiryResponse struct {
-	TransactionID  string `json:"transactionID"`
-	PaymentID      string `json:"paymentID"`
-	SequenceNumber string `json:"sequenceNumber"`
-	Status         string `json:"description"`
-	CardNumber     string `json:"cardNumber"`
-	SourceAccount  string `json:"sourceAccount"`
-	Amount         int64  `json:"amount"`
+	TransactionID string `json:"transactionID"`
+	PaymentID     string `json:"paymentID"`
+	Status        string `json:"description"`
+	CardNumber    string `json:"cardNumber"`
+	SourceAccount string `json:"sourceAccount"`
+	Amount        int64  `json:"amount"`
 }
 
 type PaymentRequest struct {

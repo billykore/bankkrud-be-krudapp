@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 
-	"go.bankkrud.com/backend/svc/tapmoney/internal/pkg/pkgerror"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/pkgerror"
 )
 
 // Data is a generic type for the data field in the response.
