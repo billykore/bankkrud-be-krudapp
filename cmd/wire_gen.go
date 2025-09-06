@@ -29,12 +29,11 @@ func initTapMoney(cfg *config.Configs) *tapmoney {
 	cbsStatusAPI := api.NewCBSStatusAPI(cfg, client, cbsAuth)
 	db := postgres.New(cfg)
 	transactionRepo := repo.NewTransactionRepo(db)
-	pocketRepo := repo.NewPocketRepo(db)
 	paymentGateway := api.NewPaymentGateway(cfg, client)
 	accountAPI := api.NewAccountAPI(cfg, client, cbsAuth)
-	usecase := tapmoney2.NewUsecase(cbsStatusAPI, transactionRepo, pocketRepo, paymentGateway, accountAPI)
+	usecase := tapmoney2.NewUsecase(cbsStatusAPI, transactionRepo, paymentGateway, accountAPI)
 	tapMoneyHandler := handler.NewTapMoneyHandler(validator, usecase)
-	serverServer := server.NewHTTP(cfg, echoEcho, tapMoneyHandler)
-	mainTapmoney := newTapMoney(serverServer, db)
+	httpServer := server.NewHTTP(cfg, echoEcho, tapMoneyHandler)
+	mainTapmoney := newTapMoney(httpServer, db)
 	return mainTapmoney
 }

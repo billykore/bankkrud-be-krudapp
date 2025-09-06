@@ -10,7 +10,6 @@ import (
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/account"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/cbs"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/payment"
-	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/pocket"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/transaction"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/log"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/pkgerror"
@@ -20,10 +19,9 @@ func TestInquiry_Success(t *testing.T) {
 	var (
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
-		pocketRepo  = pocket.NewMockRepository(t)
 		paymentSvc  = payment.NewMockService(t)
 		accountRepo = account.NewMockRepository(t)
-		uc          = NewUsecase(cbsService, txRepo, pocketRepo, paymentSvc, accountRepo)
+		uc          = NewUsecase(cbsService, txRepo, paymentSvc, accountRepo)
 	)
 
 	cbsService.EXPECT().GetStatus(mock.Anything).
@@ -32,12 +30,10 @@ func TestInquiry_Success(t *testing.T) {
 			IsEOD:      false,
 			IsStandIn:  false,
 		}, nil)
-	pocketRepo.EXPECT().GetByAccountNumber(mock.Anything, "123").
-		Return(pocket.Pocket{
-			ID:            123,
-			AccountNumber: "001201001479315",
-			Name:          "Savings",
-			Status:        "active",
+	accountRepo.EXPECT().Get(mock.Anything, mock.Anything).
+		Return(account.Account{
+			Balance:       1000000,
+			AccountNumber: "123",
 		}, nil)
 	paymentSvc.EXPECT().Inquiry(mock.Anything, mock.Anything, mock.Anything).
 		Return(payment.Payment{
@@ -59,7 +55,6 @@ func TestInquiry_Success(t *testing.T) {
 	t.Log(resp)
 
 	cbsService.AssertExpectations(t)
-	pocketRepo.AssertExpectations(t)
 	txRepo.AssertExpectations(t)
 	paymentSvc.AssertExpectations(t)
 	accountRepo.AssertExpectations(t)
@@ -69,10 +64,9 @@ func TestInquiry_GetCbsFailed(t *testing.T) {
 	var (
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
-		pocketRepo  = pocket.NewMockRepository(t)
 		paymentSvc  = payment.NewMockService(t)
 		accountRepo = account.NewMockRepository(t)
-		uc          = NewUsecase(cbsService, txRepo, pocketRepo, paymentSvc, accountRepo)
+		uc          = NewUsecase(cbsService, txRepo, paymentSvc, accountRepo)
 	)
 
 	log.Configure("development")
@@ -90,19 +84,17 @@ func TestInquiry_GetCbsFailed(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, pkgerror.InternalServerError(), err)
 
-	pocketRepo.AssertExpectations(t)
 	txRepo.AssertExpectations(t)
 	paymentSvc.AssertExpectations(t)
 }
 
-func TestInquiry_PocketNotFound(t *testing.T) {
+func TestInquiry_AccountInsufficientBalance(t *testing.T) {
 	var (
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
-		pocketRepo  = pocket.NewMockRepository(t)
 		paymentSvc  = payment.NewMockService(t)
 		accountRepo = account.NewMockRepository(t)
-		uc          = NewUsecase(cbsService, txRepo, pocketRepo, paymentSvc, accountRepo)
+		uc          = NewUsecase(cbsService, txRepo, paymentSvc, accountRepo)
 	)
 
 	cbsService.EXPECT().GetStatus(mock.Anything).
@@ -111,8 +103,11 @@ func TestInquiry_PocketNotFound(t *testing.T) {
 			IsEOD:      false,
 			IsStandIn:  false,
 		}, nil)
-	pocketRepo.EXPECT().GetByAccountNumber(mock.Anything, "321").
-		Return(pocket.Pocket{}, pocket.ErrNotFound)
+	accountRepo.EXPECT().Get(mock.Anything, mock.Anything).
+		Return(account.Account{
+			Balance:       5000,
+			AccountNumber: "123",
+		}, nil)
 
 	resp, err := uc.Inquiry(context.Background(), &InquiryRequest{
 		CardNumber:    "6013501000500719",
@@ -122,10 +117,9 @@ func TestInquiry_PocketNotFound(t *testing.T) {
 
 	assert.Nil(t, resp)
 	assert.Error(t, err)
-	assert.Equal(t, pkgerror.NotFound().SetMsg("Pocket not found"), err)
+	assert.Equal(t, pkgerror.BadRequest().SetMsg("Insufficient balance"), err)
 
 	cbsService.AssertExpectations(t)
-	pocketRepo.AssertExpectations(t)
 	txRepo.AssertExpectations(t)
 	paymentSvc.AssertExpectations(t)
 	accountRepo.AssertExpectations(t)
@@ -135,10 +129,9 @@ func TestPayment_Success(t *testing.T) {
 	var (
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
-		pocketRepo  = pocket.NewMockRepository(t)
 		paymentSvc  = payment.NewMockService(t)
 		accountRepo = account.NewMockRepository(t)
-		uc          = NewUsecase(cbsService, txRepo, pocketRepo, paymentSvc, accountRepo)
+		uc          = NewUsecase(cbsService, txRepo, paymentSvc, accountRepo)
 	)
 
 	cbsService.EXPECT().GetStatus(mock.Anything).
@@ -188,7 +181,6 @@ func TestPayment_Success(t *testing.T) {
 	t.Log(resp)
 
 	cbsService.AssertExpectations(t)
-	pocketRepo.AssertExpectations(t)
 	txRepo.AssertExpectations(t)
 	paymentSvc.AssertExpectations(t)
 	accountRepo.AssertExpectations(t)

@@ -2,14 +2,12 @@ package tapmoney
 
 import (
 	"context"
-	"errors"
 
 	"github.com/google/uuid"
 	"github.com/rs/zerolog/log"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/account"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/cbs"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/payment"
-	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/pocket"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/transaction"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/pkgerror"
 )
@@ -29,7 +27,6 @@ var tapMoneyChannel = payment.Channel{
 type Usecase struct {
 	cbs         cbs.Service
 	txRepo      transaction.Repository
-	pocketRepo  pocket.Repository
 	paymentSvc  payment.Service
 	accountRepo account.Repository
 }
@@ -37,13 +34,11 @@ type Usecase struct {
 func NewUsecase(
 	cbs cbs.Service,
 	txRepo transaction.Repository,
-	pocketRepo pocket.Repository,
 	paymentSvc payment.Service,
 	accountRepo account.Repository) *Usecase {
 	return &Usecase{
 		cbs:         cbs,
 		txRepo:      txRepo,
-		pocketRepo:  pocketRepo,
 		paymentSvc:  paymentSvc,
 		accountRepo: accountRepo,
 	}
@@ -62,18 +57,16 @@ func (uc *Usecase) Inquiry(ctx context.Context, req *InquiryRequest) (*InquiryRe
 		return nil, pkgerror.InternalServerError()
 	}
 
-	thePocket, err := uc.pocketRepo.GetByAccountNumber(ctx, req.SourceAccount)
-	if err != nil && errors.Is(err, pocket.ErrNotFound) {
-		l.Error().Err(err).Msg("Pocket not found")
-		return nil, pkgerror.NotFound().SetMsg("Pocket not found")
-	}
+	srcAccount, err := uc.accountRepo.Get(ctx, req.SourceAccount)
 	if err != nil {
 		l.Error().Err(err).Msg("Failed to get pocket")
 		return nil, pkgerror.InternalServerError()
 	}
-	if thePocket.NotActive() {
-		l.Error().Str("pocket_status", thePocket.Status).Msg("Pocket is not active")
-		return nil, pkgerror.BadRequest().SetMsg("Pocket is not active")
+	if !srcAccount.CanTransfer(req.Amount) {
+		l.Error().Int64("account_balance", srcAccount.Balance).
+			Int64("amount", req.Amount).
+			Msg("Insufficient balance")
+		return nil, pkgerror.BadRequest().SetMsg("Insufficient balance")
 	}
 
 	result, err := uc.paymentSvc.Inquiry(ctx, tapMoneyChannel, payment.Bill{
@@ -143,7 +136,7 @@ func (uc *Usecase) Payment(ctx context.Context, req *PaymentRequest) (*PaymentRe
 	}
 	if !srcAccount.CanTransfer(tx.Amount) {
 		l.Error().
-			Int64("balance", srcAccount.Balance).
+			Int64("account_balance", srcAccount.Balance).
 			Int64("amount", tx.Amount).
 			Msg("Insufficient balance")
 		return nil, pkgerror.BadRequest().SetMsg("Insufficient balance")
