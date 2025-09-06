@@ -25,25 +25,8 @@ func NewClient(client *http.Client, addr string) *Client {
 
 func (c *Client) Inquiry(ctx context.Context, request InquiryRequest) (Response[InquiryResponse], error) {
 	url := c.addr + "/api/v1/tapmoney/inquiry"
-	body, err := json.Marshal(request)
-	if err != nil {
-		return Response[InquiryResponse]{}, err
-	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(body))
-	if err != nil {
-		return Response[InquiryResponse]{}, err
-	}
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return Response[InquiryResponse]{}, err
-	}
-	defer resp.Body.Close()
-	b, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return Response[InquiryResponse]{}, err
-	}
 	var apiRes Response[InquiryResponse]
-	err = json.Unmarshal(b, &apiRes)
+	err := c.doRequest(ctx, http.MethodPost, url, request, &apiRes)
 	if err != nil {
 		return Response[InquiryResponse]{}, err
 	}
@@ -52,27 +35,35 @@ func (c *Client) Inquiry(ctx context.Context, request InquiryRequest) (Response[
 
 func (c *Client) Payment(ctx context.Context, request PaymentRequest) (Response[PaymentResponse], error) {
 	url := c.addr + "/api/v1/tapmoney/payment"
-	body, err := json.Marshal(request)
-	if err != nil {
-		return Response[PaymentResponse]{}, err
-	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(body))
-	if err != nil {
-		return Response[PaymentResponse]{}, err
-	}
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return Response[PaymentResponse]{}, err
-	}
-	defer resp.Body.Close()
-	b, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return Response[PaymentResponse]{}, err
-	}
 	var apiRes Response[PaymentResponse]
-	err = json.Unmarshal(b, &apiRes)
+	err := c.doRequest(ctx, http.MethodPost, url, request, &apiRes)
 	if err != nil {
 		return Response[PaymentResponse]{}, err
 	}
 	return apiRes, nil
+}
+
+func (c *Client) doRequest(ctx context.Context, method, url string, requestBody any, responseBody any) error {
+	bBody, err := json.Marshal(requestBody)
+	if err != nil {
+		return err
+	}
+	req, err := http.NewRequestWithContext(ctx, method, url, bytes.NewReader(bBody))
+	if err != nil {
+		return err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	b, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(b, responseBody)
+	if err != nil {
+		return err
+	}
+	return nil
 }

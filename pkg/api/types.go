@@ -18,9 +18,9 @@ type ErrorResponse struct {
 // InquiryRequest represents the request structure
 // for an inquiry operation in the TapMoney system.
 type InquiryRequest struct {
-	CardNumber string `json:"cardNumber"`
-	PocketID   int64  `json:"pocketID"`
-	Amount     int64  `json:"amount"`
+	CardNumber    string `json:"cardNumber"`
+	SourceAccount string `json:"sourceAccount"`
+	Amount        int64  `json:"amount"`
 }
 
 // InquiryResponse represents the response structure
@@ -31,7 +31,7 @@ type InquiryResponse struct {
 	TraceId        string `json:"traceId"`
 	Amount         int64  `json:"amount"`
 	CardNumber     string `json:"cardNumber"`
-	PocketID       int64  `json:"pocketID"`
+	SourceAccount  string `json:"sourceAccount"`
 }
 
 // PaymentRequest represents the request structure
