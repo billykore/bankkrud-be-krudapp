@@ -89,7 +89,7 @@ func gracefulShutdown(ctx context.Context, timeout time.Duration, ops map[string
 		defer timeoutFunc.Stop()
 
 		var wg sync.WaitGroup
-		// Do the operations asynchronously to save time
+		// do the operations asynchronously to save time
 		for key, op := range ops {
 			wg.Add(1)
 

@@ -53,7 +53,10 @@ func (uc *Usecase) Inquiry(ctx context.Context, req *InquiryRequest) (*InquiryRe
 		return nil, pkgerror.InternalServerError()
 	}
 	if cbsStatus.NotReady() {
-		l.Error().Msg("CBS is not ready for transactions")
+		l.Error().
+			Bool("is_eod", cbsStatus.IsEOD).
+			Bool("is_stand_in", cbsStatus.IsStandIn).
+			Msg("CBS is not ready for transactions")
 		return nil, pkgerror.InternalServerError()
 	}
 
@@ -63,8 +66,9 @@ func (uc *Usecase) Inquiry(ctx context.Context, req *InquiryRequest) (*InquiryRe
 		return nil, pkgerror.InternalServerError()
 	}
 	if !srcAccount.CanTransfer(req.Amount) {
-		l.Error().Int64("account_balance", srcAccount.Balance).
-			Int64("amount", req.Amount).
+		l.Error().
+			Int64("account_balance", srcAccount.Balance).
+			Int64("request_amount", req.Amount).
 			Msg("Insufficient balance")
 		return nil, pkgerror.BadRequest().SetMsg("Insufficient balance")
 	}
@@ -115,7 +119,10 @@ func (uc *Usecase) Payment(ctx context.Context, req *PaymentRequest) (*PaymentRe
 		return nil, pkgerror.InternalServerError()
 	}
 	if cbsStatus.NotReady() {
-		l.Error().Err(err).Msg("CBS is not ready for transactions")
+		l.Error().
+			Bool("is_eod", cbsStatus.IsEOD).
+			Bool("is_stand_in", cbsStatus.IsStandIn).
+			Msg("CBS is not ready for transactions")
 		return nil, pkgerror.InternalServerError()
 	}
 
@@ -125,7 +132,9 @@ func (uc *Usecase) Payment(ctx context.Context, req *PaymentRequest) (*PaymentRe
 		return nil, pkgerror.NotFound().SetMsg("Transaction was not found")
 	}
 	if tx.Status != transaction.StatusPending {
-		l.Error().Err(err).Str("transaction_status", tx.Status).Msg("Transaction is already processed")
+		l.Error().Err(err).
+			Str("transaction_status", tx.Status).
+			Msg("Transaction is already processed")
 		return nil, pkgerror.BadRequest().SetMsg("Transaction is already processed")
 	}
 
@@ -137,7 +146,7 @@ func (uc *Usecase) Payment(ctx context.Context, req *PaymentRequest) (*PaymentRe
 	if !srcAccount.CanTransfer(tx.Amount) {
 		l.Error().
 			Int64("account_balance", srcAccount.Balance).
-			Int64("amount", tx.Amount).
+			Int64("request_amount", tx.Amount).
 			Msg("Insufficient balance")
 		return nil, pkgerror.BadRequest().SetMsg("Insufficient balance")
 	}

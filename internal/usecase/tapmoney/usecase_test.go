@@ -88,6 +88,38 @@ func TestInquiry_GetCbsFailed(t *testing.T) {
 	paymentSvc.AssertExpectations(t)
 }
 
+func TestInquiry_EODIsRunning(t *testing.T) {
+	var (
+		cbsService  = cbs.NewMockService(t)
+		txRepo      = transaction.NewMockRepository(t)
+		paymentSvc  = payment.NewMockService(t)
+		accountRepo = account.NewMockRepository(t)
+		uc          = NewUsecase(cbsService, txRepo, paymentSvc, accountRepo)
+	)
+
+	log.Configure("development")
+
+	cbsService.EXPECT().GetStatus(mock.Anything).
+		Return(cbs.Status{
+			SystemDate: "2030-01-01",
+			IsEOD:      true,
+			IsStandIn:  false,
+		}, nil)
+
+	resp, err := uc.Inquiry(context.Background(), &InquiryRequest{
+		CardNumber:    "6013501000500719",
+		SourceAccount: "123",
+		Amount:        10000,
+	})
+
+	assert.Nil(t, resp)
+	assert.Error(t, err)
+	assert.Equal(t, pkgerror.InternalServerError(), err)
+
+	txRepo.AssertExpectations(t)
+	paymentSvc.AssertExpectations(t)
+}
+
 func TestInquiry_AccountInsufficientBalance(t *testing.T) {
 	var (
 		cbsService  = cbs.NewMockService(t)
