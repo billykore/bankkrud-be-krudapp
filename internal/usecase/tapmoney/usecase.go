@@ -28,14 +28,14 @@ type Usecase struct {
 	cbs         cbs.Service
 	txRepo      transaction.Repository
 	paymentSvc  payment.Service
-	accountRepo account.Repository
+	accountRepo account.Service
 }
 
 func NewUsecase(
 	cbs cbs.Service,
 	txRepo transaction.Repository,
 	paymentSvc payment.Service,
-	accountRepo account.Repository) *Usecase {
+	accountRepo account.Service) *Usecase {
 	return &Usecase{
 		cbs:         cbs,
 		txRepo:      txRepo,
@@ -151,7 +151,7 @@ func (uc *Usecase) Payment(ctx context.Context, req *PaymentRequest) (*PaymentRe
 		return nil, pkgerror.BadRequest().SetMsg("Insufficient balance")
 	}
 
-	payRes, err := uc.paymentSvc.Payment(ctx, payment.Bill{
+	payResp, err := uc.paymentSvc.Payment(ctx, payment.Bill{
 		DestinationAccount: tx.DestinationAccount,
 		BillerCode:         tapMoneyBillerCode,
 		Amount:             tx.Amount,
@@ -162,10 +162,10 @@ func (uc *Usecase) Payment(ctx context.Context, req *PaymentRequest) (*PaymentRe
 		return nil, pkgerror.InternalServerError()
 	}
 
-	err = uc.txRepo.Update(ctx, transaction.Transaction{
-		UUID:   req.TransactionID,
-		Status: transaction.StatusSuccess,
-	})
+	tx.Status = transaction.StatusInquirySuccess
+	tx.PaymentID = payResp.ID
+
+	err = uc.txRepo.Update(ctx, tx)
 	if err != nil {
 		l.Error().Err(err).Msg("Update transaction failed")
 		return nil, pkgerror.InternalServerError()
@@ -174,7 +174,7 @@ func (uc *Usecase) Payment(ctx context.Context, req *PaymentRequest) (*PaymentRe
 	return &PaymentResponse{
 		TransactionID: tx.UUID,
 		Message:       SuccessfulMessage,
-		Status:        payRes.Status,
+		Status:        tx.Status,
 		Amount:        tx.Amount,
 		CardNumber:    tx.DestinationAccount,
 		Notes:         tx.Notes,
