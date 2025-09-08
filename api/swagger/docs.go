@@ -127,6 +127,110 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/transfer/initiate": {
+            "post": {
+                "description": "Initiate transfer transaction",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transfer"
+                ],
+                "summary": "Initiate transfer",
+                "parameters": [
+                    {
+                        "description": "Initiate Transfer Request",
+                        "name": "InitiateRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/transfer.InitiateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/transfer/process": {
+            "post": {
+                "description": "Process transfer transaction",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transfer"
+                ],
+                "summary": "Process transfer",
+                "parameters": [
+                    {
+                        "description": "Process Transfer Request",
+                        "name": "ProcessRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/transfer.ProcessRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -174,6 +278,37 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "notes": {
+                    "type": "string"
+                },
+                "transactionID": {
+                    "type": "string"
+                }
+            }
+        },
+        "transfer.InitiateRequest": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "integer"
+                },
+                "destinationAccount": {
+                    "type": "string"
+                },
+                "sourceAccount": {
+                    "type": "string"
+                }
+            }
+        },
+        "transfer.ProcessRequest": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "integer"
+                },
+                "destinationAccount": {
+                    "type": "string"
+                },
+                "sourceAccount": {
                     "type": "string"
                 },
                 "transactionID": {

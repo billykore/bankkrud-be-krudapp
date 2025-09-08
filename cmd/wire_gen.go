@@ -17,6 +17,7 @@ import (
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/httpclient"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/validation"
 	tapmoney2 "go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/tapmoney"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/transfer"
 )
 
 // Injectors from wire.go:
@@ -33,7 +34,9 @@ func initTapMoney(cfg *config.Configs) *tapmoney {
 	accountAPI := api.NewAccountAPI(cfg, client, cbsAuth)
 	usecase := tapmoney2.NewUsecase(cbsStatusAPI, transactionRepo, paymentGateway, accountAPI)
 	tapMoneyHandler := handler.NewTapMoneyHandler(validator, usecase)
-	httpServer := server.NewHTTP(cfg, echoEcho, tapMoneyHandler)
+	transferUsecase := transfer.NewUsecase(cbsStatusAPI, transactionRepo, accountAPI)
+	transferHandler := handler.NewTransferHandler(validator, transferUsecase)
+	httpServer := server.NewHTTP(cfg, echoEcho, tapMoneyHandler, transferHandler)
 	mainTapmoney := newTapMoney(httpServer, db)
 	return mainTapmoney
 }

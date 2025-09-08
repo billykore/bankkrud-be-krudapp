@@ -14,19 +14,22 @@ import (
 type HTTPServer struct {
 	cfg    *config.Configs
 	router *echo.Echo
-	th     *handler.TapMoneyHandler
+	tmh    *handler.TapMoneyHandler
+	tfh    *handler.TransferHandler
 }
 
 // NewHTTP returns new Router.
 func NewHTTP(
 	cfg *config.Configs,
 	router *echo.Echo,
-	th *handler.TapMoneyHandler,
+	tmh *handler.TapMoneyHandler,
+	tfh *handler.TransferHandler,
 ) *HTTPServer {
 	return &HTTPServer{
 		cfg:    cfg,
 		router: router,
-		th:     th,
+		tmh:    tmh,
+		tfh:    tfh,
 	}
 }
 

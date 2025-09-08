@@ -33,6 +33,26 @@ definitions:
       transactionID:
         type: string
     type: object
+  transfer.InitiateRequest:
+    properties:
+      amount:
+        type: integer
+      destinationAccount:
+        type: string
+      sourceAccount:
+        type: string
+    type: object
+  transfer.ProcessRequest:
+    properties:
+      amount:
+        type: integer
+      destinationAccount:
+        type: string
+      sourceAccount:
+        type: string
+      transactionID:
+        type: string
+    type: object
 host: api.bankkrud.com
 info:
   contact:
@@ -115,6 +135,74 @@ paths:
       summary: TapMoney payment
       tags:
       - example
+  /transfer/initiate:
+    post:
+      consumes:
+      - application/json
+      description: Initiate transfer transaction
+      parameters:
+      - description: Initiate Transfer Request
+        in: body
+        name: InitiateRequest
+        required: true
+        schema:
+          $ref: '#/definitions/transfer.InitiateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Initiate transfer
+      tags:
+      - transfer
+  /transfer/process:
+    post:
+      consumes:
+      - application/json
+      description: Process transfer transaction
+      parameters:
+      - description: Process Transfer Request
+        in: body
+        name: ProcessRequest
+        required: true
+        schema:
+          $ref: '#/definitions/transfer.ProcessRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Process transfer
+      tags:
+      - transfer
 schemes:
 - http
 - https

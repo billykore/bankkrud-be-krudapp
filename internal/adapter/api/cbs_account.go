@@ -88,3 +88,8 @@ func (ca *AccountAPI) Get(ctx context.Context, accountNumber string) (account.Ac
 		Balance:       apiRes.Data.GetBalance(),
 	}, nil
 }
+
+func (ca *AccountAPI) Transfer(ctx context.Context, srcAccountNumber string, destAccountNumber string, amount int64) error {
+	//TODO implement me
+	panic("implement me")
+}
