@@ -4,11 +4,11 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/rs/zerolog/log"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/account"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/cbs"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/payment"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/transaction"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/log"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/pkgerror"
 )
 
@@ -45,7 +45,7 @@ func NewUsecase(
 }
 
 func (uc *Usecase) Inquiry(ctx context.Context, req *InquiryRequest) (*InquiryResponse, error) {
-	l := log.With().Ctx(ctx).Str("usecase", "Inquiry").Logger()
+	l := log.WithContext(ctx, "Inquiry")
 
 	cbsStatus, err := uc.cbs.GetStatus(ctx)
 	if err != nil {
@@ -111,7 +111,7 @@ func (uc *Usecase) Inquiry(ctx context.Context, req *InquiryRequest) (*InquiryRe
 }
 
 func (uc *Usecase) Payment(ctx context.Context, req *PaymentRequest) (*PaymentResponse, error) {
-	l := log.With().Ctx(ctx).Str("usecase", "Payment").Logger()
+	l := log.WithContext(ctx, "Payment")
 
 	cbsStatus, err := uc.cbs.GetStatus(ctx)
 	if err != nil {
