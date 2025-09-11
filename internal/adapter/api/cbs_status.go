@@ -39,7 +39,7 @@ func (cs *CBSStatusAPI) GetStatus(ctx context.Context) (cbs.Status, error) {
 		return cbs.Status{}, err
 	}
 
-	token, err := cs.cbsAuth.getToken(ctx)
+	token, err := cs.cbsAuth.GetToken(ctx)
 	if err != nil {
 		return cbs.Status{}, err
 	}

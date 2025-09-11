@@ -2,6 +2,8 @@ package api
 
 import "strconv"
 
+const CoreBankingTransferTransactionType = "sa-ovb-sa"
+
 type GetAccountRequest struct {
 	TransactionType string `json:"tipeTransaksi"`
 	AccountNumber   string `json:"noRekening"`

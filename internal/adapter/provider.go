@@ -10,12 +10,14 @@ import (
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/cbs"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/payment"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/transaction"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/transfer"
 )
 
 var ProviderSet = wire.NewSet(
 	api.NewCBS,
 	api.NewAccountAPI, wire.Bind(new(account.Service), new(*api.AccountAPI)),
 	api.NewCBSStatusAPI, wire.Bind(new(cbs.Service), new(*api.CBSStatusAPI)),
+	api.NewTransferAPI, wire.Bind(new(transfer.Service), new(*api.TransferAPI)),
 	api.NewPaymentGateway, wire.Bind(new(payment.Service), new(*api.PaymentGateway)),
 	repo.NewTransactionRepo, wire.Bind(new(transaction.Repository), new(*repo.TransactionRepo)),
 	handler.NewTransferHandler,

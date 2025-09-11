@@ -13,7 +13,10 @@ import (
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/config"
 )
 
-const TransactionTypeInquiry = "inquiry"
+const (
+	TransactionTypeInquiry = "inquiry"
+	transferFee            = "0"
+)
 
 // AccountAPI is the core banking system service API for getting account information.
 type AccountAPI struct {
@@ -51,7 +54,7 @@ func (ca *AccountAPI) Get(ctx context.Context, accountNumber string) (account.Ac
 		return account.Account{}, err
 	}
 
-	token, err := ca.cbsAuth.getToken(ctx)
+	token, err := ca.cbsAuth.GetToken(ctx)
 	if err != nil {
 		return account.Account{}, err
 	}
@@ -72,6 +75,7 @@ func (ca *AccountAPI) Get(ctx context.Context, accountNumber string) (account.Ac
 	if err != nil {
 		return account.Account{}, err
 	}
+
 	var apiRes GetAccountResponse
 	err = json.Unmarshal(b, &apiRes)
 	if err != nil {
@@ -87,9 +91,4 @@ func (ca *AccountAPI) Get(ctx context.Context, accountNumber string) (account.Ac
 		Type:          apiRes.Data.AccountType,
 		Balance:       apiRes.Data.GetBalance(),
 	}, nil
-}
-
-func (ca *AccountAPI) Transfer(ctx context.Context, srcAccountNumber string, destAccountNumber string, amount int64) error {
-	//TODO implement me
-	panic("implement me")
 }

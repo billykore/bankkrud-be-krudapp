@@ -30,7 +30,7 @@ func NewCBS(cfg *config.Configs, client *http.Client) *CBSAuth {
 	}
 }
 
-func (c *CBSAuth) getToken(ctx context.Context) (string, error) {
+func (c *CBSAuth) GetToken(ctx context.Context) (string, error) {
 	tokenUrl := c.addr + "/token"
 
 	data := url.Values{}

@@ -2,11 +2,13 @@ package transfer
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/google/uuid"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/account"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/cbs"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/transaction"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/transfer"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/log"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/pkgerror"
 )
@@ -16,9 +18,10 @@ const (
 )
 
 type Usecase struct {
-	cbs        cbs.Service
-	txRepo     transaction.Repository
-	accountSvc account.Service
+	cbs         cbs.Service
+	txRepo      transaction.Repository
+	accountSvc  account.Service
+	transferSvc transfer.Service
 }
 
 func NewUsecase(
@@ -118,7 +121,13 @@ func (uc *Usecase) Process(ctx context.Context, req *ProcessRequest) (*ProcessRe
 		return nil, pkgerror.BadRequest().SetMsg("Transaction is not in a valid state to be processed")
 	}
 
-	err = uc.accountSvc.Transfer(ctx, tx.SourceAccount, tx.DestinationAccount, req.Amount)
+	res, err := uc.transferSvc.Transfer(
+		ctx,
+		tx.SourceAccount,
+		tx.DestinationAccount,
+		req.Amount,
+		makeTransferRemark(tx.SourceAccount, tx.DestinationAccount, tx.UUID),
+	)
 	if err != nil {
 		l.Error().Err(err).Msg("Failed to transfer amount")
 		return nil, pkgerror.InternalServerError()
@@ -126,6 +135,7 @@ func (uc *Usecase) Process(ctx context.Context, req *ProcessRequest) (*ProcessRe
 
 	// Update transaction status to success
 	tx.Status = transaction.StatusSuccess
+	tx.TransactionReference = res.TransactionReference
 
 	err = uc.txRepo.Update(ctx, tx)
 	if err != nil {
@@ -137,4 +147,8 @@ func (uc *Usecase) Process(ctx context.Context, req *ProcessRequest) (*ProcessRe
 		TransactionID: tx.UUID,
 		Status:        tx.Status,
 	}, nil
+}
+
+func makeTransferRemark(srcAccount, destAccount, uuid string) string {
+	return fmt.Sprintf("TRF %s %s BNKKRD %s", srcAccount, destAccount, uuid)
 }

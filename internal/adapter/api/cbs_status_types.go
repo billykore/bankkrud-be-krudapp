@@ -1,7 +1,5 @@
 package api
 
-const CBSSuccessResponseCode = "00"
-
 type CBSGetStatusResponse struct {
 	StatusCode        string           `json:"statusCode"`
 	StatusDescription string           `json:"statusDescription"`
