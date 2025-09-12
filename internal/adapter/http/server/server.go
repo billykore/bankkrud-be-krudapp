@@ -2,6 +2,8 @@ package server
 
 import (
 	"context"
+	"errors"
+	"net/http"
 
 	"github.com/labstack/echo/v4"
 	echomiddleware "github.com/labstack/echo/v4/middleware"
@@ -47,7 +49,11 @@ func (hs *HTTPServer) useMiddlewares() {
 
 func (hs *HTTPServer) run() {
 	port := hs.cfg.App.Port
-	if err := hs.router.Start(":" + port); err != nil {
+	err := hs.router.Start(":" + port)
+	if err != nil && errors.Is(err, http.ErrServerClosed) {
+		log.Info().Msgf("http server closed")
+	}
+	if err != nil {
 		log.Panic().Err(err).Msg("Failed to start server")
 	}
 }
