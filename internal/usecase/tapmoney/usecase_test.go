@@ -69,7 +69,7 @@ func TestInquiry_GetCbsFailed(t *testing.T) {
 		uc         = NewUsecase(cbsService, txRepo, paymentSvc, accountSvc)
 	)
 
-	log.Configure("development")
+	log.Configure("test")
 
 	cbsService.EXPECT().GetStatus(mock.Anything).
 		Return(cbs.Status{}, errors.New("get cbs status failed"))

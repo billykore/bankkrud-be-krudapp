@@ -37,9 +37,14 @@ func NewHTTP(
 
 // Run runs the server router.
 func (hs *HTTPServer) Run() {
+	hs.setupRouter()
 	hs.useMiddlewares()
 	hs.registerRoutes()
 	hs.run()
+}
+
+func (hs *HTTPServer) setupRouter() {
+	hs.router.HideBanner = true
 }
 
 func (hs *HTTPServer) useMiddlewares() {

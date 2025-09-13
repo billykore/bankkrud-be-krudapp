@@ -25,22 +25,22 @@ var tapMoneyChannel = payment.Channel{
 
 // Usecase defines the use case for handling TapMoney transactions.
 type Usecase struct {
-	cbs         cbs.Service
-	txRepo      transaction.Repository
-	paymentSvc  payment.Service
-	accountRepo account.Service
+	cbs        cbs.Service
+	txRepo     transaction.Repository
+	paymentSvc payment.Service
+	accountSvc account.Service
 }
 
 func NewUsecase(
 	cbs cbs.Service,
 	txRepo transaction.Repository,
 	paymentSvc payment.Service,
-	accountRepo account.Service) *Usecase {
+	accountSvc account.Service) *Usecase {
 	return &Usecase{
-		cbs:         cbs,
-		txRepo:      txRepo,
-		paymentSvc:  paymentSvc,
-		accountRepo: accountRepo,
+		cbs:        cbs,
+		txRepo:     txRepo,
+		paymentSvc: paymentSvc,
+		accountSvc: accountSvc,
 	}
 }
 
@@ -60,7 +60,7 @@ func (uc *Usecase) Inquiry(ctx context.Context, req *InquiryRequest) (*InquiryRe
 		return nil, pkgerror.InternalServerError()
 	}
 
-	srcAccount, err := uc.accountRepo.Get(ctx, req.SourceAccount)
+	srcAccount, err := uc.accountSvc.Get(ctx, req.SourceAccount)
 	if err != nil {
 		l.Error().Err(err).Msg("Failed to get pocket")
 		return nil, pkgerror.InternalServerError()
@@ -138,7 +138,7 @@ func (uc *Usecase) Payment(ctx context.Context, req *PaymentRequest) (*PaymentRe
 		return nil, pkgerror.BadRequest().SetMsg("Transaction is already processed")
 	}
 
-	srcAccount, err := uc.accountRepo.Get(ctx, tx.SourceAccount)
+	srcAccount, err := uc.accountSvc.Get(ctx, tx.SourceAccount)
 	if err != nil {
 		l.Error().Err(err).Msg("Source account was not found")
 		return nil, pkgerror.NotFound().SetMsg("Source account was not found")

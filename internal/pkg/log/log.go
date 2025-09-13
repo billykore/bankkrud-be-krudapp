@@ -10,9 +10,9 @@ import (
 
 // Configure sets up the global logger configuration.
 func Configure(env string) {
-	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnixMs
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
-	if env == "development" {
+	if env == "development" || env == "test" {
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	}
 	// Add stack trace hook

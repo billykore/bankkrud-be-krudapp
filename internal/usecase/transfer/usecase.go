@@ -17,6 +17,7 @@ const (
 	transferTransactionType = "transfer"
 )
 
+// Usecase defines the use case for handling transfers.
 type Usecase struct {
 	cbs         cbs.Service
 	txRepo      transaction.Repository
@@ -54,7 +55,9 @@ func (uc *Usecase) Initiate(ctx context.Context, req *InitiateRequest) (*Initiat
 
 	srcAccount, err := uc.accountSvc.Get(ctx, req.SourceAccount)
 	if err != nil {
-		l.Error().Err(err).Msg("Failed to get pocket")
+		l.Error().Err(err).
+			Str("account_number", req.SourceAccount).
+			Msg("Failed to get account")
 		return nil, pkgerror.InternalServerError()
 	}
 	if !srcAccount.CanTransfer(req.Amount) {

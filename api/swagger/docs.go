@@ -252,6 +252,9 @@ const docTemplate = `{
                 "error": {
                     "$ref": "#/definitions/response.ErrorResponse"
                 },
+                "serverTime": {
+                    "type": "integer"
+                },
                 "success": {
                     "type": "boolean"
                 }

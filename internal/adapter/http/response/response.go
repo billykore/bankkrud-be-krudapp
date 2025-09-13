@@ -3,6 +3,7 @@ package response
 import (
 	"errors"
 	"net/http"
+	"time"
 
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/pkgerror"
 )
@@ -12,9 +13,10 @@ type Data any
 
 // Response represents the response structure for HTTP responses.
 type Response[T Data] struct {
-	Success bool           `json:"success"`
-	Error   *ErrorResponse `json:"error,omitempty"`
-	Data    Data           `json:"data,omitempty"`
+	Success    bool           `json:"success"`
+	Error      *ErrorResponse `json:"error,omitempty"`
+	Data       Data           `json:"data,omitempty"`
+	ServerTime int64          `json:"serverTime,omitempty"`
 }
 
 type ErrorResponse struct {
@@ -25,8 +27,9 @@ type ErrorResponse struct {
 // Success returns status code 200 and success response with data.
 func Success(data Data) (int, *Response[Data]) {
 	return http.StatusOK, &Response[Data]{
-		Success: true,
-		Data:    data,
+		Success:    true,
+		Data:       data,
+		ServerTime: serverTime(),
 	}
 }
 
@@ -39,6 +42,7 @@ func Error(err error) (int, *Response[Data]) {
 				Name:    responseName[e.Code],
 				Message: err.Error(),
 			},
+			ServerTime: serverTime(),
 		}
 	}
 	return InternalServerError(err)
@@ -52,6 +56,7 @@ func BadRequest(err error) (int, *Response[Data]) {
 			Name:    "BadRequest",
 			Message: err.Error(),
 		},
+		ServerTime: serverTime(),
 	}
 }
 
@@ -63,6 +68,7 @@ func Unauthorized(err error) (int, *Response[Data]) {
 			Name:    "Unauthorized",
 			Message: err.Error(),
 		},
+		ServerTime: serverTime(),
 	}
 }
 
@@ -74,6 +80,7 @@ func Forbidden(err error) (int, *Response[Data]) {
 			Name:    "Forbidden",
 			Message: err.Error(),
 		},
+		ServerTime: serverTime(),
 	}
 }
 
@@ -85,7 +92,13 @@ func InternalServerError(err error) (int, *Response[Data]) {
 			Name:    "InternalServerError",
 			Message: err.Error(),
 		},
+		ServerTime: serverTime(),
 	}
+}
+
+// serverTime returns the current server time in milliseconds since the Unix epoch.
+func serverTime() int64 {
+	return time.Now().UnixMilli()
 }
 
 // responseCode is a slice of integer HTTP status codes used for error response mapping.
