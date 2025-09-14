@@ -29,11 +29,13 @@ func NewUsecase(
 	cbs cbs.Service,
 	txRepo transaction.Repository,
 	accountSvc account.Service,
+	transferSvc transfer.Service,
 ) *Usecase {
 	return &Usecase{
-		cbs:        cbs,
-		txRepo:     txRepo,
-		accountSvc: accountSvc,
+		cbs:         cbs,
+		txRepo:      txRepo,
+		accountSvc:  accountSvc,
+		transferSvc: transferSvc,
 	}
 }
 
@@ -47,8 +49,8 @@ func (uc *Usecase) Initiate(ctx context.Context, req *InitiateRequest) (*Initiat
 	}
 	if cbsStatus.NotReady() {
 		l.Error().
-			Bool("is_eod", cbsStatus.IsEOD).
-			Bool("is_stand_in", cbsStatus.IsStandIn).
+			Bool("isEOD", cbsStatus.IsEOD).
+			Bool("isStandIn", cbsStatus.IsStandIn).
 			Msg("CBS is not ready for transactions")
 		return nil, pkgerror.InternalServerError()
 	}
@@ -56,21 +58,23 @@ func (uc *Usecase) Initiate(ctx context.Context, req *InitiateRequest) (*Initiat
 	srcAccount, err := uc.accountSvc.Get(ctx, req.SourceAccount)
 	if err != nil {
 		l.Error().Err(err).
-			Str("account_number", req.SourceAccount).
+			Str("accountNumber", req.SourceAccount).
 			Msg("Failed to get account")
 		return nil, pkgerror.InternalServerError()
 	}
 	if !srcAccount.CanTransfer(req.Amount) {
 		l.Error().
-			Int64("account_balance", srcAccount.Balance).
-			Int64("request_amount", req.Amount).
+			Int64("accountBalance", srcAccount.Balance).
+			Int64("requestAmount", req.Amount).
 			Msg("Insufficient balance")
 		return nil, pkgerror.BadRequest().SetMsg("Insufficient balance")
 	}
 
 	destAccount, err := uc.accountSvc.Get(ctx, req.DestinationAccount)
 	if err != nil {
-		l.Error().Err(err).Msg("Failed to get pocket")
+		l.Error().Err(err).
+			Str("accountNumber", req.DestinationAccount).
+			Msg("Failed to get account")
 		return nil, pkgerror.InternalServerError()
 	}
 
@@ -105,8 +109,8 @@ func (uc *Usecase) Process(ctx context.Context, req *ProcessRequest) (*ProcessRe
 	}
 	if cbsStatus.NotReady() {
 		l.Error().
-			Bool("is_eod", cbsStatus.IsEOD).
-			Bool("is_stand_in", cbsStatus.IsStandIn).
+			Bool("isEOD", cbsStatus.IsEOD).
+			Bool("isStandIn", cbsStatus.IsStandIn).
 			Msg("CBS is not ready for transactions")
 		return nil, pkgerror.InternalServerError()
 	}
@@ -118,8 +122,8 @@ func (uc *Usecase) Process(ctx context.Context, req *ProcessRequest) (*ProcessRe
 	}
 	if tx.Status != transaction.StatusInquirySuccess {
 		l.Error().
-			Str("transaction_id", req.TransactionID).
-			Str("transaction_status", tx.Status).
+			Str("transactionID", req.TransactionID).
+			Str("transactionStatus", tx.Status).
 			Msg("Transaction is not in a valid state to be processed")
 		return nil, pkgerror.BadRequest().SetMsg("Transaction is not in a valid state to be processed")
 	}
@@ -142,7 +146,9 @@ func (uc *Usecase) Process(ctx context.Context, req *ProcessRequest) (*ProcessRe
 
 	err = uc.txRepo.Update(ctx, tx)
 	if err != nil {
-		l.Error().Err(err).Msg("Failed to update transaction status")
+		l.Error().Err(err).
+			Str("transactionID", req.TransactionID).
+			Msg("Failed to update transaction status")
 		return nil, pkgerror.InternalServerError()
 	}
 

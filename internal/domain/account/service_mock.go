@@ -78,55 +78,6 @@ func (_c *MockService_Get_Call) RunAndReturn(run func(context.Context, string) (
 	return _c
 }
 
-// Transfer provides a mock function with given fields: ctx, srcAccountNumber, destAccountNumber, amount
-func (_m *MockService) Transfer(ctx context.Context, srcAccountNumber string, destAccountNumber string, amount int64) error {
-	ret := _m.Called(ctx, srcAccountNumber, destAccountNumber, amount)
-
-	if len(ret) == 0 {
-		panic("no return value specified for Transfer")
-	}
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, string, string, int64) error); ok {
-		r0 = rf(ctx, srcAccountNumber, destAccountNumber, amount)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
-// MockService_Transfer_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Transfer'
-type MockService_Transfer_Call struct {
-	*mock.Call
-}
-
-// Transfer is a helper method to define mock.On call
-//   - ctx context.Context
-//   - srcAccountNumber string
-//   - destAccountNumber string
-//   - amount int64
-func (_e *MockService_Expecter) Transfer(ctx interface{}, srcAccountNumber interface{}, destAccountNumber interface{}, amount interface{}) *MockService_Transfer_Call {
-	return &MockService_Transfer_Call{Call: _e.mock.On("Transfer", ctx, srcAccountNumber, destAccountNumber, amount)}
-}
-
-func (_c *MockService_Transfer_Call) Run(run func(ctx context.Context, srcAccountNumber string, destAccountNumber string, amount int64)) *MockService_Transfer_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(string), args[2].(string), args[3].(int64))
-	})
-	return _c
-}
-
-func (_c *MockService_Transfer_Call) Return(_a0 error) *MockService_Transfer_Call {
-	_c.Call.Return(_a0)
-	return _c
-}
-
-func (_c *MockService_Transfer_Call) RunAndReturn(run func(context.Context, string, string, int64) error) *MockService_Transfer_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
 // NewMockService creates a new instance of MockService. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewMockService(t interface {
