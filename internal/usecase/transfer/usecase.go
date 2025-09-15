@@ -19,20 +19,20 @@ const (
 
 // Usecase defines the use case for handling transfers.
 type Usecase struct {
-	cbs         cbs.Service
+	cbsSvc      cbs.Service
 	txRepo      transaction.Repository
 	accountSvc  account.Service
 	transferSvc transfer.Service
 }
 
 func NewUsecase(
-	cbs cbs.Service,
+	cbsSvc cbs.Service,
 	txRepo transaction.Repository,
 	accountSvc account.Service,
 	transferSvc transfer.Service,
 ) *Usecase {
 	return &Usecase{
-		cbs:         cbs,
+		cbsSvc:      cbsSvc,
 		txRepo:      txRepo,
 		accountSvc:  accountSvc,
 		transferSvc: transferSvc,
@@ -42,7 +42,7 @@ func NewUsecase(
 func (uc *Usecase) Initiate(ctx context.Context, req *InitiateRequest) (*InitiateResponse, error) {
 	l := log.WithContext(ctx, "Initiate")
 
-	cbsStatus, err := uc.cbs.GetStatus(ctx)
+	cbsStatus, err := uc.cbsSvc.GetStatus(ctx)
 	if err != nil {
 		l.Error().Err(err).Msg("Failed to Get CBS status")
 		return nil, pkgerror.InternalServerError()
@@ -102,7 +102,7 @@ func (uc *Usecase) Initiate(ctx context.Context, req *InitiateRequest) (*Initiat
 func (uc *Usecase) Process(ctx context.Context, req *ProcessRequest) (*ProcessResponse, error) {
 	l := log.WithContext(ctx, "Process")
 
-	cbsStatus, err := uc.cbs.GetStatus(ctx)
+	cbsStatus, err := uc.cbsSvc.GetStatus(ctx)
 	if err != nil {
 		l.Error().Err(err).Msg("Failed to Get CBS status")
 		return nil, pkgerror.InternalServerError()
@@ -158,6 +158,7 @@ func (uc *Usecase) Process(ctx context.Context, req *ProcessRequest) (*ProcessRe
 	}, nil
 }
 
+// makeTransferRemark creates a remark for the transfer transaction.
 func makeTransferRemark(srcAccount, destAccount, uuid string) string {
 	return fmt.Sprintf("TRF %s %s BNKKRD %s", srcAccount, destAccount, uuid)
 }

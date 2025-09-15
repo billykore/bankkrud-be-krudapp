@@ -1,4 +1,4 @@
-basePath: /api/v1
+basePath: /v1.0
 definitions:
   response.ErrorResponse:
     properties:
@@ -137,7 +137,7 @@ paths:
       summary: TapMoney payment
       tags:
       - example
-  /transfer/initiate:
+  /transfer/init:
     post:
       consumes:
       - application/json

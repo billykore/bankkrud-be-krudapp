@@ -29,7 +29,7 @@ import (
 //	@license.url	https://www.apache.org/licenses/LICENSE-2.0.html
 //	@host			api.bankkrud.com
 //	@schemes		http https
-//	@BasePath		/api/v1
+//	@BasePath		/v1.0
 func main() {
 	c := config.Load()
 	a := initTapMoney(c)

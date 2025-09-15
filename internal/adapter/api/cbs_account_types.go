@@ -34,6 +34,9 @@ type AccountDetails struct {
 
 // GetBalance returns int64 balance.
 func (details *AccountDetails) GetBalance() int64 {
-	balance, _ := strconv.ParseInt(details.Balance, 10, 64)
-	return balance
+	balance, err := strconv.ParseFloat(details.Balance, 64)
+	if err != nil {
+		return 0
+	}
+	return int64(balance)
 }

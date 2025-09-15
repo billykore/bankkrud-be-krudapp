@@ -128,7 +128,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/transfer/initiate": {
+        "/transfer/init": {
             "post": {
                 "description": "Initiate transfer transaction",
                 "consumes": [
@@ -326,7 +326,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "api.bankkrud.com",
-	BasePath:         "/api/v1",
+	BasePath:         "/v1.0",
 	Schemes:          []string{"http", "https"},
 	Title:            "API Specification",
 	Description:      "TapMoney service API specification.",

@@ -31,7 +31,7 @@ func NewTransferHandler(va *validation.Validator, uc *transfer.Usecase) *Transfe
 //	@Failure		400				{object}	response.Response
 //	@Failure		404				{object}	response.Response
 //	@Failure		500				{object}	response.Response
-//	@Router			/transfer/initiate [post]
+//	@Router			/transfer/init [post]
 func (h *TransferHandler) Initiate(ctx echo.Context) error {
 	req := new(transfer.InitiateRequest)
 	err := ctx.Bind(req)
