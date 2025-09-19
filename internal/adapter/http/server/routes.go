@@ -3,6 +3,8 @@ package server
 func (hs *HTTPServer) registerRoutes() {
 	v1 := hs.router.Group("/v1.0")
 
+	v1.POST("/authentication/login", hs.ah.Login)
+
 	v1.POST("/tapmoney/inquiry", hs.tmh.Inquiry)
 	v1.POST("/tapmoney/payment", hs.tmh.Payment)
 

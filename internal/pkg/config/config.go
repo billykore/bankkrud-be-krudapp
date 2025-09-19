@@ -19,6 +19,8 @@ type Configs struct {
 	CBS internal.CBS
 	// DBD defines the digital banking delivery system configuration.
 	DBD internal.DBD
+	// Redis defines the redis database configuration.
+	Redis internal.Redis
 }
 
 // Config holds the application configuration.
@@ -33,6 +35,7 @@ func Load() *Configs {
 	viper.SetConfigName("configs")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
+	viper.AddConfigPath("..")
 
 	if err := viper.ReadInConfig(); err != nil {
 		panic(err)

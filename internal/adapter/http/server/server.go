@@ -18,6 +18,7 @@ type HTTPServer struct {
 	router *echo.Echo
 	tmh    *handler.TapMoneyHandler
 	tfh    *handler.TransferHandler
+	ah     *handler.AuthenticationHandler
 }
 
 // NewHTTP returns new Router.
@@ -26,12 +27,14 @@ func NewHTTP(
 	router *echo.Echo,
 	tmh *handler.TapMoneyHandler,
 	tfh *handler.TransferHandler,
+	ah *handler.AuthenticationHandler,
 ) *HTTPServer {
 	return &HTTPServer{
 		cfg:    cfg,
 		router: router,
 		tmh:    tmh,
 		tfh:    tfh,
+		ah:     ah,
 	}
 }
 
@@ -57,8 +60,7 @@ func (hs *HTTPServer) run() {
 	err := hs.router.Start(":" + port)
 	if err != nil && errors.Is(err, http.ErrServerClosed) {
 		log.Info().Msgf("http server closed")
-	}
-	if err != nil {
+	} else {
 		log.Panic().Err(err).Msg("Failed to start server")
 	}
 }

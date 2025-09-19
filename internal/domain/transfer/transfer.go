@@ -1,5 +1,6 @@
 package transfer
 
+// Transfer represents a money transfer between accounts.
 type Transfer struct {
 	SourceAccount        string
 	DestinationAccount   string

@@ -31,14 +31,14 @@ func NewCBS(cfg *config.Configs, client *http.Client) *CBSAuth {
 }
 
 func (c *CBSAuth) GetToken(ctx context.Context) (string, error) {
-	tokenUrl := c.addr + "/token"
+	tokenURL := c.addr + "/token"
 
 	data := url.Values{}
 	data.Set("username", c.username)
 	data.Set("password", c.password)
 	data.Set("grant_type", "password")
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, tokenUrl, strings.NewReader(data.Encode()))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, tokenURL, strings.NewReader(data.Encode()))
 	if err != nil {
 		return "", err
 	}

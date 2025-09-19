@@ -26,6 +26,10 @@ func BadRequest() *Error {
 	return New(codes.BadRequest)
 }
 
+func Unauthorized() *Error {
+	return New(codes.Unauthenticated)
+}
+
 // NotFound returns a new Error with NotFound code.
 func NotFound() *Error {
 	return New(codes.NotFound)

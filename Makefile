@@ -61,3 +61,9 @@ generate-mocks:
 .PHONY: run-test
 run-test:
 	@./scripts/test.sh
+
+# Example:
+# make run-test-coverage
+.PHONY: test-coverage
+test-coverage:
+	@./scripts/test_coverage.sh

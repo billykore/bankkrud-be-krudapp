@@ -11,18 +11,21 @@ import (
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/api"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/http/handler"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/http/server"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/service"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/storage/repo"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/config"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/db/postgres"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/db/redis"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/httpclient"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/validation"
-	tapmoney2 "go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/tapmoney"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/authentication"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/tapmoney"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/transfer"
 )
 
 // Injectors from wire.go:
 
-func initTapMoney(cfg *config.Configs) *tapmoney {
+func initKrudApp(cfg *config.Configs) *krudApp {
 	echoEcho := echo.New()
 	validator := validation.New()
 	client := httpclient.New()
@@ -32,12 +35,17 @@ func initTapMoney(cfg *config.Configs) *tapmoney {
 	transactionRepo := repo.NewTransactionRepo(db)
 	paymentGateway := api.NewPaymentGateway(cfg, client)
 	accountAPI := api.NewAccountAPI(cfg, client, cbsAuth)
-	usecase := tapmoney2.NewUsecase(cbsStatusAPI, transactionRepo, paymentGateway, accountAPI)
+	usecase := tapmoney.NewUsecase(cbsStatusAPI, transactionRepo, paymentGateway, accountAPI)
 	tapMoneyHandler := handler.NewTapMoneyHandler(validator, usecase)
 	transferAPI := api.NewTransferAPI(cfg, client, cbsAuth)
 	transferUsecase := transfer.NewUsecase(cbsStatusAPI, transactionRepo, accountAPI, transferAPI)
 	transferHandler := handler.NewTransferHandler(validator, transferUsecase)
-	httpServer := server.NewHTTP(cfg, echoEcho, tapMoneyHandler, transferHandler)
-	mainTapmoney := newTapMoney(httpServer, db)
-	return mainTapmoney
+	redisClient := redis.New(cfg)
+	userRepo := repo.NewUserRepo(db, redisClient)
+	authService := service.NewAuthService(cfg)
+	authenticationUsecase := authentication.NewUsecase(userRepo, authService)
+	authenticationHandler := handler.NewAuthenticationHandler(validator, authenticationUsecase)
+	httpServer := server.NewHTTP(cfg, echoEcho, tapMoneyHandler, transferHandler, authenticationHandler)
+	mainKrudApp := newKrudApp(httpServer, db)
+	return mainKrudApp
 }

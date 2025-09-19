@@ -28,7 +28,7 @@ type InquiryRequest struct {
 type InquiryResponse struct {
 	SequenceNumber string `json:"sequenceNumber"`
 	Status         string `json:"description"`
-	TraceId        string `json:"traceId"`
+	TraceID        string `json:"traceId"`
 	Amount         int64  `json:"amount"`
 	CardNumber     string `json:"cardNumber"`
 	SourceAccount  string `json:"sourceAccount"`

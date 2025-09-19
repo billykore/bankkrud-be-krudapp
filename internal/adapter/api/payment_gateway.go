@@ -87,7 +87,7 @@ func (pg *PaymentGateway) Inquiry(ctx context.Context, channel payment.Channel, 
 	}, nil
 }
 
-func (pg *PaymentGateway) Payment(ctx context.Context, Bill payment.Bill) (payment.Payment, error) {
-	//TODO implement me
+func (pg *PaymentGateway) Payment(ctx context.Context, bill payment.Bill) (payment.Payment, error) {
+	// TODO implement me
 	panic("implement me")
 }

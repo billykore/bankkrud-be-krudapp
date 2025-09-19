@@ -12,13 +12,13 @@ import (
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase"
 )
 
-func initTapMoney(cfg *config.Configs) *tapmoney {
+func initKrudApp(cfg *config.Configs) *krudApp {
 	wire.Build(
 		adapter.ProviderSet,
 		pkg.ProviderSet,
 		usecase.ProviderSet,
 		echo.New,
-		newTapMoney,
+		newKrudApp,
 	)
-	return &tapmoney{}
+	return &krudApp{}
 }

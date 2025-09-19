@@ -32,7 +32,7 @@ import (
 //	@BasePath		/v1.0
 func main() {
 	c := config.Load()
-	a := initTapMoney(c)
+	a := initKrudApp(c)
 	log.Configure(c.App.Env)
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -53,13 +53,13 @@ func main() {
 	<-wait
 }
 
-type tapmoney struct {
+type krudApp struct {
 	http *server.HTTPServer
 	db   *gorm.DB
 }
 
-func newTapMoney(http *server.HTTPServer, db *gorm.DB) *tapmoney {
-	return &tapmoney{
+func newKrudApp(http *server.HTTPServer, db *gorm.DB) *krudApp {
+	return &krudApp{
 		http: http,
 		db:   db,
 	}
