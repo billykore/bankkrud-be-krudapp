@@ -37,6 +37,6 @@ func (as *AuthService) GenerateToken(u user.User) (user.Token, error) {
 	}
 	return user.Token{
 		Value:     strToken,
-		ExpiredAt: exp,
+		ExpiresAt: exp,
 	}, nil
 }

@@ -42,7 +42,7 @@ func initKrudApp(cfg *config.Configs) *krudApp {
 	transferUsecase := transfer.NewUsecase(cbsStatusAPI, transactionRepo, accountAPI, transferAPI)
 	transferHandler := handler.NewTransferHandler(validator, transferUsecase)
 	redisClient := redis.New(cfg)
-	userRepo := repo.NewUserRepo(db, redisClient)
+	userRepo := repo.NewUserRepo(cfg, db, redisClient)
 	authService := service.NewAuthService(cfg)
 	authenticationUsecase := authentication.NewUsecase(userRepo, authService)
 	authenticationHandler := handler.NewAuthenticationHandler(validator, authenticationUsecase)

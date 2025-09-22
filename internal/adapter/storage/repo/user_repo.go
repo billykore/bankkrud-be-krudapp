@@ -12,6 +12,7 @@ import (
 
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/storage/model"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/user"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/config"
 )
 
 const (
@@ -20,12 +21,17 @@ const (
 )
 
 type UserRepo struct {
+	cfg *config.Configs
 	db  *gorm.DB
 	rdb *redis.Client
 }
 
-func NewUserRepo(db *gorm.DB, rdb *redis.Client) *UserRepo {
-	return &UserRepo{db: db, rdb: rdb}
+func NewUserRepo(cfg *config.Configs, db *gorm.DB, rdb *redis.Client) *UserRepo {
+	return &UserRepo{
+		cfg: cfg,
+		db:  db,
+		rdb: rdb,
+	}
 }
 
 func (ur *UserRepo) GetByUsername(ctx context.Context, username string) (user.User, error) {
@@ -49,12 +55,15 @@ func (ur *UserRepo) GetByUsername(ctx context.Context, username string) (user.Us
 }
 
 func (ur *UserRepo) SaveToken(ctx context.Context, username string, token user.Token) error {
-	redisKey := fmt.Sprintf(userTokenKey, username)
-	b, err := json.Marshal(token)
+	b, err := json.Marshal(model.Token{
+		Value:     token.Value,
+		ExpiresAt: token.ExpiresAt,
+	})
 	if err != nil {
 		return err
 	}
-	err = ur.rdb.Set(ctx, redisKey, string(b), userTokenCacheTTL).Err()
+	redisKey := fmt.Sprintf(userTokenKey, username)
+	err = ur.rdb.Set(ctx, redisKey, string(b), ur.cfg.Token.Duration).Err()
 	if err != nil {
 		return err
 	}
@@ -70,10 +79,13 @@ func (ur *UserRepo) GetToken(ctx context.Context, username string) (user.Token, 
 	if err != nil {
 		return user.Token{}, err
 	}
-	var t user.Token
-	err = json.Unmarshal([]byte(token), &t)
+	var m model.Token
+	err = json.Unmarshal([]byte(token), &m)
 	if err != nil {
 		return user.Token{}, err
 	}
-	return t, nil
+	return user.Token{
+		Value:     m.Value,
+		ExpiresAt: m.ExpiresAt,
+	}, nil
 }

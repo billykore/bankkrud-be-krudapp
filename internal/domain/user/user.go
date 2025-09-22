@@ -34,13 +34,13 @@ func (u *User) IsInactive() bool {
 
 type Token struct {
 	Value     string
-	ExpiredAt time.Time
+	ExpiresAt time.Time
 }
 
 func (t *Token) ExpiredDuration() int64 {
-	return int64(time.Until(t.ExpiredAt).Seconds())
+	return int64(time.Until(t.ExpiresAt).Seconds())
 }
 
 func (t *Token) Expired() bool {
-	return time.Now().After(t.ExpiredAt)
+	return time.Now().After(t.ExpiresAt)
 }

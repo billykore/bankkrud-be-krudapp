@@ -34,7 +34,7 @@ func TestLogin_Success(t *testing.T) {
 	authSvc.EXPECT().GenerateToken(mock.Anything).
 		Return(user.Token{
 			Value:     "token-123",
-			ExpiredAt: time.Time{},
+			ExpiresAt: time.Time{},
 		}, nil)
 
 	userRepo.EXPECT().SaveToken(mock.Anything, mock.Anything, mock.Anything).
