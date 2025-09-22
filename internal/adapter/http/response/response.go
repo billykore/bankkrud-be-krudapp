@@ -14,14 +14,14 @@ type Data any
 // Response represents the response structure for HTTP responses.
 type Response[T Data] struct {
 	Success    bool           `json:"success"`
-	Error      *ErrorResponse `json:"error,omitempty"`
+	Error      *ErrorResponse `json:"errors,omitempty"`
 	Data       Data           `json:"data,omitempty"`
 	ServerTime int64          `json:"serverTime,omitempty"`
 }
 
 type ErrorResponse struct {
-	Name    string `json:"name,omitempty"`
-	Message string `json:"message,omitempty"`
+	Name  string `json:"name,omitempty"`
+	Error error  `json:"error,omitempty"`
 }
 
 // Success returns status code 200 and success response with data.
@@ -39,8 +39,8 @@ func Error(err error) (int, *Response[Data]) {
 	if errors.As(err, &e) {
 		return responseCode[e.Code], &Response[Data]{
 			Error: &ErrorResponse{
-				Name:    responseName[e.Code],
-				Message: err.Error(),
+				Name:  responseName[e.Code],
+				Error: err,
 			},
 			ServerTime: serverTime(),
 		}
@@ -53,8 +53,8 @@ func BadRequest(err error) (int, *Response[Data]) {
 	return http.StatusBadRequest, &Response[Data]{
 		Success: false,
 		Error: &ErrorResponse{
-			Name:    "BadRequest",
-			Message: err.Error(),
+			Name:  "BadRequest",
+			Error: err,
 		},
 		ServerTime: serverTime(),
 	}
@@ -65,8 +65,8 @@ func Unauthorized(err error) (int, *Response[Data]) {
 	return http.StatusUnauthorized, &Response[Data]{
 		Success: false,
 		Error: &ErrorResponse{
-			Name:    "Unauthorized",
-			Message: err.Error(),
+			Name:  "Unauthorized",
+			Error: err,
 		},
 		ServerTime: serverTime(),
 	}
@@ -77,8 +77,8 @@ func Forbidden(err error) (int, *Response[Data]) {
 	return http.StatusForbidden, &Response[Data]{
 		Success: false,
 		Error: &ErrorResponse{
-			Name:    "Forbidden",
-			Message: err.Error(),
+			Name:  "Forbidden",
+			Error: err,
 		},
 		ServerTime: serverTime(),
 	}
@@ -89,8 +89,8 @@ func InternalServerError(err error) (int, *Response[Data]) {
 	return http.StatusInternalServerError, &Response[Data]{
 		Success: false,
 		Error: &ErrorResponse{
-			Name:    "InternalServerError",
-			Message: err.Error(),
+			Name:  "InternalServerError",
+			Error: err,
 		},
 		ServerTime: serverTime(),
 	}

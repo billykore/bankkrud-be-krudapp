@@ -4,6 +4,7 @@ import (
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 // New returns new postgres db connection.
@@ -12,6 +13,9 @@ func New(cfg *config.Configs) *gorm.DB {
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)
+	}
+	if cfg.App.Env == "production" {
+		db.Logger = db.Logger.LogMode(logger.Silent)
 	}
 	return db
 }

@@ -15,6 +15,7 @@ type User struct {
 	CIF         string
 	Status      string
 	Address     string
+	LastLogin   time.Time
 }
 
 // FullName returns the full name of the user.

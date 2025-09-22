@@ -3,7 +3,6 @@ package validation
 import (
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -21,17 +20,13 @@ func New() *Validator {
 	if err := vv.registerCustomValidation(); err != nil {
 		panic(err)
 	}
+	vv.JSONTagFunc()
 	return vv
 }
 
 // Validate checks the validity of the input data based on struct tags and returns an error if any.
 func (v *Validator) Validate(req any) error {
 	err := v.v.Struct(req)
-	return validationErr(err)
-}
-
-// validationErr processes validation errors and returns a formatted error message.
-func validationErr(err error) error {
 	var ve validator.ValidationErrors
 	if !errors.As(err, &ve) {
 		return nil
@@ -41,20 +36,14 @@ func validationErr(err error) error {
 
 // joinValidationErrors converts a slice of FieldError into a concatenated error.
 func joinValidationErrors(validationErrors validator.ValidationErrors) error {
-	var errList []string
+	var fieldErrors FieldErrors
 	for _, fieldError := range validationErrors {
-		errList = append(errList, errMessage(fieldError))
+		fieldErrors = append(fieldErrors, FieldError{
+			Field:   fieldError.Field(),
+			Message: errMessage(fieldError),
+		})
 	}
-	return errors.New(strings.Join(errList, ". "))
-}
-
-// tagMessages maps validation tags to corresponding error message templates.
-var tagMessages = map[string]string{
-	"required": "%s is required",
-	"email":    "%s is not a valid email",
-	"len":      "%s length must be %s",
-	"min":      "%s minimum length must be %s",
-	"number":   "%s must be a number",
+	return fieldErrors
 }
 
 // errMessage formats and returns error messages based on the field validation error type.

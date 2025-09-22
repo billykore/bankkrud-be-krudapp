@@ -51,6 +51,7 @@ func (ur *UserRepo) GetByUsername(ctx context.Context, username string) (user.Us
 		LastName:    m.LastName,
 		CIF:         m.CIF,
 		Address:     m.Address,
+		LastLogin:   m.LastLogin,
 	}, nil
 }
 
@@ -64,6 +65,12 @@ func (ur *UserRepo) SaveToken(ctx context.Context, username string, token user.T
 	}
 	redisKey := fmt.Sprintf(userTokenKey, username)
 	err = ur.rdb.Set(ctx, redisKey, string(b), ur.cfg.Token.Duration).Err()
+	if err != nil {
+		return err
+	}
+	err = ur.db.WithContext(ctx).Model(model.User{}).
+		Where("username = ?", username).
+		UpdateColumn("last_login", time.Now()).Error
 	if err != nil {
 		return err
 	}

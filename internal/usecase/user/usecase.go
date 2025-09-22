@@ -37,5 +37,6 @@ func (uc *Usecase) GetByUsername(ctx context.Context, req *GetByUsernameRequest)
 		Email:       u.Email,
 		PhoneNumber: u.PhoneNumber,
 		Address:     u.Address,
+		LastLogin:   u.LastLogin,
 	}, nil
 }

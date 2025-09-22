@@ -7,10 +7,10 @@ const DefaultMsg = "Please try again later. If the problem persists, please cont
 // Error represents domain error.
 type Error struct {
 	// Code is the error code.
-	Code codes.Code
+	Code codes.Code `json:"-"`
 	// Msg is the custom error message that will be displayed to the client.
 	// If no message is provided, the DefaultMsg will be used.
-	Msg string
+	Msg string `json:"message"`
 }
 
 // New returns new Error.

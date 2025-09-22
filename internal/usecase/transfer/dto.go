@@ -1,9 +1,9 @@
 package transfer
 
 type InitiateRequest struct {
-	SourceAccount      string `json:"source_account"`
-	DestinationAccount string `json:"destination_account"`
-	Amount             int64  `json:"amount"`
+	SourceAccount      string `json:"source_account" validate:"required,number"`
+	DestinationAccount string `json:"destination_account" validate:"required,number"`
+	Amount             int64  `json:"amount" validate:"required,gte=1000,lte=50000000"`
 }
 
 type InitiateResponse struct {
@@ -12,10 +12,10 @@ type InitiateResponse struct {
 }
 
 type ProcessRequest struct {
-	TransactionID      string `json:"transaction_id"`
-	SourceAccount      string `json:"source_account"`
-	DestinationAccount string `json:"destination_account"`
-	Amount             int64  `json:"amount"`
+	TransactionID      string `json:"transaction_id" validate:"required,uuid"`
+	SourceAccount      string `json:"source_account" validate:"required,number"`
+	DestinationAccount string `json:"destination_account" validate:"required,number"`
+	Amount             int64  `json:"amount" validate:"required"`
 }
 
 type ProcessResponse struct {

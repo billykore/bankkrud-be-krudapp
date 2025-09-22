@@ -1,8 +1,8 @@
 package authentication
 
 type LoginRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username string `json:"username" validate:"required,min=2,max=100"`
+	Password string `json:"password" validate:"required,min=8,max=100"`
 }
 
 type LoginResponse struct {

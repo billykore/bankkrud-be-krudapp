@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 type User struct {
 	Username     string `gorm:"unique"`
 	Email        string `gorm:"unique"`
@@ -9,4 +11,5 @@ type User struct {
 	FirstName    string
 	LastName     string
 	Address      string
+	LastLogin    time.Time
 }
