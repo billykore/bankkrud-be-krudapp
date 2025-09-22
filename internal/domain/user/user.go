@@ -12,8 +12,9 @@ type User struct {
 	PhoneNumber string
 	Password    string
 	DateOfBirth string
-	CIFNumber   string
+	CIF         string
 	Status      string
+	Address     string
 }
 
 // FullName returns the full name of the user.

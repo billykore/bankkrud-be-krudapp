@@ -10,4 +10,6 @@ func (hs *HTTPServer) registerRoutes() {
 
 	v1.POST("/transfer/init", hs.tfh.Initiate)
 	v1.POST("/transfer/process", hs.tfh.Process)
+
+	v1.GET("/users/:username", hs.uh.GetByUsername)
 }

@@ -43,6 +43,8 @@ func (ur *UserRepo) GetByUsername(ctx context.Context, username string) (user.Us
 		PhoneNumber: m.PhoneNumber,
 		FirstName:   m.FirstName,
 		LastName:    m.LastName,
+		CIF:         m.CIF,
+		Address:     m.Address,
 	}, nil
 }
 

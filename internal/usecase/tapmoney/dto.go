@@ -3,32 +3,32 @@ package tapmoney
 const SuccessfulMessage = "Payment successful"
 
 type InquiryRequest struct {
-	CardNumber    string `json:"cardNumber"`
-	SourceAccount string `json:"sourceAccount"`
+	CardNumber    string `json:"card_number"`
+	SourceAccount string `json:"source_account"`
 	Amount        int64  `json:"amount"`
 }
 
 type InquiryResponse struct {
-	TransactionID string `json:"transactionID"`
-	PaymentID     string `json:"paymentID"`
-	Status        string `json:"description"`
-	CardNumber    string `json:"cardNumber"`
-	SourceAccount string `json:"sourceAccount"`
+	TransactionID string `json:"transaction_id"`
+	PaymentID     string `json:"payment_id"`
+	Status        string `json:"status"`
+	CardNumber    string `json:"card_number"`
+	SourceAccount string `json:"source_account"`
 	Amount        int64  `json:"amount"`
 }
 
 type PaymentRequest struct {
-	TransactionID string `json:"transactionID"`
+	TransactionID string `json:"transaction_id"`
 	Amount        int64  `json:"amount"`
 	Notes         string `json:"notes"`
 }
 
 type PaymentResponse struct {
-	TransactionID string `json:"transactionID"`
+	TransactionID string `json:"transaction_id"`
 	Message       string `json:"message"`
 	Status        string `json:"status"`
 	Amount        int64  `json:"amount"`
-	CardNumber    string `json:"cardNumber"`
+	CardNumber    string `json:"card_number"`
 	Notes         string `json:"notes"`
 	Fee           int64  `json:"fee"`
 }

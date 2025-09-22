@@ -7,9 +7,9 @@ type LoginRequest struct {
 
 type LoginResponse struct {
 	Email           string `json:"email"`
-	PhoneNumber     string `json:"phoneNumber"`
+	PhoneNumber     string `json:"phone_number"`
 	Username        string `json:"username"`
-	FullName        string `json:"fullName"`
+	FullName        string `json:"full_name"`
 	Token           string `json:"token"`
-	ExpiredDuration int64  `json:"expiredDuration"`
+	ExpiredDuration int64  `json:"expired_duration"`
 }

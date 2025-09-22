@@ -27,5 +27,6 @@ var ProviderSet = wire.NewSet(
 	handler.NewTransferHandler,
 	handler.NewTapMoneyHandler,
 	handler.NewAuthenticationHandler,
+	handler.NewUserHandler,
 	server.NewHTTP,
 )

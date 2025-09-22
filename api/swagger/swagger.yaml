@@ -21,9 +21,9 @@ definitions:
     properties:
       amount:
         type: integer
-      cardNumber:
+      card_number:
         type: string
-      sourceAccount:
+      source_account:
         type: string
     type: object
   tapmoney.PaymentRequest:
@@ -32,27 +32,27 @@ definitions:
         type: integer
       notes:
         type: string
-      transactionID:
+      transaction_id:
         type: string
     type: object
   transfer.InitiateRequest:
     properties:
       amount:
         type: integer
-      destinationAccount:
+      destination_account:
         type: string
-      sourceAccount:
+      source_account:
         type: string
     type: object
   transfer.ProcessRequest:
     properties:
       amount:
         type: integer
-      destinationAccount:
+      destination_account:
         type: string
-      sourceAccount:
+      source_account:
         type: string
-      transactionID:
+      transaction_id:
         type: string
     type: object
 host: api.bankkrud.com
@@ -205,6 +205,39 @@ paths:
       summary: Process transfer
       tags:
       - transfer
+  /users/{username}:
+    get:
+      consumes:
+      - application/json
+      description: Get user by username
+      parameters:
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get user by username
+      tags:
+      - user
 schemes:
 - http
 - https

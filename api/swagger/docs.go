@@ -231,6 +231,56 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/users/{username}": {
+            "get": {
+                "description": "Get user by username",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Get user by username",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Username",
+                        "name": "username",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -266,10 +316,10 @@ const docTemplate = `{
                 "amount": {
                     "type": "integer"
                 },
-                "cardNumber": {
+                "card_number": {
                     "type": "string"
                 },
-                "sourceAccount": {
+                "source_account": {
                     "type": "string"
                 }
             }
@@ -283,7 +333,7 @@ const docTemplate = `{
                 "notes": {
                     "type": "string"
                 },
-                "transactionID": {
+                "transaction_id": {
                     "type": "string"
                 }
             }
@@ -294,10 +344,10 @@ const docTemplate = `{
                 "amount": {
                     "type": "integer"
                 },
-                "destinationAccount": {
+                "destination_account": {
                     "type": "string"
                 },
-                "sourceAccount": {
+                "source_account": {
                     "type": "string"
                 }
             }
@@ -308,13 +358,13 @@ const docTemplate = `{
                 "amount": {
                     "type": "integer"
                 },
-                "destinationAccount": {
+                "destination_account": {
                     "type": "string"
                 },
-                "sourceAccount": {
+                "source_account": {
                     "type": "string"
                 },
-                "transactionID": {
+                "transaction_id": {
                     "type": "string"
                 }
             }

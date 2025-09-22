@@ -19,6 +19,7 @@ type HTTPServer struct {
 	tmh    *handler.TapMoneyHandler
 	tfh    *handler.TransferHandler
 	ah     *handler.AuthenticationHandler
+	uh     *handler.UserHandler
 }
 
 // NewHTTP returns new Router.
@@ -28,6 +29,7 @@ func NewHTTP(
 	tmh *handler.TapMoneyHandler,
 	tfh *handler.TransferHandler,
 	ah *handler.AuthenticationHandler,
+	uh *handler.UserHandler,
 ) *HTTPServer {
 	return &HTTPServer{
 		cfg:    cfg,
@@ -35,6 +37,7 @@ func NewHTTP(
 		tmh:    tmh,
 		tfh:    tfh,
 		ah:     ah,
+		uh:     uh,
 	}
 }
 

@@ -3,8 +3,10 @@ package model
 type User struct {
 	Username     string `gorm:"unique"`
 	Email        string `gorm:"unique"`
-	PhoneNumber  string
+	CIF          string `gorm:"unique"`
+	PhoneNumber  string `gorm:"unique"`
 	PasswordHash string
 	FirstName    string
 	LastName     string
+	Address      string
 }

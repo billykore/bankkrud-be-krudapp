@@ -54,8 +54,8 @@ func (uc *Usecase) Inquiry(ctx context.Context, req *InquiryRequest) (*InquiryRe
 	}
 	if cbsStatus.NotReady() {
 		l.Error().
-			Bool("isEOD", cbsStatus.IsEOD).
-			Bool("isStandIn", cbsStatus.IsStandIn).
+			Bool("is_eod", cbsStatus.IsEOD).
+			Bool("is_stand_in", cbsStatus.IsStandIn).
 			Msg("CBS is not ready for transactions")
 		return nil, pkgerror.InternalServerError()
 	}
@@ -67,8 +67,8 @@ func (uc *Usecase) Inquiry(ctx context.Context, req *InquiryRequest) (*InquiryRe
 	}
 	if !srcAccount.CanTransfer(req.Amount) {
 		l.Error().
-			Int64("accountBalance", srcAccount.Balance).
-			Int64("requestAmount", req.Amount).
+			Int64("account_balance", srcAccount.Balance).
+			Int64("request_amount", req.Amount).
 			Msg("Insufficient balance")
 		return nil, pkgerror.BadRequest().SetMsg("Insufficient balance")
 	}
@@ -120,8 +120,8 @@ func (uc *Usecase) Payment(ctx context.Context, req *PaymentRequest) (*PaymentRe
 	}
 	if cbsStatus.NotReady() {
 		l.Error().
-			Bool("isEOD", cbsStatus.IsEOD).
-			Bool("isStandIn", cbsStatus.IsStandIn).
+			Bool("is_eod", cbsStatus.IsEOD).
+			Bool("is_stand_in", cbsStatus.IsStandIn).
 			Msg("CBS is not ready for transactions")
 		return nil, pkgerror.InternalServerError()
 	}
@@ -133,7 +133,7 @@ func (uc *Usecase) Payment(ctx context.Context, req *PaymentRequest) (*PaymentRe
 	}
 	if tx.Status != transaction.StatusPending {
 		l.Error().Err(err).
-			Str("transactionStatus", tx.Status).
+			Str("transaction_status", tx.Status).
 			Msg("Transaction is already processed")
 		return nil, pkgerror.BadRequest().SetMsg("Transaction is already processed")
 	}
@@ -145,8 +145,8 @@ func (uc *Usecase) Payment(ctx context.Context, req *PaymentRequest) (*PaymentRe
 	}
 	if !srcAccount.CanTransfer(tx.Amount) {
 		l.Error().
-			Int64("accountBalance", srcAccount.Balance).
-			Int64("requestAmount", tx.Amount).
+			Int64("account_balance", srcAccount.Balance).
+			Int64("request_amount", tx.Amount).
 			Msg("Insufficient balance")
 		return nil, pkgerror.BadRequest().SetMsg("Insufficient balance")
 	}
@@ -168,7 +168,7 @@ func (uc *Usecase) Payment(ctx context.Context, req *PaymentRequest) (*PaymentRe
 	err = uc.txRepo.Update(ctx, tx)
 	if err != nil {
 		l.Error().Err(err).
-			Str("transactionID", tx.UUID).
+			Str("transaction_id", tx.UUID).
 			Msg("Update transaction failed")
 		return nil, pkgerror.InternalServerError()
 	}

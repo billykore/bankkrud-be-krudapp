@@ -21,6 +21,7 @@ import (
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/authentication"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/tapmoney"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/transfer"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/user"
 )
 
 // Injectors from wire.go:
@@ -45,7 +46,9 @@ func initKrudApp(cfg *config.Configs) *krudApp {
 	authService := service.NewAuthService(cfg)
 	authenticationUsecase := authentication.NewUsecase(userRepo, authService)
 	authenticationHandler := handler.NewAuthenticationHandler(validator, authenticationUsecase)
-	httpServer := server.NewHTTP(cfg, echoEcho, tapMoneyHandler, transferHandler, authenticationHandler)
+	userUsecase := user.NewUsecase(userRepo)
+	userHandler := handler.NewUserHandler(validator, userUsecase)
+	httpServer := server.NewHTTP(cfg, echoEcho, tapMoneyHandler, transferHandler, authenticationHandler, userHandler)
 	mainKrudApp := newKrudApp(httpServer, db)
 	return mainKrudApp
 }

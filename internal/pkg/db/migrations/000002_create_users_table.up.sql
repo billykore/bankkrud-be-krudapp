@@ -14,5 +14,7 @@ CREATE TABLE users
     status        VARCHAR(20)              DEFAULT 'active',
     created_at    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    deleted_at    TIMESTAMP WITH TIME ZONE DEFAULT NULL
+    deleted_at    TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+    address       TEXT       NOT NULL,
+    cif           VARCHAR(20) UNIQUE  NOT NULL
 );
