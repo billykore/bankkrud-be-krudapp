@@ -21,6 +21,53 @@ func (_m *MockRepository) EXPECT() *MockRepository_Expecter {
 	return &MockRepository_Expecter{mock: &_m.Mock}
 }
 
+// DeleteToken provides a mock function with given fields: ctx, username
+func (_m *MockRepository) DeleteToken(ctx context.Context, username string) error {
+	ret := _m.Called(ctx, username)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeleteToken")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
+		r0 = rf(ctx, username)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// MockRepository_DeleteToken_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'DeleteToken'
+type MockRepository_DeleteToken_Call struct {
+	*mock.Call
+}
+
+// DeleteToken is a helper method to define mock.On call
+//   - ctx context.Context
+//   - username string
+func (_e *MockRepository_Expecter) DeleteToken(ctx interface{}, username interface{}) *MockRepository_DeleteToken_Call {
+	return &MockRepository_DeleteToken_Call{Call: _e.mock.On("DeleteToken", ctx, username)}
+}
+
+func (_c *MockRepository_DeleteToken_Call) Run(run func(ctx context.Context, username string)) *MockRepository_DeleteToken_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(string))
+	})
+	return _c
+}
+
+func (_c *MockRepository_DeleteToken_Call) Return(_a0 error) *MockRepository_DeleteToken_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *MockRepository_DeleteToken_Call) RunAndReturn(run func(context.Context, string) error) *MockRepository_DeleteToken_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // GetByUsername provides a mock function with given fields: ctx, username
 func (_m *MockRepository) GetByUsername(ctx context.Context, username string) (User, error) {
 	ret := _m.Called(ctx, username)
@@ -74,6 +121,78 @@ func (_c *MockRepository_GetByUsername_Call) Return(_a0 User, _a1 error) *MockRe
 }
 
 func (_c *MockRepository_GetByUsername_Call) RunAndReturn(run func(context.Context, string) (User, error)) *MockRepository_GetByUsername_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetFieldsByUsername provides a mock function with given fields: ctx, username, fields
+func (_m *MockRepository) GetFieldsByUsername(ctx context.Context, username string, fields ...string) (User, error) {
+	_va := make([]interface{}, len(fields))
+	for _i := range fields {
+		_va[_i] = fields[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, ctx, username)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetFieldsByUsername")
+	}
+
+	var r0 User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, ...string) (User, error)); ok {
+		return rf(ctx, username, fields...)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, ...string) User); ok {
+		r0 = rf(ctx, username, fields...)
+	} else {
+		r0 = ret.Get(0).(User)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, ...string) error); ok {
+		r1 = rf(ctx, username, fields...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockRepository_GetFieldsByUsername_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetFieldsByUsername'
+type MockRepository_GetFieldsByUsername_Call struct {
+	*mock.Call
+}
+
+// GetFieldsByUsername is a helper method to define mock.On call
+//   - ctx context.Context
+//   - username string
+//   - fields ...string
+func (_e *MockRepository_Expecter) GetFieldsByUsername(ctx interface{}, username interface{}, fields ...interface{}) *MockRepository_GetFieldsByUsername_Call {
+	return &MockRepository_GetFieldsByUsername_Call{Call: _e.mock.On("GetFieldsByUsername",
+		append([]interface{}{ctx, username}, fields...)...)}
+}
+
+func (_c *MockRepository_GetFieldsByUsername_Call) Run(run func(ctx context.Context, username string, fields ...string)) *MockRepository_GetFieldsByUsername_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		variadicArgs := make([]string, len(args)-2)
+		for i, a := range args[2:] {
+			if a != nil {
+				variadicArgs[i] = a.(string)
+			}
+		}
+		run(args[0].(context.Context), args[1].(string), variadicArgs...)
+	})
+	return _c
+}
+
+func (_c *MockRepository_GetFieldsByUsername_Call) Return(_a0 User, _a1 error) *MockRepository_GetFieldsByUsername_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockRepository_GetFieldsByUsername_Call) RunAndReturn(run func(context.Context, string, ...string) (User, error)) *MockRepository_GetFieldsByUsername_Call {
 	_c.Call.Return(run)
 	return _c
 }

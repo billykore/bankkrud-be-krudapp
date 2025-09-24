@@ -232,7 +232,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{username}": {
+        "/users/me": {
             "get": {
                 "description": "Get user by username",
                 "consumes": [
@@ -248,10 +248,9 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Username",
-                        "name": "username",
-                        "in": "path",
-                        "required": true
+                        "description": "Fields",
+                        "name": "fields",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -284,54 +283,59 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "response.ErrorResponse": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
         "response.Response": {
             "type": "object",
             "properties": {
                 "data": {},
-                "error": {
-                    "$ref": "#/definitions/response.ErrorResponse"
+                "detail": {
+                    "type": "string"
                 },
-                "serverTime": {
-                    "type": "integer"
-                },
-                "success": {
-                    "type": "boolean"
+                "errors": {},
+                "title": {
+                    "type": "string"
                 }
             }
         },
         "tapmoney.InquiryRequest": {
             "type": "object",
+            "required": [
+                "amount",
+                "card_number",
+                "source_account"
+            ],
             "properties": {
                 "amount": {
-                    "type": "integer"
+                    "type": "integer",
+                    "maximum": 1000000,
+                    "minimum": 10000
                 },
                 "card_number": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 19,
+                    "minLength": 16
                 },
                 "source_account": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 19,
+                    "minLength": 16
                 }
             }
         },
         "tapmoney.PaymentRequest": {
             "type": "object",
+            "required": [
+                "amount",
+                "transaction_id"
+            ],
             "properties": {
                 "amount": {
-                    "type": "integer"
+                    "type": "integer",
+                    "maximum": 1000000,
+                    "minimum": 10000
                 },
                 "notes": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 255
                 },
                 "transaction_id": {
                     "type": "string"
@@ -340,9 +344,16 @@ const docTemplate = `{
         },
         "transfer.InitiateRequest": {
             "type": "object",
+            "required": [
+                "amount",
+                "destination_account",
+                "source_account"
+            ],
             "properties": {
                 "amount": {
-                    "type": "integer"
+                    "type": "integer",
+                    "maximum": 50000000,
+                    "minimum": 1000
                 },
                 "destination_account": {
                     "type": "string"
@@ -354,6 +365,12 @@ const docTemplate = `{
         },
         "transfer.ProcessRequest": {
             "type": "object",
+            "required": [
+                "amount",
+                "destination_account",
+                "source_account",
+                "transaction_id"
+            ],
             "properties": {
                 "amount": {
                     "type": "integer"

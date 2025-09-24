@@ -30,7 +30,7 @@ func (uc *Usecase) Login(ctx context.Context, req *LoginRequest) (*LoginResponse
 		l.Error().Err(err).
 			Str("username", req.Username).
 			Msg("User not found")
-		return nil, pkgerror.NotFound().SetMsg("User not found")
+		return nil, pkgerror.Unauthorized().SetMsg("Invalid username or password")
 	}
 
 	err = uc.authSvc.ValidatePassword(req.Password, usr.Password)
@@ -38,7 +38,7 @@ func (uc *Usecase) Login(ctx context.Context, req *LoginRequest) (*LoginResponse
 		l.Error().Err(err).
 			Str("username", req.Username).
 			Msg("Invalid password")
-		return nil, pkgerror.Unauthorized().SetMsg("Invalid password")
+		return nil, pkgerror.Unauthorized().SetMsg("Invalid username or password")
 	}
 
 	cacheToken, err := uc.userRepo.GetToken(ctx, usr.Username)
@@ -46,14 +46,11 @@ func (uc *Usecase) Login(ctx context.Context, req *LoginRequest) (*LoginResponse
 		l.Error().Err(err).
 			Str("username", req.Username).
 			Msg("Failed to get token")
-		return nil, pkgerror.InternalServerError().SetMsg("Failed to get token")
+		return nil, pkgerror.InternalServerError()
 	}
 	if cacheToken.Value != "" {
 		return &LoginResponse{
 			Username:        usr.Username,
-			Email:           usr.Email,
-			PhoneNumber:     usr.PhoneNumber,
-			FullName:        usr.FullName(),
 			Token:           cacheToken.Value,
 			ExpiredDuration: cacheToken.ExpiredDuration(),
 		}, nil
@@ -64,7 +61,7 @@ func (uc *Usecase) Login(ctx context.Context, req *LoginRequest) (*LoginResponse
 		l.Error().Err(err).
 			Str("username", req.Username).
 			Msg("Failed to generate token")
-		return nil, pkgerror.InternalServerError().SetMsg("Failed to generate token")
+		return nil, pkgerror.InternalServerError()
 	}
 
 	err = uc.userRepo.SaveToken(ctx, usr.Username, token)
@@ -76,10 +73,23 @@ func (uc *Usecase) Login(ctx context.Context, req *LoginRequest) (*LoginResponse
 
 	return &LoginResponse{
 		Username:        usr.Username,
-		Email:           usr.Email,
-		PhoneNumber:     usr.PhoneNumber,
-		FullName:        usr.FullName(),
 		Token:           token.Value,
 		ExpiredDuration: token.ExpiredDuration(),
+	}, nil
+}
+
+func (uc *Usecase) Logout(ctx context.Context, req *LogoutRequest) (*LogoutResponse, error) {
+	l := log.WithContext(ctx, "Logout")
+
+	err := uc.userRepo.DeleteToken(ctx, req.Username)
+	if err != nil {
+		l.Error().Err(err).
+			Str("username", req.Username).
+			Msg("Failed to get token")
+		return nil, pkgerror.InternalServerError().SetMsg("Failed to delete token")
+	}
+
+	return &LogoutResponse{
+		Message: "Logout successful",
 	}, nil
 }

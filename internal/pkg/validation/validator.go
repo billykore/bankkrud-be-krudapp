@@ -3,6 +3,7 @@ package validation
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -39,15 +40,15 @@ func joinValidationErrors(validationErrors validator.ValidationErrors) error {
 	var fieldErrors FieldErrors
 	for _, fieldError := range validationErrors {
 		fieldErrors = append(fieldErrors, FieldError{
-			Field:   fieldError.Field(),
-			Message: errMessage(fieldError),
+			Name:    fieldError.Field(),
+			Message: validationMessage(fieldError),
 		})
 	}
 	return fieldErrors
 }
 
-// errMessage formats and returns error messages based on the field validation error type.
-func errMessage(fe validator.FieldError) string {
+// validationMessage formats and returns error messages based on the field validation error type.
+func validationMessage(fe validator.FieldError) string {
 	if messageTemplate, exists := tagMessages[fe.Tag()]; exists {
 		return formatMessage(messageTemplate, fe.Field(), fe.Param())
 	}
@@ -57,6 +58,7 @@ func errMessage(fe validator.FieldError) string {
 // formatMessage is a helper function to format messages with parameters.
 func formatMessage(template, field string, param ...string) string {
 	if len(param) > 0 && param[0] != "" {
+		param[0] = strings.ReplaceAll(param[0], " ", ", ")
 		return fmt.Sprintf(template, field, param[0])
 	}
 	return fmt.Sprintf(template, field)

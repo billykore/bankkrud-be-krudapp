@@ -11,5 +11,6 @@ type User struct {
 	FirstName    string
 	LastName     string
 	Address      string
+	DateOfBirth  time.Time
 	LastLogin    time.Time
 }

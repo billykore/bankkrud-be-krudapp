@@ -1,6 +1,10 @@
 package user
 
-import "time"
+import (
+	"context"
+	"errors"
+	"time"
+)
 
 // User represents a user in the system.
 type User struct {
@@ -11,15 +15,18 @@ type User struct {
 	Email       string
 	PhoneNumber string
 	Password    string
-	DateOfBirth string
 	CIF         string
 	Status      string
 	Address     string
+	DateOfBirth time.Time
 	LastLogin   time.Time
 }
 
 // FullName returns the full name of the user.
 func (u *User) FullName() string {
+	if u.FirstName == "" || u.LastName == "" {
+		return ""
+	}
 	return u.FirstName + " " + u.LastName
 }
 
@@ -44,4 +51,21 @@ func (t *Token) ExpiredDuration() int64 {
 
 func (t *Token) Expired() bool {
 	return time.Now().After(t.ExpiresAt)
+}
+
+type ContextKeyType string
+
+// ContextKey represents the key for storing user data in the context.
+const ContextKey ContextKeyType = "user"
+
+// ErrUserFromContextFailed is returned when the user cannot be retrieved from the context.
+var ErrUserFromContextFailed = errors.New("failed to get user from context")
+
+// FromContext retrieves the user from the context.
+func FromContext(ctx context.Context) (User, error) {
+	user, ok := ctx.Value(ContextKey).(User)
+	if !ok {
+		return User{}, ErrUserFromContextFailed
+	}
+	return user, nil
 }

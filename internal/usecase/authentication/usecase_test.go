@@ -49,6 +49,4 @@ func TestLogin_Success(t *testing.T) {
 	assert.NotNil(t, res)
 	assert.Equal(t, "token-123", res.Token)
 	assert.Equal(t, "johndoe", res.Username)
-	assert.Equal(t, "johndoe@example.com", res.Email)
-	assert.Equal(t, "1234567890", res.PhoneNumber)
 }

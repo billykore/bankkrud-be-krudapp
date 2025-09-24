@@ -1,15 +1,19 @@
 package server
 
+import "go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/http/middleware"
+
 func (hs *HTTPServer) registerRoutes() {
 	v1 := hs.router.Group("/v1.0")
 
 	v1.POST("/authentication/login", hs.ah.Login)
 
-	v1.POST("/tapmoney/inquiry", hs.tmh.Inquiry)
-	v1.POST("/tapmoney/payment", hs.tmh.Payment)
+	withAuth := v1.Group("", middleware.AuthenticateUser(hs.cfg))
 
-	v1.POST("/transfer/init", hs.tfh.Initiate)
-	v1.POST("/transfer/process", hs.tfh.Process)
+	withAuth.POST("/tapmoney/inquiry", hs.tmh.Inquiry)
+	withAuth.POST("/tapmoney/payment", hs.tmh.Payment)
 
-	v1.GET("/users/:username", hs.uh.GetByUsername)
+	withAuth.POST("/transfer/init", hs.tfh.Initiate)
+	withAuth.POST("/transfer/process", hs.tfh.Process)
+
+	withAuth.GET("/users/me", hs.uh.GetByUsername)
 }

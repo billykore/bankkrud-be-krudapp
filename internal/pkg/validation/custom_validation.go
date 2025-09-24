@@ -2,6 +2,8 @@ package validation
 
 import (
 	"regexp"
+	"slices"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -21,6 +23,7 @@ type validationRegistry map[string]func(fl validator.FieldLevel) bool
 // Add custom validation functions here.
 var customValidations = validationRegistry{
 	"phonenumber": ValidPhoneNumber,
+	"only":        Only,
 }
 
 func ValidPhoneNumber(fl validator.FieldLevel) bool {
@@ -36,4 +39,15 @@ func (v *Validator) registerCustomValidation() error {
 		}
 	}
 	return nil
+}
+
+func Only(fl validator.FieldLevel) bool {
+	values := strings.Split(fl.Field().String(), ",")
+	params := strings.Split(fl.Param(), " ")
+	for _, value := range values {
+		if !slices.Contains(params, value) {
+			return false
+		}
+	}
+	return true
 }

@@ -26,12 +26,12 @@ func NewUserHandler(va *validation.Validator, uc *user.Usecase) *UserHandler {
 //	@Tags			user
 //	@Accept			json
 //	@Produce		json
-//	@Param			username	path		string	true	"Username"
-//	@Success		200			{object}	response.Response
-//	@Failure		400			{object}	response.Response
-//	@Failure		404			{object}	response.Response
-//	@Failure		500			{object}	response.Response
-//	@Router			/users/{username} [get]
+//	@Param			fields	query		string	false	"Fields"
+//	@Success		200		{object}	response.Response
+//	@Failure		400		{object}	response.Response
+//	@Failure		404		{object}	response.Response
+//	@Failure		500		{object}	response.Response
+//	@Router			/users/me [get]
 func (h *UserHandler) GetByUsername(ctx echo.Context) error {
 	req := new(user.GetByUsernameRequest)
 	err := ctx.Bind(req)

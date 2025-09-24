@@ -15,10 +15,7 @@ import (
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/config"
 )
 
-const (
-	userTokenKey      = "user:%s:token"
-	userTokenCacheTTL = time.Hour
-)
+const userTokenKey = "user:%s:token"
 
 type UserRepo struct {
 	cfg *config.Configs
@@ -53,6 +50,37 @@ func (ur *UserRepo) GetByUsername(ctx context.Context, username string) (user.Us
 		Address:     m.Address,
 		LastLogin:   m.LastLogin,
 	}, nil
+}
+
+func (ur *UserRepo) GetFieldsByUsername(ctx context.Context, username string, fields ...string) (user.User, error) {
+	var m model.User
+	err := ur.db.WithContext(ctx).
+		Select(selectedFields(fields)).
+		Where("username = ?", username).
+		First(&m).Error
+	if err != nil {
+		return user.User{}, err
+	}
+	return user.User{
+		Email:       m.Email,
+		Username:    m.Username,
+		Password:    m.PasswordHash,
+		PhoneNumber: m.PhoneNumber,
+		FirstName:   m.FirstName,
+		LastName:    m.LastName,
+		CIF:         m.CIF,
+		Address:     m.Address,
+		DateOfBirth: m.DateOfBirth,
+		LastLogin:   m.LastLogin,
+	}, nil
+}
+
+func selectedFields(fields []string) []string {
+	userFields := []string{"username", "first_name", "last_name"}
+	if len(fields) > 0 {
+		userFields = append(userFields, fields...)
+	}
+	return userFields
 }
 
 func (ur *UserRepo) SaveToken(ctx context.Context, username string, token user.Token) error {
@@ -95,4 +123,9 @@ func (ur *UserRepo) GetToken(ctx context.Context, username string) (user.Token, 
 		Value:     m.Value,
 		ExpiresAt: m.ExpiresAt,
 	}, nil
+}
+
+func (ur *UserRepo) DeleteToken(ctx context.Context, username string) error {
+	redisKey := fmt.Sprintf(userTokenKey, username)
+	return ur.rdb.Del(ctx, redisKey).Err()
 }

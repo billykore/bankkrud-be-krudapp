@@ -27,7 +27,7 @@ func TestGetByUsername_Success(t *testing.T) {
 		}, nil)
 
 	res, err := uc.GetByUsername(context.Background(), &GetByUsernameRequest{
-		Username: "johndoe",
+		Fields: "username",
 	})
 
 	assert.NoError(t, err)
@@ -35,9 +35,7 @@ func TestGetByUsername_Success(t *testing.T) {
 	assert.Equal(t, "johndoe", res.Username)
 	assert.Equal(t, "johndoe@example.com", res.Email)
 	assert.Equal(t, "1234567890", res.PhoneNumber)
-	assert.Equal(t, "John", res.FirstName)
-	assert.Equal(t, "Doe", res.LastName)
-
+	assert.Equal(t, "John Doe", res.FullName)
 	userRepo.AssertExpectations(t)
 }
 
@@ -51,7 +49,7 @@ func TestGetByUsername_RepositoryError(t *testing.T) {
 		Return(user.User{}, errors.New("mock error"))
 
 	res, err := uc.GetByUsername(context.Background(), &GetByUsernameRequest{
-		Username: "johndoe",
+		Fields: "username",
 	})
 
 	assert.Equal(t, err, pkgerror.NotFound().SetMsg("User not found"))

@@ -6,10 +6,15 @@ type LoginRequest struct {
 }
 
 type LoginResponse struct {
-	Email           string `json:"email"`
-	PhoneNumber     string `json:"phone_number"`
 	Username        string `json:"username"`
-	FullName        string `json:"full_name"`
 	Token           string `json:"token"`
 	ExpiredDuration int64  `json:"expired_duration"`
+}
+
+type LogoutRequest struct {
+	Username string `param:"username" json:"username" validate:"required"`
+}
+
+type LogoutResponse struct {
+	Message string `json:"message"`
 }

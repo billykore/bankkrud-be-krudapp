@@ -3,17 +3,16 @@ package user
 import "time"
 
 type GetByUsernameRequest struct {
-	Username string `json:"username" param:"username" validate:"required"`
+	Fields string `json:"fields" query:"fields" validate:"omitempty,only=cif email phone_number address date_of_birth last_login"`
 }
 
 type GetByUsernameResponse struct {
 	Username    string    `json:"username"`
-	Email       string    `json:"email"`
-	FirstName   string    `json:"first_name"`
-	LastName    string    `json:"last_name"`
 	FullName    string    `json:"full_name"`
-	PhoneNumber string    `json:"phone_number"`
-	CIF         string    `json:"cif"`
-	Address     string    `json:"address"`
-	LastLogin   time.Time `json:"last_login"`
+	CIF         string    `json:"cif,omitempty"`
+	Email       string    `json:"email,omitempty"`
+	PhoneNumber string    `json:"phone_number,omitempty"`
+	Address     string    `json:"address,omitempty"`
+	DateOfBirth time.Time `json:"date_of_birth,omitzero"`
+	LastLogin   time.Time `json:"last_login,omitzero"`
 }
