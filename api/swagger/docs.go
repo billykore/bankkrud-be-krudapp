@@ -128,6 +128,56 @@ const docTemplate = `{
                 }
             }
         },
+        "/transfer/detail/{uuid}": {
+            "get": {
+                "description": "Get transfer detail by uuid",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transfer"
+                ],
+                "summary": "Get transfer detail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Transfer UUID",
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/transfer/init": {
             "post": {
                 "description": "Initiate transfer transaction",
@@ -369,7 +419,7 @@ const docTemplate = `{
                 "amount",
                 "destination_account",
                 "source_account",
-                "transaction_id"
+                "uuid"
             ],
             "properties": {
                 "amount": {
@@ -381,7 +431,7 @@ const docTemplate = `{
                 "source_account": {
                     "type": "string"
                 },
-                "transaction_id": {
+                "uuid": {
                     "type": "string"
                 }
             }

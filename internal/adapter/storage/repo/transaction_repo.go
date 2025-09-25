@@ -2,8 +2,8 @@ package repo
 
 import (
 	"context"
-	"errors"
 
+	"github.com/google/uuid"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/storage/model"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/transaction"
 	"gorm.io/gorm"
@@ -19,10 +19,14 @@ func NewTransactionRepo(db *gorm.DB) *TransactionRepo {
 	}
 }
 
-func (r *TransactionRepo) Get(ctx context.Context, uuid string) (transaction.Transaction, error) {
+func (r *TransactionRepo) Get(ctx context.Context, tfuuid string) (transaction.Transaction, error) {
 	var m model.Transaction
+	id, err := uuid.Parse(tfuuid)
+	if err != nil {
+		return transaction.Transaction{}, err
+	}
 	res := r.db.WithContext(ctx).
-		Where("uuid = ?", uuid).
+		Where("uuid = ?", id).
 		First(&m)
 	if res.Error != nil {
 		return transaction.Transaction{}, res.Error
@@ -37,6 +41,7 @@ func (r *TransactionRepo) Get(ctx context.Context, uuid string) (transaction.Tra
 		Notes:                m.Note,
 		Amount:               m.Amount,
 		Fee:                  m.Fee,
+		ProcessedAt:          m.CreatedAt,
 	}, nil
 }
 
@@ -56,5 +61,17 @@ func (r *TransactionRepo) Create(ctx context.Context, tx transaction.Transaction
 }
 
 func (r *TransactionRepo) Update(ctx context.Context, tx transaction.Transaction) error {
-	return errors.New("not implemented")
+	res := r.db.WithContext(ctx).Model(&model.Transaction{}).
+		Where("uuid = ?", tx.UUID).
+		Updates(&model.Transaction{
+			SourceAccount:        tx.SourceAccount,
+			DestinationAccount:   tx.DestinationAccount,
+			TransactionType:      tx.TransactionType,
+			TransactionReference: tx.TransactionReference,
+			Status:               tx.Status,
+			Note:                 tx.Notes,
+			Amount:               tx.Amount,
+			Fee:                  tx.Fee,
+		})
+	return res.Error
 }

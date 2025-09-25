@@ -78,3 +78,30 @@ func (h *TransferHandler) Process(ctx echo.Context) error {
 	}
 	return ctx.JSON(response.Success(resp))
 }
+
+// Detail swaggo annotation.
+//
+//	@Summary		Get transfer detail
+//	@Description	Get transfer detail by uuid
+//	@Tags			transfer
+//	@Accept			json
+//	@Produce		json
+//	@Param			uuid	path		string	true	"Transfer UUID"
+//	@Success		200		{object}	response.Response
+//	@Failure		400		{object}	response.Response
+//	@Failure		404		{object}	response.Response
+//	@Failure		500		{object}	response.Response
+//	@Router			/transfer/{uuid} [get]
+func (h *TransferHandler) Detail(ctx echo.Context) error {
+	req := new(transfer.DetailRequest)
+	err := ctx.Bind(req)
+	if err != nil {
+		return ctx.JSON(response.BadRequest(err))
+	}
+	err = h.va.Validate(req)
+	resp, err := h.uc.Detail(ctx.Request().Context(), req)
+	if err != nil {
+		return ctx.JSON(response.Error(err))
+	}
+	return ctx.JSON(response.Success(resp))
+}

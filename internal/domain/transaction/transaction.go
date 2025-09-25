@@ -1,6 +1,8 @@
 // Package transaction contains transaction domain entities.
 package transaction
 
+import "time"
+
 const (
 	// StatusPending represents a pending transaction status.
 	StatusPending = "pending"
@@ -22,4 +24,5 @@ type Transaction struct {
 	Notes                string
 	Amount               int64
 	Fee                  int64
+	ProcessedAt          time.Time
 }

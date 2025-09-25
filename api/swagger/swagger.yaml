@@ -66,13 +66,13 @@ definitions:
         type: string
       source_account:
         type: string
-      transaction_id:
+      uuid:
         type: string
     required:
     - amount
     - destination_account
     - source_account
-    - transaction_id
+    - uuid
     type: object
 host: api.bankkrud.com
 info:
@@ -156,6 +156,39 @@ paths:
       summary: TapMoney payment
       tags:
       - example
+  /transfer/detail/{uuid}:
+    get:
+      consumes:
+      - application/json
+      description: Get transfer detail by uuid
+      parameters:
+      - description: Transfer UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get transfer detail
+      tags:
+      - transfer
   /transfer/init:
     post:
       consumes:

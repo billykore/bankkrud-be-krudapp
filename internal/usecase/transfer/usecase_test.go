@@ -295,7 +295,7 @@ func TestInitiate_Success(t *testing.T) {
 
 	assert.NotNil(t, res)
 	assert.NoError(t, err)
-	assert.NotEmpty(t, res.TransactionID)
+	assert.NotEmpty(t, res.UUID)
 	assert.Equal(t, "inq-success", res.Status)
 
 	cbsService.AssertExpectations(t)
@@ -318,7 +318,7 @@ func TestProcess_GetCbsStatusFailed(t *testing.T) {
 		Return(cbs.Status{}, errors.New("mock error"))
 
 	res, err := uc.Process(context.Background(), &ProcessRequest{
-		TransactionID:      "tx-123",
+		UUID:               "tx-123",
 		SourceAccount:      "123",
 		DestinationAccount: "456",
 		Amount:             10000,
@@ -352,7 +352,7 @@ func TestProcess_CbsNotReady(t *testing.T) {
 		}, nil)
 
 	res, err := uc.Process(context.Background(), &ProcessRequest{
-		TransactionID:      "tx-123",
+		UUID:               "tx-123",
 		SourceAccount:      "123",
 		DestinationAccount: "456",
 		Amount:             10000,
@@ -389,7 +389,7 @@ func TestProcess_GetTransactionFailed(t *testing.T) {
 		Return(transaction.Transaction{}, errors.New("mock error"))
 
 	res, err := uc.Process(context.Background(), &ProcessRequest{
-		TransactionID:      "tx-123",
+		UUID:               "tx-123",
 		SourceAccount:      "123",
 		DestinationAccount: "456",
 		Amount:             10000,
@@ -429,7 +429,7 @@ func TestProcess_TransactionStatusNotInquirySuccess(t *testing.T) {
 		}, nil)
 
 	res, err := uc.Process(context.Background(), &ProcessRequest{
-		TransactionID:      "tx-123",
+		UUID:               "tx-123",
 		SourceAccount:      "123",
 		DestinationAccount: "456",
 		Amount:             10000,
@@ -482,7 +482,7 @@ func TestProcess_TransferFailed(t *testing.T) {
 	).Return(transfer.Transfer{}, errors.New("mock error"))
 
 	res, err := uc.Process(context.Background(), &ProcessRequest{
-		TransactionID:      "tx-123",
+		UUID:               "tx-123",
 		SourceAccount:      "123",
 		DestinationAccount: "456",
 		Amount:             10000,
@@ -539,7 +539,7 @@ func TestProcess_UpdateTransactionFailed(t *testing.T) {
 		Return(errors.New("mock error"))
 
 	res, err := uc.Process(context.Background(), &ProcessRequest{
-		TransactionID:      "tx-123",
+		UUID:               "tx-123",
 		SourceAccount:      "121",
 		DestinationAccount: "45a",
 		Amount:             10000,
@@ -596,7 +596,7 @@ func TestProcess_Success(t *testing.T) {
 		Return(nil)
 
 	res, err := uc.Process(context.Background(), &ProcessRequest{
-		TransactionID:      "tx-123",
+		UUID:               "tx-123",
 		SourceAccount:      "121",
 		DestinationAccount: "454",
 		Amount:             10000,
@@ -604,7 +604,7 @@ func TestProcess_Success(t *testing.T) {
 
 	assert.NotNil(t, res)
 	assert.NoError(t, err)
-	assert.Equal(t, "tx-123", res.TransactionID)
+	assert.Equal(t, "tx-123", res.UUID)
 	assert.Equal(t, "success", res.Status)
 
 	cbsService.AssertExpectations(t)

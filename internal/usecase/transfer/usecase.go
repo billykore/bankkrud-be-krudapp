@@ -94,8 +94,8 @@ func (uc *Usecase) Initiate(ctx context.Context, req *InitiateRequest) (*Initiat
 	}
 
 	return &InitiateResponse{
-		TransactionID: tx.UUID,
-		Status:        tx.Status,
+		UUID:   tx.UUID,
+		Status: tx.Status,
 	}, nil
 }
 
@@ -115,14 +115,14 @@ func (uc *Usecase) Process(ctx context.Context, req *ProcessRequest) (*ProcessRe
 		return nil, pkgerror.InternalServerError()
 	}
 
-	tx, err := uc.txRepo.Get(ctx, req.TransactionID)
+	tx, err := uc.txRepo.Get(ctx, req.UUID)
 	if err != nil {
 		l.Error().Err(err).Msg("Failed to get transaction")
 		return nil, pkgerror.InternalServerError()
 	}
 	if tx.Status != transaction.StatusInquirySuccess {
 		l.Error().
-			Str("transaction_id", req.TransactionID).
+			Str("transaction_id", req.UUID).
 			Str("transaction_status", tx.Status).
 			Msg("Transaction is not in a valid state to be processed")
 		return nil, pkgerror.BadRequest().SetMsg("Transaction is not in a valid state to be processed")
@@ -147,18 +147,41 @@ func (uc *Usecase) Process(ctx context.Context, req *ProcessRequest) (*ProcessRe
 	err = uc.txRepo.Update(ctx, tx)
 	if err != nil {
 		l.Error().Err(err).
-			Str("transaction_id", req.TransactionID).
+			Str("transaction_id", req.UUID).
 			Msg("Failed to update transaction status")
 		return nil, pkgerror.InternalServerError()
 	}
 
 	return &ProcessResponse{
-		TransactionID: tx.UUID,
-		Status:        tx.Status,
+		UUID:   tx.UUID,
+		Status: tx.Status,
 	}, nil
 }
 
 // makeTransferRemark creates a remark for the transfer transaction.
 func makeTransferRemark(srcAccount, destAccount, uuid string) string {
 	return fmt.Sprintf("TRF %s %s BNKKRD %s", srcAccount, destAccount, uuid)
+}
+
+func (uc *Usecase) Detail(ctx context.Context, req *DetailRequest) (*DetailResponse, error) {
+	l := log.WithContext(ctx, "Detail")
+
+	tx, err := uc.txRepo.Get(ctx, req.UUID)
+	if err != nil {
+		l.Error().Err(err).
+			Str("uuid", req.UUID).
+			Msg("Transaction not found")
+		return nil, pkgerror.NotFound().SetMsg("Transaction not found")
+	}
+
+	return &DetailResponse{
+		UUID:               tx.UUID,
+		Status:             tx.Status,
+		Amount:             tx.Amount,
+		Fee:                tx.Fee,
+		SourceAccount:      tx.SourceAccount,
+		DestinationAccount: tx.DestinationAccount,
+		Notes:              tx.Notes,
+		ProcessedAt:        tx.ProcessedAt,
+	}, nil
 }

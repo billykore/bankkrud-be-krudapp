@@ -1,5 +1,7 @@
 package transfer
 
+import "time"
+
 type InitiateRequest struct {
 	SourceAccount      string `json:"source_account" validate:"required,number"`
 	DestinationAccount string `json:"destination_account" validate:"required,number"`
@@ -7,18 +9,33 @@ type InitiateRequest struct {
 }
 
 type InitiateResponse struct {
-	TransactionID string `json:"transaction_id"`
-	Status        string `json:"status"`
+	UUID   string `json:"uuid"`
+	Status string `json:"status"`
 }
 
 type ProcessRequest struct {
-	TransactionID      string `json:"transaction_id" validate:"required,uuid"`
+	UUID               string `json:"uuid" validate:"required,uuid"`
 	SourceAccount      string `json:"source_account" validate:"required,number"`
 	DestinationAccount string `json:"destination_account" validate:"required,number"`
 	Amount             int64  `json:"amount" validate:"required"`
 }
 
 type ProcessResponse struct {
-	TransactionID string `json:"transaction_id"`
-	Status        string `json:"status"`
+	UUID   string `json:"uuid"`
+	Status string `json:"status"`
+}
+
+type DetailRequest struct {
+	UUID string `param:"uuid" json:"uuid" validate:"required,uuid"`
+}
+
+type DetailResponse struct {
+	UUID               string    `json:"uuid"`
+	Status             string    `json:"status"`
+	Amount             int64     `json:"amount"`
+	Fee                int64     `json:"fee"`
+	SourceAccount      string    `json:"source_account"`
+	DestinationAccount string    `json:"destination_account"`
+	Notes              string    `json:"note"`
+	ProcessedAt        time.Time `json:"processed_at"`
 }

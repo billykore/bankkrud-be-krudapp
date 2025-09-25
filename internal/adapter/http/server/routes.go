@@ -14,6 +14,7 @@ func (hs *HTTPServer) registerRoutes() {
 
 	withAuth.POST("/transfer/init", hs.tfh.Initiate)
 	withAuth.POST("/transfer/process", hs.tfh.Process)
+	withAuth.GET("/transfer/:uuid", hs.tfh.Detail)
 
 	withAuth.GET("/users/me", hs.uh.GetByUsername)
 }
