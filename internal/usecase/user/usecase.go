@@ -50,8 +50,10 @@ func (uc *Usecase) GetByUsername(ctx context.Context, req *GetByUsernameRequest)
 }
 
 func parseFields(requestFields string) []string {
+	defaultFields := []string{"username", "first_name", "last_name"}
 	if requestFields == "" {
-		return []string{}
+		return defaultFields
 	}
-	return strings.Split(requestFields, ",")
+	fieldsArray := strings.Split(requestFields, ",")
+	return append(defaultFields, fieldsArray...)
 }

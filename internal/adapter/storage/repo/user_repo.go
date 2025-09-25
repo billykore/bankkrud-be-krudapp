@@ -55,7 +55,7 @@ func (ur *UserRepo) GetByUsername(ctx context.Context, username string) (user.Us
 func (ur *UserRepo) GetFieldsByUsername(ctx context.Context, username string, fields ...string) (user.User, error) {
 	var m model.User
 	err := ur.db.WithContext(ctx).
-		Select(selectedFields(fields)).
+		Select(fields).
 		Where("username = ?", username).
 		First(&m).Error
 	if err != nil {
@@ -73,14 +73,6 @@ func (ur *UserRepo) GetFieldsByUsername(ctx context.Context, username string, fi
 		DateOfBirth: m.DateOfBirth,
 		LastLogin:   m.LastLogin,
 	}, nil
-}
-
-func selectedFields(fields []string) []string {
-	userFields := []string{"username", "first_name", "last_name"}
-	if len(fields) > 0 {
-		userFields = append(userFields, fields...)
-	}
-	return userFields
 }
 
 func (ur *UserRepo) SaveToken(ctx context.Context, username string, token user.Token) error {

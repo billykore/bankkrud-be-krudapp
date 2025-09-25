@@ -35,16 +35,14 @@ func successHandler(ctx echo.Context) {
 
 // errorHandler returns an unauthorized response if there is an authentication error.
 func errorHandler(ctx echo.Context, err error) error {
-	return ctx.JSON(response.Unauthorized(newAuthenticationError(err.Error())))
+	return ctx.JSON(response.Unauthorized(&authenticationError{
+		Message: "Invalid token",
+	}))
 }
 
 // authenticationError represents an authentication error.
 type authenticationError struct {
 	Message string `json:"message"`
-}
-
-func newAuthenticationError(message string) *authenticationError {
-	return &authenticationError{Message: message}
 }
 
 func (e *authenticationError) Error() string {

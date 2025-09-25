@@ -30,17 +30,20 @@ func (s *AuthService) GenerateToken(u user.User) (user.Token, error) {
 	exp := time.Now().Add(s.tokenDuration)
 
 	claims := jwt.MapClaims{
-		"iss":          "api.bankkrud.com",
-		"sub":          u.Username,
-		"aud":          jwt.ClaimStrings{"app.bankkrud.com"},
-		"exp":          jwt.NewNumericDate(exp),
-		"nbf":          jwt.NewNumericDate(time.Now()),
-		"iat":          jwt.NewNumericDate(time.Now()),
-		"jti":          uuid.New().String(),
-		"email":        u.Email,
-		"phone_number": u.PhoneNumber,
-		"full_name":    u.FullName(),
-		"last_login":   u.LastLogin,
+		"iss":           "api.bankkrud.com",
+		"aud":           jwt.ClaimStrings{"app.bankkrud.com"},
+		"exp":           jwt.NewNumericDate(exp),
+		"nbf":           jwt.NewNumericDate(time.Now()),
+		"iat":           jwt.NewNumericDate(time.Now()),
+		"jti":           uuid.New().String(),
+		"sub":           u.Username,
+		"cif":           u.CIF,
+		"email":         u.Email,
+		"phone_number":  u.PhoneNumber,
+		"full_name":     u.FullName(),
+		"address":       u.Address,
+		"date_of_birth": u.DateOfBirth,
+		"last_login":    u.LastLogin,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

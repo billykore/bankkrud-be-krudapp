@@ -20,7 +20,24 @@ func NewTransactionRepo(db *gorm.DB) *TransactionRepo {
 }
 
 func (r *TransactionRepo) Get(ctx context.Context, uuid string) (transaction.Transaction, error) {
-	return transaction.Transaction{}, errors.New("not implemented")
+	var m model.Transaction
+	res := r.db.WithContext(ctx).
+		Where("uuid = ?", uuid).
+		First(&m)
+	if res.Error != nil {
+		return transaction.Transaction{}, res.Error
+	}
+	return transaction.Transaction{
+		UUID:                 m.UUID,
+		SourceAccount:        m.SourceAccount,
+		DestinationAccount:   m.DestinationAccount,
+		TransactionType:      m.TransactionType,
+		TransactionReference: m.TransactionReference,
+		Status:               m.Status,
+		Notes:                m.Note,
+		Amount:               m.Amount,
+		Fee:                  m.Fee,
+	}, nil
 }
 
 func (r *TransactionRepo) Create(ctx context.Context, tx transaction.Transaction) error {
