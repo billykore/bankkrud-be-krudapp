@@ -1,4 +1,4 @@
-basePath: /v1.0
+basePath: /v1
 definitions:
   response.Response:
     properties:
@@ -156,7 +156,7 @@ paths:
       summary: TapMoney payment
       tags:
       - example
-  /transfer/detail/{uuid}:
+  /transfer/{uuid}:
     get:
       consumes:
       - application/json

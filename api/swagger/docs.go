@@ -128,56 +128,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/transfer/detail/{uuid}": {
-            "get": {
-                "description": "Get transfer detail by uuid",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "transfer"
-                ],
-                "summary": "Get transfer detail",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Transfer UUID",
-                        "name": "uuid",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
         "/transfer/init": {
             "post": {
                 "description": "Initiate transfer transaction",
@@ -252,6 +202,56 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/transfer.ProcessRequest"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/transfer/{uuid}": {
+            "get": {
+                "description": "Get transfer detail by uuid",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transfer"
+                ],
+                "summary": "Get transfer detail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Transfer UUID",
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -443,7 +443,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "api.bankkrud.com",
-	BasePath:         "/v1.0",
+	BasePath:         "/v1",
 	Schemes:          []string{"http", "https"},
 	Title:            "API Specification",
 	Description:      "TapMoney service API specification.",
