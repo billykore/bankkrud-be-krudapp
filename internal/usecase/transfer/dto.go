@@ -6,6 +6,7 @@ type InitiateRequest struct {
 	SourceAccount      string `json:"source_account" validate:"required,number"`
 	DestinationAccount string `json:"destination_account" validate:"required,number"`
 	Amount             int64  `json:"amount" validate:"required,gte=1000,lte=50000000"`
+	Note               string `json:"note"`
 }
 
 type InitiateResponse struct {
@@ -14,7 +15,7 @@ type InitiateResponse struct {
 }
 
 type ProcessRequest struct {
-	UUID               string `json:"uuid" validate:"required,uuid"`
+	UUID               string `param:"uuid" json:"uuid" validate:"required,uuid"`
 	SourceAccount      string `json:"source_account" validate:"required,number"`
 	DestinationAccount string `json:"destination_account" validate:"required,number"`
 	Amount             int64  `json:"amount" validate:"required"`
@@ -36,6 +37,6 @@ type DetailResponse struct {
 	Fee                int64     `json:"fee"`
 	SourceAccount      string    `json:"source_account"`
 	DestinationAccount string    `json:"destination_account"`
-	Notes              string    `json:"note"`
+	Note               string    `json:"note"`
 	ProcessedAt        time.Time `json:"processed_at"`
 }

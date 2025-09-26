@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/storage/model"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/transaction"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/infra/storage/model"
 	"gorm.io/gorm"
 )
 
@@ -19,7 +19,7 @@ func NewTransactionRepo(db *gorm.DB) *TransactionRepo {
 	}
 }
 
-func (r *TransactionRepo) Get(ctx context.Context, tfuuid string) (transaction.Transaction, error) {
+func (r *TransactionRepo) GetByUUID(ctx context.Context, tfuuid string) (transaction.Transaction, error) {
 	var m model.Transaction
 	id, err := uuid.Parse(tfuuid)
 	if err != nil {
@@ -38,11 +38,37 @@ func (r *TransactionRepo) Get(ctx context.Context, tfuuid string) (transaction.T
 		TransactionType:      m.TransactionType,
 		TransactionReference: m.TransactionReference,
 		Status:               m.Status,
-		Notes:                m.Note,
+		Note:                 m.Note,
 		Amount:               m.Amount,
 		Fee:                  m.Fee,
 		ProcessedAt:          m.CreatedAt,
 	}, nil
+}
+
+func (r *TransactionRepo) GetByParams(ctx context.Context, params map[string]any) ([]transaction.Transaction, error) {
+	var models []model.Transaction
+	res := r.db.WithContext(ctx).
+		Where(params).
+		Find(&models)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+	var transactions []transaction.Transaction
+	for _, m := range models {
+		transactions = append(transactions, transaction.Transaction{
+			UUID:                 m.UUID,
+			SourceAccount:        m.SourceAccount,
+			DestinationAccount:   m.DestinationAccount,
+			TransactionType:      m.TransactionType,
+			TransactionReference: m.TransactionReference,
+			Status:               m.Status,
+			Note:                 m.Note,
+			Amount:               m.Amount,
+			Fee:                  m.Fee,
+			ProcessedAt:          m.CreatedAt,
+		})
+	}
+	return transactions, nil
 }
 
 func (r *TransactionRepo) Create(ctx context.Context, tx transaction.Transaction) error {
@@ -53,9 +79,10 @@ func (r *TransactionRepo) Create(ctx context.Context, tx transaction.Transaction
 		TransactionType:      tx.TransactionType,
 		TransactionReference: tx.TransactionReference,
 		Status:               tx.Status,
-		Note:                 tx.Notes,
+		Note:                 tx.Note,
 		Amount:               tx.Amount,
 		Fee:                  tx.Fee,
+		UserUsername:         tx.Username,
 	})
 	return res.Error
 }
@@ -69,7 +96,7 @@ func (r *TransactionRepo) Update(ctx context.Context, tx transaction.Transaction
 			TransactionType:      tx.TransactionType,
 			TransactionReference: tx.TransactionReference,
 			Status:               tx.Status,
-			Note:                 tx.Notes,
+			Note:                 tx.Note,
 			Amount:               tx.Amount,
 			Fee:                  tx.Fee,
 		})

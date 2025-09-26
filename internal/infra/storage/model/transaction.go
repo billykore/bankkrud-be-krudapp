@@ -1,8 +1,6 @@
 package model
 
 import (
-	"time"
-
 	"gorm.io/gorm"
 )
 
@@ -17,5 +15,5 @@ type Transaction struct {
 	Note                 string
 	Amount               int64
 	Fee                  int64
-	CreatedAt            time.Time
+	UserUsername         string
 }

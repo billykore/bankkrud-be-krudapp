@@ -8,11 +8,11 @@ package main
 
 import (
 	"github.com/labstack/echo/v4"
-	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/api"
-	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/http/handler"
-	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/http/server"
-	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/service"
-	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/storage/repo"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/infra/api"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/infra/http/handler"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/infra/http/server"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/infra/service"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/infra/storage/repo"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/config"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/db/postgres"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/db/redis"
@@ -20,6 +20,7 @@ import (
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/validation"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/authentication"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/tapmoney"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/transaction"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/transfer"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/user"
 )
@@ -48,7 +49,9 @@ func initKrudApp(cfg *config.Configs) *krudApp {
 	authenticationHandler := handler.NewAuthenticationHandler(validator, authenticationUsecase)
 	userUsecase := user.NewUsecase(userRepo)
 	userHandler := handler.NewUserHandler(validator, userUsecase)
-	httpServer := server.NewHTTP(cfg, echoEcho, tapMoneyHandler, transferHandler, authenticationHandler, userHandler)
-	mainKrudApp := newKrudApp(httpServer, db)
+	transactionUsecase := transaction.NewUsecase(transactionRepo)
+	transactionHandler := handler.NewTransactionHandler(validator, transactionUsecase)
+	httpServer := server.NewHTTP(cfg, echoEcho, tapMoneyHandler, transferHandler, authenticationHandler, userHandler, transactionHandler)
+	mainKrudApp := newKrudApp(httpServer, db, redisClient)
 	return mainKrudApp
 }

@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/labstack/echo/v4"
-	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/http/response"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/infra/http/response"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/validation"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/transfer"
 )
@@ -26,12 +26,13 @@ func NewTransferHandler(va *validation.Validator, uc *transfer.Usecase) *Transfe
 //	@Tags			transfer
 //	@Accept			json
 //	@Produce		json
+//	@Param			Authorization	header		string						true	"Authorization token"
 //	@Param			InitiateRequest	body		transfer.InitiateRequest	true	"Initiate Transfer Request"
 //	@Success		200				{object}	response.Response
 //	@Failure		400				{object}	response.Response
 //	@Failure		404				{object}	response.Response
 //	@Failure		500				{object}	response.Response
-//	@Router			/transfer/init [post]
+//	@Router			/transfers/init [post]
 func (h *TransferHandler) Initiate(ctx echo.Context) error {
 	req := new(transfer.InitiateRequest)
 	err := ctx.Bind(req)
@@ -53,15 +54,16 @@ func (h *TransferHandler) Initiate(ctx echo.Context) error {
 //
 //	@Summary		Process transfer
 //	@Description	Process transfer transaction
-//	@Tags			transfer
+//	@Tags			transfers
 //	@Accept			json
 //	@Produce		json
+//	@Param			Authorization	header		string					true	"Authorization token"
 //	@Param			ProcessRequest	body		transfer.ProcessRequest	true	"Process Transfer Request"
 //	@Success		200				{object}	response.Response
 //	@Failure		400				{object}	response.Response
 //	@Failure		404				{object}	response.Response
 //	@Failure		500				{object}	response.Response
-//	@Router			/transfer/process [post]
+//	@Router			/transfers/{uuid}/process [post]
 func (h *TransferHandler) Process(ctx echo.Context) error {
 	req := new(transfer.ProcessRequest)
 	err := ctx.Bind(req)
@@ -73,33 +75,6 @@ func (h *TransferHandler) Process(ctx echo.Context) error {
 		return ctx.JSON(response.BadRequest(err))
 	}
 	resp, err := h.uc.Process(ctx.Request().Context(), req)
-	if err != nil {
-		return ctx.JSON(response.Error(err))
-	}
-	return ctx.JSON(response.Success(resp))
-}
-
-// Detail swaggo annotation.
-//
-//	@Summary		Get transfer detail
-//	@Description	Get transfer detail by uuid
-//	@Tags			transfer
-//	@Accept			json
-//	@Produce		json
-//	@Param			uuid	path		string	true	"Transfer UUID"
-//	@Success		200		{object}	response.Response
-//	@Failure		400		{object}	response.Response
-//	@Failure		404		{object}	response.Response
-//	@Failure		500		{object}	response.Response
-//	@Router			/transfer/{uuid} [get]
-func (h *TransferHandler) Detail(ctx echo.Context) error {
-	req := new(transfer.DetailRequest)
-	err := ctx.Bind(req)
-	if err != nil {
-		return ctx.JSON(response.BadRequest(err))
-	}
-	err = h.va.Validate(req)
-	resp, err := h.uc.Detail(ctx.Request().Context(), req)
 	if err != nil {
 		return ctx.JSON(response.Error(err))
 	}

@@ -35,6 +35,11 @@ func NotFound() *Error {
 	return New(codes.NotFound)
 }
 
+// Conflict returns a new Error with Conflict code.
+func Conflict() *Error {
+	return New(codes.Conflict)
+}
+
 // InternalServerError returns a new Error with InternalServerError code.
 func InternalServerError() *Error {
 	return New(codes.Internal)

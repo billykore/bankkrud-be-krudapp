@@ -9,6 +9,7 @@ import (
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/cbs"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/transaction"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/transfer"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/user"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/log"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/pkgerror"
 )
@@ -78,13 +79,21 @@ func (uc *Usecase) Initiate(ctx context.Context, req *InitiateRequest) (*Initiat
 		return nil, pkgerror.InternalServerError()
 	}
 
+	userFromCtx, err := user.FromContext(ctx)
+	if err != nil {
+		l.Error().Err(err).Msg("Error getting user from context")
+		return nil, pkgerror.NotFound().SetMsg("User not found")
+	}
+
 	tx := transaction.Transaction{
 		UUID:               uuid.New().String(),
 		SourceAccount:      srcAccount.AccountNumber,
 		DestinationAccount: destAccount.AccountNumber,
 		TransactionType:    transferTransactionType,
-		Status:             transaction.StatusInquirySuccess,
+		Status:             transaction.StatusInitiated,
 		Amount:             req.Amount,
+		Username:           userFromCtx.Username,
+		Note:               req.Note,
 	}
 
 	err = uc.txRepo.Create(ctx, tx)
@@ -115,17 +124,17 @@ func (uc *Usecase) Process(ctx context.Context, req *ProcessRequest) (*ProcessRe
 		return nil, pkgerror.InternalServerError()
 	}
 
-	tx, err := uc.txRepo.Get(ctx, req.UUID)
+	tx, err := uc.txRepo.GetByUUID(ctx, req.UUID)
 	if err != nil {
 		l.Error().Err(err).Msg("Failed to get transaction")
 		return nil, pkgerror.InternalServerError()
 	}
-	if tx.Status != transaction.StatusInquirySuccess {
+	if tx.Status != transaction.StatusInitiated {
 		l.Error().
-			Str("transaction_id", req.UUID).
-			Str("transaction_status", tx.Status).
+			Str("uuid", req.UUID).
+			Str("status", tx.Status).
 			Msg("Transaction is not in a valid state to be processed")
-		return nil, pkgerror.BadRequest().SetMsg("Transaction is not in a valid state to be processed")
+		return nil, pkgerror.Conflict().SetMsg("Transaction is not in a valid state to be processed")
 	}
 
 	res, err := uc.transferSvc.Transfer(
@@ -141,7 +150,7 @@ func (uc *Usecase) Process(ctx context.Context, req *ProcessRequest) (*ProcessRe
 	}
 
 	// Update transaction status to success
-	tx.Status = transaction.StatusSuccess
+	tx.Status = transaction.StatusCompleted
 	tx.TransactionReference = res.TransactionReference
 
 	err = uc.txRepo.Update(ctx, tx)
@@ -161,27 +170,4 @@ func (uc *Usecase) Process(ctx context.Context, req *ProcessRequest) (*ProcessRe
 // makeTransferRemark creates a remark for the transfer transaction.
 func makeTransferRemark(srcAccount, destAccount, uuid string) string {
 	return fmt.Sprintf("TRF %s %s BNKKRD %s", srcAccount, destAccount, uuid)
-}
-
-func (uc *Usecase) Detail(ctx context.Context, req *DetailRequest) (*DetailResponse, error) {
-	l := log.WithContext(ctx, "Detail")
-
-	tx, err := uc.txRepo.Get(ctx, req.UUID)
-	if err != nil {
-		l.Error().Err(err).
-			Str("uuid", req.UUID).
-			Msg("Transaction not found")
-		return nil, pkgerror.NotFound().SetMsg("Transaction not found")
-	}
-
-	return &DetailResponse{
-		UUID:               tx.UUID,
-		Status:             tx.Status,
-		Amount:             tx.Amount,
-		Fee:                tx.Fee,
-		SourceAccount:      tx.SourceAccount,
-		DestinationAccount: tx.DestinationAccount,
-		Notes:              tx.Notes,
-		ProcessedAt:        tx.ProcessedAt,
-	}, nil
 }

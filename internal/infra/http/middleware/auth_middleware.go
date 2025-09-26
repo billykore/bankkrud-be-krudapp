@@ -7,14 +7,14 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
-	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/http/response"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/user"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/infra/http/response"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/config"
 )
 
-// AuthenticateUser returns a middleware function that validates token from headers
+// AuthorizeUser returns a middleware function that validates token from headers
 // and extract user information.
-func AuthenticateUser(cfg *config.Configs) echo.MiddlewareFunc {
+func AuthorizeUser(cfg *config.Configs) echo.MiddlewareFunc {
 	return echojwt.WithConfig(echojwt.Config{
 		ContextKey:     string(user.ContextKey),
 		SigningKey:     []byte(cfg.Token.Secret),
@@ -35,17 +35,17 @@ func successHandler(ctx echo.Context) {
 
 // errorHandler returns an unauthorized response if there is an authentication error.
 func errorHandler(ctx echo.Context, err error) error {
-	return ctx.JSON(response.Unauthorized(&authenticationError{
+	return ctx.JSON(response.Unauthorized(&authorizationError{
 		Message: "Invalid token",
 	}))
 }
 
-// authenticationError represents an authentication error.
-type authenticationError struct {
+// authorizationError represents an authorization error.
+type authorizationError struct {
 	Message string `json:"message"`
 }
 
-func (e *authenticationError) Error() string {
+func (e *authorizationError) Error() string {
 	return e.Message
 }
 

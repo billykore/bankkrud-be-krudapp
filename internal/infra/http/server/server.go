@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 	echomiddleware "github.com/labstack/echo/v4/middleware"
 	"github.com/rs/zerolog/log"
-	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/http/handler"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/infra/http/handler"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/config"
 )
 
@@ -20,6 +20,7 @@ type HTTPServer struct {
 	tfh    *handler.TransferHandler
 	ah     *handler.AuthenticationHandler
 	uh     *handler.UserHandler
+	txh    *handler.TransactionHandler
 }
 
 // NewHTTP returns new Router.
@@ -30,6 +31,7 @@ func NewHTTP(
 	tfh *handler.TransferHandler,
 	ah *handler.AuthenticationHandler,
 	uh *handler.UserHandler,
+	txh *handler.TransactionHandler,
 ) *HTTPServer {
 	return &HTTPServer{
 		cfg:    cfg,
@@ -38,6 +40,7 @@ func NewHTTP(
 		tfh:    tfh,
 		ah:     ah,
 		uh:     uh,
+		txh:    txh,
 	}
 }
 

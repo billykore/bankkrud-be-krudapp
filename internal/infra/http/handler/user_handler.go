@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/labstack/echo/v4"
-	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/http/response"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/infra/http/response"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/validation"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/user"
 )
@@ -21,16 +21,17 @@ func NewUserHandler(va *validation.Validator, uc *user.Usecase) *UserHandler {
 
 // GetByUsername swaggo annotation.
 //
-//	@Summary		Get user by username
-//	@Description	Get user by username
-//	@Tags			user
+//	@Summary		Get logged in user
+//	@Description	Get logged in user details
+//	@Tags			users
 //	@Accept			json
 //	@Produce		json
-//	@Param			fields	query		string	false	"Fields"
-//	@Success		200		{object}	response.Response
-//	@Failure		400		{object}	response.Response
-//	@Failure		404		{object}	response.Response
-//	@Failure		500		{object}	response.Response
+//	@Param			Authorization	header		string	true	"Authorization token"
+//	@Param			fields			query		string	false	"Fields"
+//	@Success		200				{object}	response.Response
+//	@Failure		400				{object}	response.Response
+//	@Failure		404				{object}	response.Response
+//	@Failure		500				{object}	response.Response
 //	@Router			/users/me [get]
 func (h *UserHandler) GetByUsername(ctx echo.Context) error {
 	req := new(user.GetByUsernameRequest)

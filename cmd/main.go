@@ -8,8 +8,8 @@ import (
 	"syscall"
 	"time"
 
-	zlog "github.com/rs/zerolog/log"
-	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/http/server"
+	"github.com/redis/go-redis/v9"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/infra/http/server"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/config"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/db/postgres"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/log"
@@ -20,7 +20,7 @@ import (
 //
 //	@title			API Specification
 //	@version		1.0
-//	@description	TapMoney service API specification.
+//	@description	Bankfrud service API specification.
 //	@termsOfService	https://swagger.io/terms/
 //	@contact.name	Billy Kore
 //	@contact.url	https://www.swagger.io/support
@@ -42,8 +42,11 @@ func main() {
 
 	// wait for termination syscalls and doing cleanup operations after received it
 	wait := gracefulShutdown(ctx, 3*time.Second, map[string]operation{
-		"database": func(ctx context.Context) error {
+		"postgres": func(ctx context.Context) error {
 			return postgres.Close(a.db)
+		},
+		"redis": func(ctx context.Context) error {
+			return a.rds.Close()
 		},
 		"http-server": func(ctx context.Context) error {
 			return a.http.Shutdown(ctx)
@@ -56,12 +59,14 @@ func main() {
 type krudApp struct {
 	http *server.HTTPServer
 	db   *gorm.DB
+	rds  *redis.Client
 }
 
-func newKrudApp(http *server.HTTPServer, db *gorm.DB) *krudApp {
+func newKrudApp(http *server.HTTPServer, db *gorm.DB, rds *redis.Client) *krudApp {
 	return &krudApp{
 		http: http,
 		db:   db,
+		rds:  rds,
 	}
 }
 
@@ -70,7 +75,7 @@ type operation func(ctx context.Context) error
 
 // gracefulShutdown waits for termination syscalls and doing cleanup operations after received it
 func gracefulShutdown(ctx context.Context, timeout time.Duration, ops map[string]operation) <-chan struct{} {
-	l := zlog.With().Ctx(ctx).Str("caller", "gracefulShutdown").Logger()
+	l := log.WithContext(ctx, "gracefulShutdown")
 
 	wait := make(chan struct{})
 	go func() {

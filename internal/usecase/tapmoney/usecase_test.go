@@ -225,7 +225,7 @@ func TestInquiry_FailedToInquiryPayment(t *testing.T) {
 
 	assert.Nil(t, resp)
 	assert.Error(t, err)
-	assert.Equal(t,  pkgerror.BadRequest().SetMsg("Inquiry failed"), err)
+	assert.Equal(t, pkgerror.BadRequest().SetMsg("Inquiry failed"), err)
 
 	cbsService.AssertExpectations(t)
 	txRepo.AssertExpectations(t)
@@ -291,14 +291,14 @@ func TestPayment_Success(t *testing.T) {
 			IsEOD:      false,
 			IsStandIn:  false,
 		}, nil)
-	txRepo.EXPECT().Get(mock.Anything, mock.Anything).
+	txRepo.EXPECT().GetByUUID(mock.Anything, mock.Anything).
 		Return(transaction.Transaction{
 			UUID:               "trx-123",
 			SourceAccount:      "001201001479315",
 			DestinationAccount: "6013501000500719",
 			Amount:             10000,
 			Status:             "pending",
-			Notes:              "test",
+			Note:               "test",
 			Fee:                1500,
 		}, nil)
 	accountSvc.EXPECT().Get(mock.Anything, mock.Anything).
@@ -412,7 +412,7 @@ func TestPayment_TransactionNotFound(t *testing.T) {
 			IsEOD:      false,
 			IsStandIn:  false,
 		}, nil)
-	txRepo.EXPECT().Get(mock.Anything, mock.Anything).
+	txRepo.EXPECT().GetByUUID(mock.Anything, mock.Anything).
 		Return(transaction.Transaction{}, errors.New("transaction not found"))
 
 	resp, err := uc.Payment(context.Background(), &PaymentRequest{
@@ -446,14 +446,14 @@ func TestPayment_TransactionAlreadyProcessed(t *testing.T) {
 			IsEOD:      false,
 			IsStandIn:  false,
 		}, nil)
-	txRepo.EXPECT().Get(mock.Anything, mock.Anything).
+	txRepo.EXPECT().GetByUUID(mock.Anything, mock.Anything).
 		Return(transaction.Transaction{
 			UUID:               "trx-123",
 			SourceAccount:      "001201001479315",
 			DestinationAccount: "6013501000500719",
 			Amount:             10000,
 			Status:             "inq-success",
-			Notes:              "test",
+			Note:               "test",
 			Fee:                1500,
 		}, nil)
 
@@ -489,14 +489,14 @@ func TestPayment_FailedToGetSourceAccount(t *testing.T) {
 			IsStandIn:  false,
 		}, nil)
 
-	txRepo.EXPECT().Get(mock.Anything, mock.Anything).
+	txRepo.EXPECT().GetByUUID(mock.Anything, mock.Anything).
 		Return(transaction.Transaction{
 			UUID:               "trx-123",
 			SourceAccount:      "001201001479315",
 			DestinationAccount: "6013501000500719",
 			Amount:             10000,
 			Status:             "pending",
-			Notes:              "test",
+			Note:               "test",
 			Fee:                1500,
 		}, nil)
 
@@ -535,14 +535,14 @@ func TestPayment_InsufficientBalance(t *testing.T) {
 			IsStandIn:  false,
 		}, nil)
 
-	txRepo.EXPECT().Get(mock.Anything, mock.Anything).
+	txRepo.EXPECT().GetByUUID(mock.Anything, mock.Anything).
 		Return(transaction.Transaction{
 			UUID:               "trx-123",
 			SourceAccount:      "001201001479315",
 			DestinationAccount: "6013501000500719",
 			Amount:             10000,
 			Status:             "pending",
-			Notes:              "test",
+			Note:               "test",
 			Fee:                1500,
 		}, nil)
 
@@ -550,7 +550,7 @@ func TestPayment_InsufficientBalance(t *testing.T) {
 		Return(account.Account{
 			Balance:       5000,
 			AccountNumber: "001201001479315",
-	}, nil)
+		}, nil)
 
 	resp, err := uc.Payment(context.Background(), &PaymentRequest{
 		TransactionID: "trx-123",
@@ -584,15 +584,15 @@ func TestPayment_FailedToProcessPayment(t *testing.T) {
 			IsStandIn:  false,
 		}, nil)
 
-	txRepo.EXPECT().Get(mock.Anything, mock.Anything).
+	txRepo.EXPECT().GetByUUID(mock.Anything, mock.Anything).
 		Return(transaction.Transaction{
-		UUID:               "trx-123",
-		SourceAccount:      "001201001479315",
-		DestinationAccount: "6013501000500719",
-		Amount:             10000,
-		Status:             "pending",
-		Notes:              "test",
-	}, nil)
+			UUID:               "trx-123",
+			SourceAccount:      "001201001479315",
+			DestinationAccount: "6013501000500719",
+			Amount:             10000,
+			Status:             "pending",
+			Note:               "test",
+		}, nil)
 
 	accountSvc.EXPECT().Get(mock.Anything, mock.Anything).
 		Return(account.Account{
@@ -635,14 +635,14 @@ func TestPayment_FailedToUpdateTransaction(t *testing.T) {
 			IsStandIn:  false,
 		}, nil)
 
-	txRepo.EXPECT().Get(mock.Anything, mock.Anything).
+	txRepo.EXPECT().GetByUUID(mock.Anything, mock.Anything).
 		Return(transaction.Transaction{
 			UUID:               "trx-123",
 			SourceAccount:      "001201001479315",
 			DestinationAccount: "6013501000500719",
 			Amount:             10000,
 			Status:             "pending",
-			Notes:              "test",
+			Note:               "test",
 			Fee:                1500,
 		}, nil)
 

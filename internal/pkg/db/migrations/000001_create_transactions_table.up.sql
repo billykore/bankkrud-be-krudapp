@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS transactions
     note                  VARCHAR(255),
     amount                NUMERIC(14, 0) NOT NULL,
     fee                   NUMERIC(14, 0) NOT NULL        DEFAULT 0,
+    user_username         VARCHAR(255)   NOT NULL,
     created_at            TIMESTAMP WITH TIME ZONE       DEFAULT CURRENT_TIMESTAMP,
     updated_at            TIMESTAMP WITH TIME ZONE       DEFAULT CURRENT_TIMESTAMP,
     deleted_at            TIMESTAMP WITH TIME ZONE       DEFAULT NULL

@@ -44,8 +44,8 @@ func NewUsecase(
 	}
 }
 
-func (uc *Usecase) Inquiry(ctx context.Context, req *InquiryRequest) (*InquiryResponse, error) {
-	l := log.WithContext(ctx, "Inquiry")
+func (uc *Usecase) Initiate(ctx context.Context, req *InitiateRequest) (*InitiateResponse, error) {
+	l := log.WithContext(ctx, "Initiate")
 
 	cbsStatus, err := uc.cbs.GetStatus(ctx)
 	if err != nil {
@@ -89,7 +89,7 @@ func (uc *Usecase) Inquiry(ctx context.Context, req *InquiryRequest) (*InquiryRe
 		TransactionType:    tapMoneyTransactionType,
 		SourceAccount:      req.SourceAccount,
 		DestinationAccount: req.CardNumber,
-		Status:             transaction.StatusInquirySuccess,
+		Status:             transaction.StatusInitiated,
 		PaymentID:          result.ID,
 		Amount:             req.Amount,
 	}
@@ -100,8 +100,8 @@ func (uc *Usecase) Inquiry(ctx context.Context, req *InquiryRequest) (*InquiryRe
 		return nil, pkgerror.InternalServerError()
 	}
 
-	return &InquiryResponse{
-		TransactionID: tx.UUID,
+	return &InitiateResponse{
+		UUID:          tx.UUID,
 		PaymentID:     result.ID,
 		Status:        tx.Status,
 		CardNumber:    req.CardNumber,
@@ -110,8 +110,8 @@ func (uc *Usecase) Inquiry(ctx context.Context, req *InquiryRequest) (*InquiryRe
 	}, nil
 }
 
-func (uc *Usecase) Payment(ctx context.Context, req *PaymentRequest) (*PaymentResponse, error) {
-	l := log.WithContext(ctx, "Payment")
+func (uc *Usecase) Process(ctx context.Context, req *ProcessRequest) (*ProcessResponse, error) {
+	l := log.WithContext(ctx, "Process")
 
 	cbsStatus, err := uc.cbs.GetStatus(ctx)
 	if err != nil {
@@ -126,12 +126,12 @@ func (uc *Usecase) Payment(ctx context.Context, req *PaymentRequest) (*PaymentRe
 		return nil, pkgerror.InternalServerError()
 	}
 
-	tx, err := uc.txRepo.Get(ctx, req.TransactionID)
+	tx, err := uc.txRepo.GetByUUID(ctx, req.UUID)
 	if err != nil {
 		l.Error().Err(err).Msg("Transaction was not found")
 		return nil, pkgerror.NotFound().SetMsg("Transaction was not found")
 	}
-	if tx.Status != transaction.StatusPending {
+	if tx.Status != transaction.StatusInitiated {
 		l.Error().Err(err).
 			Str("transaction_status", tx.Status).
 			Msg("Transaction is already processed")
@@ -162,7 +162,7 @@ func (uc *Usecase) Payment(ctx context.Context, req *PaymentRequest) (*PaymentRe
 		return nil, pkgerror.InternalServerError()
 	}
 
-	tx.Status = transaction.StatusInquirySuccess
+	tx.Status = transaction.StatusCompleted
 	tx.PaymentID = payResp.ID
 
 	err = uc.txRepo.Update(ctx, tx)
@@ -173,13 +173,13 @@ func (uc *Usecase) Payment(ctx context.Context, req *PaymentRequest) (*PaymentRe
 		return nil, pkgerror.InternalServerError()
 	}
 
-	return &PaymentResponse{
-		TransactionID: tx.UUID,
-		Message:       SuccessfulMessage,
-		Status:        tx.Status,
-		Amount:        tx.Amount,
-		CardNumber:    tx.DestinationAccount,
-		Notes:         tx.Notes,
-		Fee:           tx.Fee,
+	return &ProcessResponse{
+		UUID:       tx.UUID,
+		Message:    SuccessfulMessage,
+		Status:     tx.Status,
+		Amount:     tx.Amount,
+		CardNumber: tx.DestinationAccount,
+		Notes:      tx.Note,
+		Fee:        tx.Fee,
 	}, nil
 }

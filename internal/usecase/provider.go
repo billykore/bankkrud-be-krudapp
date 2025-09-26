@@ -4,6 +4,7 @@ import (
 	"github.com/google/wire"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/authentication"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/tapmoney"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/transaction"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/transfer"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/user"
 )
@@ -13,4 +14,5 @@ var ProviderSet = wire.NewSet(
 	tapmoney.NewUsecase,
 	transfer.NewUsecase,
 	user.NewUsecase,
+	transaction.NewUsecase,
 )

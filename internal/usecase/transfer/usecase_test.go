@@ -385,7 +385,7 @@ func TestProcess_GetTransactionFailed(t *testing.T) {
 			IsStandIn:  false,
 		}, nil)
 
-	txRepo.EXPECT().Get(mock.Anything, "tx-123").
+	txRepo.EXPECT().GetByUUID(mock.Anything, "tx-123").
 		Return(transaction.Transaction{}, errors.New("mock error"))
 
 	res, err := uc.Process(context.Background(), &ProcessRequest{
@@ -422,7 +422,7 @@ func TestProcess_TransactionStatusNotInquirySuccess(t *testing.T) {
 			IsStandIn:  false,
 		}, nil)
 
-	txRepo.EXPECT().Get(mock.Anything, "tx-123").
+	txRepo.EXPECT().GetByUUID(mock.Anything, "tx-123").
 		Return(transaction.Transaction{
 			UUID:   "tx-123",
 			Status: "completed",
@@ -465,10 +465,10 @@ func TestProcess_TransferFailed(t *testing.T) {
 			IsStandIn:  false,
 		}, nil)
 
-	txRepo.EXPECT().Get(mock.Anything, "tx-123").
+	txRepo.EXPECT().GetByUUID(mock.Anything, "tx-123").
 		Return(transaction.Transaction{
 			UUID:               "tx-123",
-			Status:             transaction.StatusInquirySuccess,
+			Status:             transaction.StatusCompleted,
 			SourceAccount:      "123",
 			DestinationAccount: "456",
 		}, nil)
@@ -516,10 +516,10 @@ func TestProcess_UpdateTransactionFailed(t *testing.T) {
 			IsStandIn:  false,
 		}, nil)
 
-	txRepo.EXPECT().Get(mock.Anything, "tx-123").
+	txRepo.EXPECT().GetByUUID(mock.Anything, "tx-123").
 		Return(transaction.Transaction{
 			UUID:               "tx-123",
-			Status:             transaction.StatusInquirySuccess,
+			Status:             transaction.StatusCompleted,
 			SourceAccount:      "121",
 			DestinationAccount: "454",
 		}, nil)
@@ -573,10 +573,10 @@ func TestProcess_Success(t *testing.T) {
 			IsStandIn:  false,
 		}, nil)
 
-	txRepo.EXPECT().Get(mock.Anything, "tx-123").
+	txRepo.EXPECT().GetByUUID(mock.Anything, "tx-123").
 		Return(transaction.Transaction{
 			UUID:               "tx-123",
-			Status:             transaction.StatusInquirySuccess,
+			Status:             transaction.StatusCompleted,
 			SourceAccount:      "121",
 			DestinationAccount: "454",
 		}, nil)

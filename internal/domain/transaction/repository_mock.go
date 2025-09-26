@@ -68,12 +68,71 @@ func (_c *MockRepository_Create_Call) RunAndReturn(run func(context.Context, Tra
 	return _c
 }
 
-// Get provides a mock function with given fields: ctx, uuid
-func (_m *MockRepository) Get(ctx context.Context, uuid string) (Transaction, error) {
+// GetByParams provides a mock function with given fields: ctx, params
+func (_m *MockRepository) GetByParams(ctx context.Context, params map[string]interface{}) ([]Transaction, error) {
+	ret := _m.Called(ctx, params)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetByParams")
+	}
+
+	var r0 []Transaction
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, map[string]interface{}) ([]Transaction, error)); ok {
+		return rf(ctx, params)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, map[string]interface{}) []Transaction); ok {
+		r0 = rf(ctx, params)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]Transaction)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, map[string]interface{}) error); ok {
+		r1 = rf(ctx, params)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockRepository_GetByParams_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetByParams'
+type MockRepository_GetByParams_Call struct {
+	*mock.Call
+}
+
+// GetByParams is a helper method to define mock.On call
+//   - ctx context.Context
+//   - params map[string]interface{}
+func (_e *MockRepository_Expecter) GetByParams(ctx interface{}, params interface{}) *MockRepository_GetByParams_Call {
+	return &MockRepository_GetByParams_Call{Call: _e.mock.On("GetByParams", ctx, params)}
+}
+
+func (_c *MockRepository_GetByParams_Call) Run(run func(ctx context.Context, params map[string]interface{})) *MockRepository_GetByParams_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(map[string]interface{}))
+	})
+	return _c
+}
+
+func (_c *MockRepository_GetByParams_Call) Return(_a0 []Transaction, _a1 error) *MockRepository_GetByParams_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockRepository_GetByParams_Call) RunAndReturn(run func(context.Context, map[string]interface{}) ([]Transaction, error)) *MockRepository_GetByParams_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetByUUID provides a mock function with given fields: ctx, uuid
+func (_m *MockRepository) GetByUUID(ctx context.Context, uuid string) (Transaction, error) {
 	ret := _m.Called(ctx, uuid)
 
 	if len(ret) == 0 {
-		panic("no return value specified for Get")
+		panic("no return value specified for GetByUUID")
 	}
 
 	var r0 Transaction
@@ -96,31 +155,31 @@ func (_m *MockRepository) Get(ctx context.Context, uuid string) (Transaction, er
 	return r0, r1
 }
 
-// MockRepository_Get_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Get'
-type MockRepository_Get_Call struct {
+// MockRepository_GetByUUID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetByUUID'
+type MockRepository_GetByUUID_Call struct {
 	*mock.Call
 }
 
-// Get is a helper method to define mock.On call
+// GetByUUID is a helper method to define mock.On call
 //   - ctx context.Context
 //   - uuid string
-func (_e *MockRepository_Expecter) Get(ctx interface{}, uuid interface{}) *MockRepository_Get_Call {
-	return &MockRepository_Get_Call{Call: _e.mock.On("Get", ctx, uuid)}
+func (_e *MockRepository_Expecter) GetByUUID(ctx interface{}, uuid interface{}) *MockRepository_GetByUUID_Call {
+	return &MockRepository_GetByUUID_Call{Call: _e.mock.On("GetByUUID", ctx, uuid)}
 }
 
-func (_c *MockRepository_Get_Call) Run(run func(ctx context.Context, uuid string)) *MockRepository_Get_Call {
+func (_c *MockRepository_GetByUUID_Call) Run(run func(ctx context.Context, uuid string)) *MockRepository_GetByUUID_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(string))
 	})
 	return _c
 }
 
-func (_c *MockRepository_Get_Call) Return(_a0 Transaction, _a1 error) *MockRepository_Get_Call {
+func (_c *MockRepository_GetByUUID_Call) Return(_a0 Transaction, _a1 error) *MockRepository_GetByUUID_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *MockRepository_Get_Call) RunAndReturn(run func(context.Context, string) (Transaction, error)) *MockRepository_Get_Call {
+func (_c *MockRepository_GetByUUID_Call) RunAndReturn(run func(context.Context, string) (Transaction, error)) *MockRepository_GetByUUID_Call {
 	_c.Call.Return(run)
 	return _c
 }

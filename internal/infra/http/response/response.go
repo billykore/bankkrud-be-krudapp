@@ -36,6 +36,8 @@ func Error(err error) (int, Response) {
 			return Forbidden(err)
 		case codes.BadRequest:
 			return BadRequest(err)
+		case codes.Conflict:
+			return Conflict(err)
 		}
 	}
 	return InternalServerError(err)
@@ -73,6 +75,15 @@ func NotFound(err error) (int, Response) {
 	return http.StatusNotFound, Response{
 		Title:  "Not Found",
 		Detail: "The requested resource could not be found.",
+		Errors: err,
+	}
+}
+
+// Conflict returns status code 409 and error response.
+func Conflict(err error) (int, Response) {
+	return http.StatusConflict, Response{
+		Title:  "Conflict",
+		Detail: "The request could not be completed due to a conflict with the current state of the resource.",
 		Errors: err,
 	}
 }

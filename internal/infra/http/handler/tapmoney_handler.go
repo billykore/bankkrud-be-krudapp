@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/labstack/echo/v4"
-	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/http/response"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/infra/http/response"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/validation"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/tapmoney"
 )
@@ -19,21 +19,22 @@ func NewTapMoneyHandler(va *validation.Validator, uc *tapmoney.Usecase) *TapMone
 	}
 }
 
-// Inquiry swaggo annotation.
+// Initiate swaggo annotation.
 //
-//	@Summary		TapMoney inquiry
-//	@Description	TapMoney transaction inquiry process
-//	@Tags			example
+//	@Summary		Initiate TapMoney transaction
+//	@Description	Initiate TapMoney transaction
+//	@Tags			tapmoney
 //	@Accept			json
 //	@Produce		json
+//	@Param			Authorization	header		string					true	"Authorization token"
 //	@Param			InquiryRequest	body		tapmoney.InquiryRequest	true	"Inquiry Request"
 //	@Success		200				{object}	response.Response
 //	@Failure		400				{object}	response.Response
 //	@Failure		404				{object}	response.Response
 //	@Failure		500				{object}	response.Response
-//	@Router			/tapmoney/inquiry [post]
-func (h *TapMoneyHandler) Inquiry(ctx echo.Context) error {
-	req := new(tapmoney.InquiryRequest)
+//	@Router			/tapmoney/init [post]
+func (h *TapMoneyHandler) Initiate(ctx echo.Context) error {
+	req := new(tapmoney.InitiateRequest)
 	err := ctx.Bind(req)
 	if err != nil {
 		return ctx.JSON(response.BadRequest(err))
@@ -42,7 +43,7 @@ func (h *TapMoneyHandler) Inquiry(ctx echo.Context) error {
 	if err != nil {
 		return ctx.JSON(response.BadRequest(err))
 	}
-	resp, err := h.uc.Inquiry(ctx.Request().Context(), req)
+	resp, err := h.uc.Initiate(ctx.Request().Context(), req)
 	if err != nil {
 		return ctx.JSON(response.Error(err))
 	}
@@ -51,19 +52,20 @@ func (h *TapMoneyHandler) Inquiry(ctx echo.Context) error {
 
 // Payment swaggo annotation.
 //
-//	@Summary		TapMoney payment
-//	@Description	TapMoney transaction payment process
-//	@Tags			example
+//	@Summary		Process TapMoney transaction
+//	@Description	Process TapMoney transaction
+//	@Tags			tapmoney
 //	@Accept			json
 //	@Produce		json
+//	@Param			Authorization	header		string					true	"Authorization token"
 //	@Param			PaymentRequest	body		tapmoney.PaymentRequest	true	"Payment Request"
 //	@Success		200				{object}	response.Response
 //	@Failure		400				{object}	response.Response
 //	@Failure		404				{object}	response.Response
 //	@Failure		500				{object}	response.Response
-//	@Router			/tapmoney/payment [post]
-func (h *TapMoneyHandler) Payment(ctx echo.Context) error {
-	req := new(tapmoney.PaymentRequest)
+//	@Router			/tapmoney/{uuid}/process [post]
+func (h *TapMoneyHandler) Process(ctx echo.Context) error {
+	req := new(tapmoney.ProcessRequest)
 	err := ctx.Bind(req)
 	if err != nil {
 		return ctx.JSON(response.BadRequest(err))
@@ -72,7 +74,7 @@ func (h *TapMoneyHandler) Payment(ctx echo.Context) error {
 	if err != nil {
 		return ctx.JSON(response.BadRequest(err))
 	}
-	resp, err := h.uc.Payment(ctx.Request().Context(), req)
+	resp, err := h.uc.Process(ctx.Request().Context(), req)
 	if err != nil {
 		return ctx.JSON(response.Error(err))
 	}

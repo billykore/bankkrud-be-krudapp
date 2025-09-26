@@ -10,8 +10,8 @@ import (
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 
-	"go.bankkrud.com/bankkrud/backend/krudapp/internal/adapter/storage/model"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/user"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/infra/storage/model"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/config"
 )
 
