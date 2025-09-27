@@ -4,7 +4,7 @@ const SuccessfulMessage = "Payment successful"
 
 type InitiateRequest struct {
 	CardNumber    string `json:"card_number" validate:"required,min=16,max=19"`
-	SourceAccount string `json:"source_account" validate:"required,min=16,max=19"`
+	SourceAccount string `json:"source_account" validate:"required,number"`
 	Amount        int64  `json:"amount" validate:"required,min=10000,max=1000000"`
 }
 
@@ -18,7 +18,7 @@ type InitiateResponse struct {
 }
 
 type ProcessRequest struct {
-	UUID       string `param:"uuid" json:"transaction_id" validate:"required,uuid"`
+	UUID       string `param:"uuid" json:"uuid" validate:"required,uuid"`
 	CardNumber string `json:"card_number" validate:"required,min=16,max=19"`
 	Amount     int64  `json:"amount" validate:"required,min=10000,max=1000000"`
 	Notes      string `json:"notes" validate:"max=255"`

@@ -26,8 +26,8 @@ func NewTapMoneyHandler(va *validation.Validator, uc *tapmoney.Usecase) *TapMone
 //	@Tags			tapmoney
 //	@Accept			json
 //	@Produce		json
-//	@Param			Authorization	header		string					true	"Authorization token"
-//	@Param			InquiryRequest	body		tapmoney.InquiryRequest	true	"Inquiry Request"
+//	@Param			Authorization	header		string						true	"Authorization token"
+//	@Param			InitiateRequest	body		tapmoney.InitiateRequest	true	"Initiate request"
 //	@Success		200				{object}	response.Response
 //	@Failure		400				{object}	response.Response
 //	@Failure		404				{object}	response.Response
@@ -58,7 +58,7 @@ func (h *TapMoneyHandler) Initiate(ctx echo.Context) error {
 //	@Accept			json
 //	@Produce		json
 //	@Param			Authorization	header		string					true	"Authorization token"
-//	@Param			PaymentRequest	body		tapmoney.PaymentRequest	true	"Payment Request"
+//	@Param			ProcessRequest	body		tapmoney.ProcessRequest	true	"Process request"
 //	@Success		200				{object}	response.Response
 //	@Failure		400				{object}	response.Response
 //	@Failure		404				{object}	response.Response

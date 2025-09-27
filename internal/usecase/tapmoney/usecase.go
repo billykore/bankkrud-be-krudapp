@@ -8,6 +8,7 @@ import (
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/cbs"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/payment"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/transaction"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/user"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/log"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/pkgerror"
 )
@@ -84,6 +85,12 @@ func (uc *Usecase) Initiate(ctx context.Context, req *InitiateRequest) (*Initiat
 		return nil, pkgerror.BadRequest().SetMsg("Inquiry failed")
 	}
 
+	user, err := user.FromContext(ctx)
+	if err != nil {
+		l.Error().Err(err).Msg("Error getting user from context")
+		return nil, pkgerror.Unauthorized().SetMsg("User unauthorized")
+	}
+
 	tx := transaction.Transaction{
 		UUID:               uuid.New().String(),
 		TransactionType:    tapMoneyTransactionType,
@@ -92,6 +99,7 @@ func (uc *Usecase) Initiate(ctx context.Context, req *InitiateRequest) (*Initiat
 		Status:             transaction.StatusInitiated,
 		PaymentID:          result.ID,
 		Amount:             req.Amount,
+		Username:           user.Username,
 	}
 
 	err = uc.txRepo.Create(ctx, tx)
@@ -168,7 +176,7 @@ func (uc *Usecase) Process(ctx context.Context, req *ProcessRequest) (*ProcessRe
 	err = uc.txRepo.Update(ctx, tx)
 	if err != nil {
 		l.Error().Err(err).
-			Str("transaction_id", tx.UUID).
+			Str("uuid", tx.UUID).
 			Msg("Update transaction failed")
 		return nil, pkgerror.InternalServerError()
 	}

@@ -76,9 +76,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/tapmoney/inquiry": {
+        "/tapmoney/init": {
             "post": {
-                "description": "TapMoney transaction inquiry process",
+                "description": "Initiate TapMoney transaction",
                 "consumes": [
                     "application/json"
                 ],
@@ -88,7 +88,7 @@ const docTemplate = `{
                 "tags": [
                     "tapmoney"
                 ],
-                "summary": "TapMoney inquiry",
+                "summary": "Initiate TapMoney transaction",
                 "parameters": [
                     {
                         "type": "string",
@@ -98,12 +98,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Inquiry Request",
-                        "name": "InquiryRequest",
+                        "description": "Initiate request",
+                        "name": "InitiateRequest",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/tapmoney.InquiryRequest"
+                            "$ref": "#/definitions/tapmoney.InitiateRequest"
                         }
                     }
                 ],
@@ -135,9 +135,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/tapmoney/payment": {
+        "/tapmoney/{uuid}/process": {
             "post": {
-                "description": "TapMoney transaction payment process",
+                "description": "Process TapMoney transaction",
                 "consumes": [
                     "application/json"
                 ],
@@ -147,7 +147,7 @@ const docTemplate = `{
                 "tags": [
                     "tapmoney"
                 ],
-                "summary": "TapMoney payment",
+                "summary": "Process TapMoney transaction",
                 "parameters": [
                     {
                         "type": "string",
@@ -157,12 +157,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Payment Request",
-                        "name": "PaymentRequest",
+                        "description": "Process request",
+                        "name": "ProcessRequest",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/tapmoney.PaymentRequest"
+                            "$ref": "#/definitions/tapmoney.ProcessRequest"
                         }
                     }
                 ],
@@ -390,63 +390,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/transfers/{uuid}": {
-            "get": {
-                "description": "Get transfer detail by uuid",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "transfers"
-                ],
-                "summary": "Get transfer detail",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Authorization token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Transfer UUID",
-                        "name": "uuid",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
         "/transfers/{uuid}/process": {
             "post": {
                 "description": "Process transfer transaction",
@@ -596,7 +539,7 @@ const docTemplate = `{
                 }
             }
         },
-        "tapmoney.InquiryRequest": {
+        "tapmoney.InitiateRequest": {
             "type": "object",
             "required": [
                 "amount",
@@ -615,17 +558,16 @@ const docTemplate = `{
                     "minLength": 16
                 },
                 "source_account": {
-                    "type": "string",
-                    "maxLength": 19,
-                    "minLength": 16
+                    "type": "string"
                 }
             }
         },
-        "tapmoney.PaymentRequest": {
+        "tapmoney.ProcessRequest": {
             "type": "object",
             "required": [
                 "amount",
-                "transaction_id"
+                "card_number",
+                "uuid"
             ],
             "properties": {
                 "amount": {
@@ -633,11 +575,16 @@ const docTemplate = `{
                     "maximum": 1000000,
                     "minimum": 10000
                 },
+                "card_number": {
+                    "type": "string",
+                    "maxLength": 19,
+                    "minLength": 16
+                },
                 "notes": {
                     "type": "string",
                     "maxLength": 255
                 },
-                "transaction_id": {
+                "uuid": {
                     "type": "string"
                 }
             }

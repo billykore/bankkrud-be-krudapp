@@ -23,7 +23,7 @@ definitions:
       title:
         type: string
     type: object
-  tapmoney.InquiryRequest:
+  tapmoney.InitiateRequest:
     properties:
       amount:
         maximum: 1000000
@@ -34,28 +34,31 @@ definitions:
         minLength: 16
         type: string
       source_account:
-        maxLength: 19
-        minLength: 16
         type: string
     required:
     - amount
     - card_number
     - source_account
     type: object
-  tapmoney.PaymentRequest:
+  tapmoney.ProcessRequest:
     properties:
       amount:
         maximum: 1000000
         minimum: 10000
         type: integer
+      card_number:
+        maxLength: 19
+        minLength: 16
+        type: string
       notes:
         maxLength: 255
         type: string
-      transaction_id:
+      uuid:
         type: string
     required:
     - amount
-    - transaction_id
+    - card_number
+    - uuid
     type: object
   transfer.InitiateRequest:
     properties:
@@ -138,23 +141,23 @@ paths:
       summary: User login
       tags:
       - authentication
-  /tapmoney/inquiry:
+  /tapmoney/{uuid}/process:
     post:
       consumes:
       - application/json
-      description: TapMoney transaction inquiry process
+      description: Process TapMoney transaction
       parameters:
       - description: Authorization token
         in: header
         name: Authorization
         required: true
         type: string
-      - description: Inquiry Request
+      - description: Process request
         in: body
-        name: InquiryRequest
+        name: ProcessRequest
         required: true
         schema:
-          $ref: '#/definitions/tapmoney.InquiryRequest'
+          $ref: '#/definitions/tapmoney.ProcessRequest'
       produces:
       - application/json
       responses:
@@ -174,26 +177,26 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/response.Response'
-      summary: TapMoney inquiry
+      summary: Process TapMoney transaction
       tags:
       - tapmoney
-  /tapmoney/payment:
+  /tapmoney/init:
     post:
       consumes:
       - application/json
-      description: TapMoney transaction payment process
+      description: Initiate TapMoney transaction
       parameters:
       - description: Authorization token
         in: header
         name: Authorization
         required: true
         type: string
-      - description: Payment Request
+      - description: Initiate request
         in: body
-        name: PaymentRequest
+        name: InitiateRequest
         required: true
         schema:
-          $ref: '#/definitions/tapmoney.PaymentRequest'
+          $ref: '#/definitions/tapmoney.InitiateRequest'
       produces:
       - application/json
       responses:
@@ -213,7 +216,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/response.Response'
-      summary: TapMoney payment
+      summary: Initiate TapMoney transaction
       tags:
       - tapmoney
   /transactions:
@@ -307,44 +310,6 @@ paths:
       summary: Get transaction by UUID
       tags:
       - transactions
-  /transfers/{uuid}:
-    get:
-      consumes:
-      - application/json
-      description: Get transfer detail by uuid
-      parameters:
-      - description: Authorization token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: Transfer UUID
-        in: path
-        name: uuid
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.Response'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.Response'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/response.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/response.Response'
-      summary: Get transfer detail
-      tags:
-      - transfers
   /transfers/{uuid}/process:
     post:
       consumes:

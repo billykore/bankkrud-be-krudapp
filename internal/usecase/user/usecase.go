@@ -25,7 +25,7 @@ func (uc *Usecase) GetByUsername(ctx context.Context, req *GetByUsernameRequest)
 	userFromCtx, err := user.FromContext(ctx)
 	if err != nil {
 		l.Error().Err(err).Msg("Error getting user from context")
-		return nil, pkgerror.NotFound().SetMsg("User not found")
+		return nil, pkgerror.Unauthorized().SetMsg("User unauthorized")
 	}
 
 	userFromRepo, err := uc.userRepo.GetFieldsByUsername(ctx, userFromCtx.Username,

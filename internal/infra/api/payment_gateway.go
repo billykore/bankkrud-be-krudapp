@@ -9,6 +9,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/google/uuid"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/payment"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/config"
 )
@@ -88,6 +89,7 @@ func (pg *PaymentGateway) Inquiry(ctx context.Context, channel payment.Channel, 
 }
 
 func (pg *PaymentGateway) Payment(ctx context.Context, bill payment.Bill) (payment.Payment, error) {
-	// TODO implement me
-	panic("implement me")
+	return payment.Payment{
+		ID: uuid.New().String(),
+	}, nil
 }
