@@ -17,7 +17,7 @@ import (
 
 var ProviderSet = wire.NewSet(
 	api.NewCBS,
-	api.NewAccountAPI, wire.Bind(new(account.Service), new(*api.AccountAPI)),
+	api.NewAccountAPI, wire.Bind(new(account.Repository), new(*api.AccountAPI)),
 	api.NewCBSStatusAPI, wire.Bind(new(cbs.Service), new(*api.CBSStatusAPI)),
 	api.NewTransferAPI, wire.Bind(new(transfer.Service), new(*api.TransferAPI)),
 	api.NewPaymentGateway, wire.Bind(new(payment.Service), new(*api.PaymentGateway)),

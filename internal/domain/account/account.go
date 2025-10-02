@@ -3,6 +3,7 @@ package account
 
 // Account represents a bank account entity.
 type Account struct {
+	CIF           string
 	AccountNumber string
 	FullName      string
 	Type          string

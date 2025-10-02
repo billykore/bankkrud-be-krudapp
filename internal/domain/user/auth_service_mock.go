@@ -73,6 +73,62 @@ func (_c *MockAuthService_GenerateToken_Call) RunAndReturn(run func(User) (Token
 	return _c
 }
 
+// HashPassword provides a mock function with given fields: password
+func (_m *MockAuthService) HashPassword(password string) (string, error) {
+	ret := _m.Called(password)
+
+	if len(ret) == 0 {
+		panic("no return value specified for HashPassword")
+	}
+
+	var r0 string
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (string, error)); ok {
+		return rf(password)
+	}
+	if rf, ok := ret.Get(0).(func(string) string); ok {
+		r0 = rf(password)
+	} else {
+		r0 = ret.Get(0).(string)
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(password)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockAuthService_HashPassword_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'HashPassword'
+type MockAuthService_HashPassword_Call struct {
+	*mock.Call
+}
+
+// HashPassword is a helper method to define mock.On call
+//   - password string
+func (_e *MockAuthService_Expecter) HashPassword(password interface{}) *MockAuthService_HashPassword_Call {
+	return &MockAuthService_HashPassword_Call{Call: _e.mock.On("HashPassword", password)}
+}
+
+func (_c *MockAuthService_HashPassword_Call) Run(run func(password string)) *MockAuthService_HashPassword_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(string))
+	})
+	return _c
+}
+
+func (_c *MockAuthService_HashPassword_Call) Return(_a0 string, _a1 error) *MockAuthService_HashPassword_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockAuthService_HashPassword_Call) RunAndReturn(run func(string) (string, error)) *MockAuthService_HashPassword_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // ValidatePassword provides a mock function with given fields: requestPassword, userPassword
 func (_m *MockAuthService) ValidatePassword(requestPassword string, userPassword string) error {
 	ret := _m.Called(requestPassword, userPassword)

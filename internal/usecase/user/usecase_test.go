@@ -7,6 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/account"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/user"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/pkgerror"
 )
@@ -20,8 +21,10 @@ func TestGetByUsername_Success(t *testing.T) {
 			FirstName:   "John",
 			LastName:    "Doe",
 		})
-		userRepo = user.NewMockRepository(t)
-		uc       = NewUsecase(userRepo)
+		userRepo    = user.NewMockRepository(t)
+		authSvc     = user.NewMockAuthService(t)
+		accountRepo = account.NewMockRepository(t)
+		uc          = NewUsecase(userRepo, authSvc, accountRepo)
 	)
 
 	userRepo.EXPECT().GetFieldsByUsername(mock.Anything, "johndoe", "username", "first_name", "last_name").
@@ -51,8 +54,10 @@ func TestGetByUsername_RepositoryError(t *testing.T) {
 			FirstName:   "John",
 			LastName:    "Doe",
 		})
-		userRepo = user.NewMockRepository(t)
-		uc       = NewUsecase(userRepo)
+		userRepo    = user.NewMockRepository(t)
+		authSvc     = user.NewMockAuthService(t)
+		accountRepo = account.NewMockRepository(t)
+		uc          = NewUsecase(userRepo, authSvc, accountRepo)
 	)
 
 	userRepo.EXPECT().GetFieldsByUsername(mock.Anything, "johndoe", "username", "first_name", "last_name").

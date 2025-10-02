@@ -13,4 +13,5 @@ type User struct {
 	Address      string
 	DateOfBirth  time.Time
 	LastLogin    time.Time
+	Status       string
 }

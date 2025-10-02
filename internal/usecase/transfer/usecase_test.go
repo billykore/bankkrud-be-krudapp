@@ -19,9 +19,9 @@ func TestInitiate_GetCbsStatusFailed(t *testing.T) {
 	var (
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
-		accountSvc  = account.NewMockService(t)
+		accountRepo = account.NewMockRepository(t)
 		transferSvc = transfer.NewMockService(t)
-		uc          = NewUsecase(cbsService, txRepo, accountSvc, transferSvc)
+		uc          = NewUsecase(cbsService, txRepo, accountRepo, transferSvc)
 	)
 
 	log.Configure("test")
@@ -41,16 +41,16 @@ func TestInitiate_GetCbsStatusFailed(t *testing.T) {
 
 	cbsService.AssertExpectations(t)
 	txRepo.AssertExpectations(t)
-	accountSvc.AssertExpectations(t)
+	accountRepo.AssertExpectations(t)
 }
 
 func TestInitiate_CbsNotReady(t *testing.T) {
 	var (
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
-		accountSvc  = account.NewMockService(t)
+		accountRepo = account.NewMockRepository(t)
 		transferSvc = transfer.NewMockService(t)
-		uc          = NewUsecase(cbsService, txRepo, accountSvc, transferSvc)
+		uc          = NewUsecase(cbsService, txRepo, accountRepo, transferSvc)
 	)
 
 	log.Configure("test")
@@ -74,16 +74,16 @@ func TestInitiate_CbsNotReady(t *testing.T) {
 
 	cbsService.AssertExpectations(t)
 	txRepo.AssertExpectations(t)
-	accountSvc.AssertExpectations(t)
+	accountRepo.AssertExpectations(t)
 }
 
 func TestInitiate_GetSourceAccountFailed(t *testing.T) {
 	var (
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
-		accountSvc  = account.NewMockService(t)
+		accountRepo = account.NewMockRepository(t)
 		transferSvc = transfer.NewMockService(t)
-		uc          = NewUsecase(cbsService, txRepo, accountSvc, transferSvc)
+		uc          = NewUsecase(cbsService, txRepo, accountRepo, transferSvc)
 	)
 
 	log.Configure("test")
@@ -95,7 +95,7 @@ func TestInitiate_GetSourceAccountFailed(t *testing.T) {
 			IsStandIn:  false,
 		}, nil)
 
-	accountSvc.EXPECT().Get(mock.Anything, mock.Anything).
+	accountRepo.EXPECT().Get(mock.Anything, mock.Anything).
 		Return(account.Account{}, errors.New("mock error"))
 
 	res, err := uc.Initiate(context.Background(), &InitiateRequest{
@@ -110,16 +110,16 @@ func TestInitiate_GetSourceAccountFailed(t *testing.T) {
 
 	cbsService.AssertExpectations(t)
 	txRepo.AssertExpectations(t)
-	accountSvc.AssertExpectations(t)
+	accountRepo.AssertExpectations(t)
 }
 
 func TestInitiate_SourceAccountCannotTransfer(t *testing.T) {
 	var (
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
-		accountSvc  = account.NewMockService(t)
+		accountRepo = account.NewMockRepository(t)
 		transferSvc = transfer.NewMockService(t)
-		uc          = NewUsecase(cbsService, txRepo, accountSvc, transferSvc)
+		uc          = NewUsecase(cbsService, txRepo, accountRepo, transferSvc)
 	)
 
 	log.Configure("test")
@@ -131,7 +131,7 @@ func TestInitiate_SourceAccountCannotTransfer(t *testing.T) {
 			IsStandIn:  false,
 		}, nil)
 
-	accountSvc.EXPECT().Get(mock.Anything, mock.Anything).
+	accountRepo.EXPECT().Get(mock.Anything, mock.Anything).
 		Return(account.Account{
 			AccountNumber: "123",
 			FullName:      "John Doe",
@@ -151,16 +151,16 @@ func TestInitiate_SourceAccountCannotTransfer(t *testing.T) {
 
 	cbsService.AssertExpectations(t)
 	txRepo.AssertExpectations(t)
-	accountSvc.AssertExpectations(t)
+	accountRepo.AssertExpectations(t)
 }
 
 func TestInitiate_GetDestinationAccountFailed(t *testing.T) {
 	var (
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
-		accountSvc  = account.NewMockService(t)
+		accountRepo = account.NewMockRepository(t)
 		transferSvc = transfer.NewMockService(t)
-		uc          = NewUsecase(cbsService, txRepo, accountSvc, transferSvc)
+		uc          = NewUsecase(cbsService, txRepo, accountRepo, transferSvc)
 	)
 
 	log.Configure("test")
@@ -172,7 +172,7 @@ func TestInitiate_GetDestinationAccountFailed(t *testing.T) {
 			IsStandIn:  false,
 		}, nil)
 
-	accountSvc.EXPECT().Get(mock.Anything, "123").
+	accountRepo.EXPECT().Get(mock.Anything, "123").
 		Return(account.Account{
 			AccountNumber: "123",
 			FullName:      "John Doe",
@@ -180,7 +180,7 @@ func TestInitiate_GetDestinationAccountFailed(t *testing.T) {
 			Balance:       50000,
 		}, nil)
 
-	accountSvc.EXPECT().Get(mock.Anything, "456").
+	accountRepo.EXPECT().Get(mock.Anything, "456").
 		Return(account.Account{}, errors.New("mock error"))
 
 	res, err := uc.Initiate(context.Background(), &InitiateRequest{
@@ -195,16 +195,16 @@ func TestInitiate_GetDestinationAccountFailed(t *testing.T) {
 
 	cbsService.AssertExpectations(t)
 	txRepo.AssertExpectations(t)
-	accountSvc.AssertExpectations(t)
+	accountRepo.AssertExpectations(t)
 }
 
 func TestInitiate_CreateTransactionFailed(t *testing.T) {
 	var (
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
-		accountSvc  = account.NewMockService(t)
+		accountRepo = account.NewMockRepository(t)
 		transferSvc = transfer.NewMockService(t)
-		uc          = NewUsecase(cbsService, txRepo, accountSvc, transferSvc)
+		uc          = NewUsecase(cbsService, txRepo, accountRepo, transferSvc)
 	)
 
 	log.Configure("test")
@@ -216,7 +216,7 @@ func TestInitiate_CreateTransactionFailed(t *testing.T) {
 			IsStandIn:  false,
 		}, nil)
 
-	accountSvc.EXPECT().Get(mock.Anything, "123").
+	accountRepo.EXPECT().Get(mock.Anything, "123").
 		Return(account.Account{
 			AccountNumber: "123",
 			FullName:      "John Doe",
@@ -224,7 +224,7 @@ func TestInitiate_CreateTransactionFailed(t *testing.T) {
 			Balance:       50000,
 		}, nil)
 
-	accountSvc.EXPECT().Get(mock.Anything, "456").
+	accountRepo.EXPECT().Get(mock.Anything, "456").
 		Return(account.Account{
 			AccountNumber: "456",
 			FullName:      "Jane Doe",
@@ -247,16 +247,16 @@ func TestInitiate_CreateTransactionFailed(t *testing.T) {
 
 	cbsService.AssertExpectations(t)
 	txRepo.AssertExpectations(t)
-	accountSvc.AssertExpectations(t)
+	accountRepo.AssertExpectations(t)
 }
 
 func TestInitiate_Success(t *testing.T) {
 	var (
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
-		accountSvc  = account.NewMockService(t)
+		accountRepo = account.NewMockRepository(t)
 		transferSvc = transfer.NewMockService(t)
-		uc          = NewUsecase(cbsService, txRepo, accountSvc, transferSvc)
+		uc          = NewUsecase(cbsService, txRepo, accountRepo, transferSvc)
 	)
 
 	log.Configure("test")
@@ -268,7 +268,7 @@ func TestInitiate_Success(t *testing.T) {
 			IsStandIn:  false,
 		}, nil)
 
-	accountSvc.EXPECT().Get(mock.Anything, "123").
+	accountRepo.EXPECT().Get(mock.Anything, "123").
 		Return(account.Account{
 			AccountNumber: "123",
 			FullName:      "John Doe",
@@ -276,7 +276,7 @@ func TestInitiate_Success(t *testing.T) {
 			Balance:       50000,
 		}, nil)
 
-	accountSvc.EXPECT().Get(mock.Anything, "456").
+	accountRepo.EXPECT().Get(mock.Anything, "456").
 		Return(account.Account{
 			AccountNumber: "456",
 			FullName:      "Jane Doe",
@@ -300,16 +300,16 @@ func TestInitiate_Success(t *testing.T) {
 
 	cbsService.AssertExpectations(t)
 	txRepo.AssertExpectations(t)
-	accountSvc.AssertExpectations(t)
+	accountRepo.AssertExpectations(t)
 }
 
 func TestProcess_GetCbsStatusFailed(t *testing.T) {
 	var (
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
-		accountSvc  = account.NewMockService(t)
+		accountRepo = account.NewMockRepository(t)
 		transferSvc = transfer.NewMockService(t)
-		uc          = NewUsecase(cbsService, txRepo, accountSvc, transferSvc)
+		uc          = NewUsecase(cbsService, txRepo, accountRepo, transferSvc)
 	)
 
 	log.Configure("test")
@@ -330,16 +330,16 @@ func TestProcess_GetCbsStatusFailed(t *testing.T) {
 
 	cbsService.AssertExpectations(t)
 	txRepo.AssertExpectations(t)
-	accountSvc.AssertExpectations(t)
+	accountRepo.AssertExpectations(t)
 }
 
 func TestProcess_CbsNotReady(t *testing.T) {
 	var (
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
-		accountSvc  = account.NewMockService(t)
+		accountRepo = account.NewMockRepository(t)
 		transferSvc = transfer.NewMockService(t)
-		uc          = NewUsecase(cbsService, txRepo, accountSvc, transferSvc)
+		uc          = NewUsecase(cbsService, txRepo, accountRepo, transferSvc)
 	)
 
 	log.Configure("test")
@@ -364,16 +364,16 @@ func TestProcess_CbsNotReady(t *testing.T) {
 
 	cbsService.AssertExpectations(t)
 	txRepo.AssertExpectations(t)
-	accountSvc.AssertExpectations(t)
+	accountRepo.AssertExpectations(t)
 }
 
 func TestProcess_GetTransactionFailed(t *testing.T) {
 	var (
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
-		accountSvc  = account.NewMockService(t)
+		accountRepo = account.NewMockRepository(t)
 		transferSvc = transfer.NewMockService(t)
-		uc          = NewUsecase(cbsService, txRepo, accountSvc, transferSvc)
+		uc          = NewUsecase(cbsService, txRepo, accountRepo, transferSvc)
 	)
 
 	log.Configure("test")
@@ -401,16 +401,16 @@ func TestProcess_GetTransactionFailed(t *testing.T) {
 
 	cbsService.AssertExpectations(t)
 	txRepo.AssertExpectations(t)
-	accountSvc.AssertExpectations(t)
+	accountRepo.AssertExpectations(t)
 }
 
 func TestProcess_TransactionStatusNotInquirySuccess(t *testing.T) {
 	var (
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
-		accountSvc  = account.NewMockService(t)
+		accountRepo = account.NewMockRepository(t)
 		transferSvc = transfer.NewMockService(t)
-		uc          = NewUsecase(cbsService, txRepo, accountSvc, transferSvc)
+		uc          = NewUsecase(cbsService, txRepo, accountRepo, transferSvc)
 	)
 
 	log.Configure("test")
@@ -444,16 +444,16 @@ func TestProcess_TransactionStatusNotInquirySuccess(t *testing.T) {
 
 	cbsService.AssertExpectations(t)
 	txRepo.AssertExpectations(t)
-	accountSvc.AssertExpectations(t)
+	accountRepo.AssertExpectations(t)
 }
 
 func TestProcess_TransferFailed(t *testing.T) {
 	var (
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
-		accountSvc  = account.NewMockService(t)
+		accountRepo = account.NewMockRepository(t)
 		transferSvc = transfer.NewMockService(t)
-		uc          = NewUsecase(cbsService, txRepo, accountSvc, transferSvc)
+		uc          = NewUsecase(cbsService, txRepo, accountRepo, transferSvc)
 	)
 
 	log.Configure("test")
@@ -494,7 +494,7 @@ func TestProcess_TransferFailed(t *testing.T) {
 
 	cbsService.AssertExpectations(t)
 	txRepo.AssertExpectations(t)
-	accountSvc.AssertExpectations(t)
+	accountRepo.AssertExpectations(t)
 	transferSvc.AssertExpectations(t)
 }
 
@@ -502,9 +502,9 @@ func TestProcess_UpdateTransactionFailed(t *testing.T) {
 	var (
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
-		accountSvc  = account.NewMockService(t)
+		accountRepo = account.NewMockRepository(t)
 		transferSvc = transfer.NewMockService(t)
-		uc          = NewUsecase(cbsService, txRepo, accountSvc, transferSvc)
+		uc          = NewUsecase(cbsService, txRepo, accountRepo, transferSvc)
 	)
 
 	log.Configure("test")
@@ -551,7 +551,7 @@ func TestProcess_UpdateTransactionFailed(t *testing.T) {
 
 	cbsService.AssertExpectations(t)
 	txRepo.AssertExpectations(t)
-	accountSvc.AssertExpectations(t)
+	accountRepo.AssertExpectations(t)
 	transferSvc.AssertExpectations(t)
 }
 
@@ -559,9 +559,9 @@ func TestProcess_Success(t *testing.T) {
 	var (
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
-		accountSvc  = account.NewMockService(t)
+		accountRepo = account.NewMockRepository(t)
 		transferSvc = transfer.NewMockService(t)
-		uc          = NewUsecase(cbsService, txRepo, accountSvc, transferSvc)
+		uc          = NewUsecase(cbsService, txRepo, accountRepo, transferSvc)
 	)
 
 	log.Configure("test")
@@ -609,6 +609,6 @@ func TestProcess_Success(t *testing.T) {
 
 	cbsService.AssertExpectations(t)
 	txRepo.AssertExpectations(t)
-	accountSvc.AssertExpectations(t)
+	accountRepo.AssertExpectations(t)
 	transferSvc.AssertExpectations(t)
 }

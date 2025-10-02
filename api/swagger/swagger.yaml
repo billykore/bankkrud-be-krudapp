@@ -8,7 +8,7 @@ definitions:
         type: string
       username:
         maxLength: 100
-        minLength: 2
+        minLength: 3
         type: string
     required:
     - password
@@ -92,6 +92,44 @@ definitions:
     - destination_account
     - source_account
     - uuid
+    type: object
+  user.CreateRequest:
+    properties:
+      address:
+        maxLength: 200
+        minLength: 3
+        type: string
+      date_of_birth:
+        type: string
+      email:
+        type: string
+      first_name:
+        maxLength: 100
+        minLength: 3
+        type: string
+      last_name:
+        maxLength: 100
+        minLength: 3
+        type: string
+      password:
+        maxLength: 100
+        minLength: 8
+        type: string
+      phone_number:
+        type: string
+      username:
+        maxLength: 100
+        minLength: 3
+        type: string
+    required:
+    - address
+    - date_of_birth
+    - email
+    - first_name
+    - last_name
+    - password
+    - phone_number
+    - username
     type: object
 host: api.bankkrud.com
 info:
@@ -388,6 +426,36 @@ paths:
       summary: Initiate transfer
       tags:
       - transfer
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user
+      parameters:
+      - description: Create request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/user.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Create a new user
+      tags:
+      - users
   /users/me:
     get:
       consumes:

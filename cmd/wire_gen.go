@@ -47,7 +47,7 @@ func initKrudApp(cfg *config.Configs) *krudApp {
 	authService := service.NewAuthService(cfg)
 	authenticationUsecase := authentication.NewUsecase(userRepo, authService)
 	authenticationHandler := handler.NewAuthenticationHandler(validator, authenticationUsecase)
-	userUsecase := user.NewUsecase(userRepo)
+	userUsecase := user.NewUsecase(userRepo, authService, accountAPI)
 	userHandler := handler.NewUserHandler(validator, userUsecase)
 	transactionUsecase := transaction.NewUsecase(transactionRepo)
 	transactionHandler := handler.NewTransactionHandler(validator, transactionUsecase)

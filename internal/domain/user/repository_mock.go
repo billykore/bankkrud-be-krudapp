@@ -21,6 +21,53 @@ func (_m *MockRepository) EXPECT() *MockRepository_Expecter {
 	return &MockRepository_Expecter{mock: &_m.Mock}
 }
 
+// Create provides a mock function with given fields: ctx, user
+func (_m *MockRepository) Create(ctx context.Context, user User) error {
+	ret := _m.Called(ctx, user)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Create")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, User) error); ok {
+		r0 = rf(ctx, user)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// MockRepository_Create_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Create'
+type MockRepository_Create_Call struct {
+	*mock.Call
+}
+
+// Create is a helper method to define mock.On call
+//   - ctx context.Context
+//   - user User
+func (_e *MockRepository_Expecter) Create(ctx interface{}, user interface{}) *MockRepository_Create_Call {
+	return &MockRepository_Create_Call{Call: _e.mock.On("Create", ctx, user)}
+}
+
+func (_c *MockRepository_Create_Call) Run(run func(ctx context.Context, user User)) *MockRepository_Create_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(User))
+	})
+	return _c
+}
+
+func (_c *MockRepository_Create_Call) Return(_a0 error) *MockRepository_Create_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *MockRepository_Create_Call) RunAndReturn(run func(context.Context, User) error) *MockRepository_Create_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // DeleteToken provides a mock function with given fields: ctx, username
 func (_m *MockRepository) DeleteToken(ctx context.Context, username string) error {
 	ret := _m.Called(ctx, username)

@@ -7,14 +7,15 @@ import (
 
 // tagMessages maps validation tags to corresponding error message templates.
 var tagMessages = map[string]string{
-	"required": "%s is required",
-	"email":    "%s is not a valid email",
-	"len":      "%s length must be %s",
-	"min":      "%s minimum length must be %s",
-	"number":   "%s must be a number",
-	"gte":      "%s must be greater than or equal to %s",
-	"lte":      "%s must be less than or equal to %s",
-	"only":     "%s must contain only: %s",
+	"required":    "%s is required",
+	"email":       "%s is not a valid email",
+	"len":         "%s length must be %s",
+	"min":         "%s minimum length must be %s",
+	"number":      "%s must be a number",
+	"gte":         "%s must be greater than or equal to %s",
+	"lte":         "%s must be less than or equal to %s",
+	"phonenumber": "%s is not a valid phone number",
+	"only":        "%s must contain only: %s",
 }
 
 func (v *Validator) JSONTagFunc() {

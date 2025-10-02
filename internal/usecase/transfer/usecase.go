@@ -22,20 +22,20 @@ const (
 type Usecase struct {
 	cbsSvc      cbs.Service
 	txRepo      transaction.Repository
-	accountSvc  account.Service
+	accountRepo account.Repository
 	transferSvc transfer.Service
 }
 
 func NewUsecase(
 	cbsSvc cbs.Service,
 	txRepo transaction.Repository,
-	accountSvc account.Service,
+	accountRepo account.Repository,
 	transferSvc transfer.Service,
 ) *Usecase {
 	return &Usecase{
 		cbsSvc:      cbsSvc,
 		txRepo:      txRepo,
-		accountSvc:  accountSvc,
+		accountRepo: accountRepo,
 		transferSvc: transferSvc,
 	}
 }
@@ -56,7 +56,7 @@ func (uc *Usecase) Initiate(ctx context.Context, req *InitiateRequest) (*Initiat
 		return nil, pkgerror.InternalServerError()
 	}
 
-	srcAccount, err := uc.accountSvc.Get(ctx, req.SourceAccount)
+	srcAccount, err := uc.accountRepo.Get(ctx, req.SourceAccount)
 	if err != nil {
 		l.Error().Err(err).
 			Str("account_number", req.SourceAccount).
@@ -71,7 +71,7 @@ func (uc *Usecase) Initiate(ctx context.Context, req *InitiateRequest) (*Initiat
 		return nil, pkgerror.BadRequest().SetMsg("Insufficient balance")
 	}
 
-	destAccount, err := uc.accountSvc.Get(ctx, req.DestinationAccount)
+	destAccount, err := uc.accountRepo.Get(ctx, req.DestinationAccount)
 	if err != nil {
 		l.Error().Err(err).
 			Str("account_number", req.DestinationAccount).

@@ -67,3 +67,8 @@ run-test:
 .PHONY: test-coverage
 test-coverage:
 	@./scripts/test_coverage.sh
+
+# Example:
+# make generate
+.PHONY: generate
+generate: generate-wire generate-swagger generate-mocks

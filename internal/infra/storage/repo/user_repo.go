@@ -5,8 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 
@@ -15,7 +17,10 @@ import (
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/config"
 )
 
-const userTokenKey = "user:%s:token"
+const (
+	userTokenKey        = "user:%s:token"
+	duplicateKeyErrCode = "23505"
+)
 
 type UserRepo struct {
 	cfg *config.Configs
@@ -31,9 +36,52 @@ func NewUserRepo(cfg *config.Configs, db *gorm.DB, rdb *redis.Client) *UserRepo 
 	}
 }
 
-func (ur *UserRepo) GetByUsername(ctx context.Context, username string) (user.User, error) {
+func (r *UserRepo) Create(ctx context.Context, u user.User) error {
+	m := model.User{
+		Email:        u.Email,
+		Username:     u.Username,
+		PasswordHash: u.Password,
+		PhoneNumber:  u.PhoneNumber,
+		FirstName:    u.FirstName,
+		LastName:     u.LastName,
+		CIF:          u.CIF,
+		Address:      u.Address,
+		LastLogin:    time.Now(),
+		DateOfBirth:  u.DateOfBirth,
+		Status:       u.Status,
+	}
+	err := r.db.WithContext(ctx).Create(&m).Error
+	var pgconnErr *pgconn.PgError
+	if err != nil && errors.As(err, &pgconnErr) {
+		if pgconnErr.Code != duplicateKeyErrCode {
+			return err
+		}
+		k := getDuplicateKey(pgconnErr.Detail)
+		if k != "" {
+			return fmt.Errorf("%w %s", user.ErrDuplicateUserData, k)
+		}
+	}
+	return nil
+}
+
+func getDuplicateKey(detail string) string {
+	if detail == "" {
+		return ""
+	}
+	s := strings.Split(detail, " ")
+	if len(s) < 2 {
+		return ""
+	}
+	keyValue := strings.Split(s[1], "=")
+	if len(keyValue) < 2 {
+		return ""
+	}
+	return keyValue[0]
+}
+
+func (r *UserRepo) GetByUsername(ctx context.Context, username string) (user.User, error) {
 	var m model.User
-	err := ur.db.WithContext(ctx).
+	err := r.db.WithContext(ctx).
 		Where("username = ?", username).
 		First(&m).Error
 	if err != nil {
@@ -52,9 +100,9 @@ func (ur *UserRepo) GetByUsername(ctx context.Context, username string) (user.Us
 	}, nil
 }
 
-func (ur *UserRepo) GetFieldsByUsername(ctx context.Context, username string, fields ...string) (user.User, error) {
+func (r *UserRepo) GetFieldsByUsername(ctx context.Context, username string, fields ...string) (user.User, error) {
 	var m model.User
-	err := ur.db.WithContext(ctx).
+	err := r.db.WithContext(ctx).
 		Select(fields).
 		Where("username = ?", username).
 		First(&m).Error
@@ -75,7 +123,7 @@ func (ur *UserRepo) GetFieldsByUsername(ctx context.Context, username string, fi
 	}, nil
 }
 
-func (ur *UserRepo) SaveToken(ctx context.Context, username string, token user.Token) error {
+func (r *UserRepo) SaveToken(ctx context.Context, username string, token user.Token) error {
 	b, err := json.Marshal(model.Token{
 		Value:     token.Value,
 		ExpiresAt: token.ExpiresAt,
@@ -84,11 +132,11 @@ func (ur *UserRepo) SaveToken(ctx context.Context, username string, token user.T
 		return err
 	}
 	redisKey := fmt.Sprintf(userTokenKey, username)
-	err = ur.rdb.Set(ctx, redisKey, string(b), ur.cfg.Token.Duration).Err()
+	err = r.rdb.Set(ctx, redisKey, string(b), r.cfg.Token.Duration).Err()
 	if err != nil {
 		return err
 	}
-	err = ur.db.WithContext(ctx).Model(model.User{}).
+	err = r.db.WithContext(ctx).Model(model.User{}).
 		Where("username = ?", username).
 		UpdateColumn("last_login", time.Now()).Error
 	if err != nil {
@@ -97,9 +145,9 @@ func (ur *UserRepo) SaveToken(ctx context.Context, username string, token user.T
 	return nil
 }
 
-func (ur *UserRepo) GetToken(ctx context.Context, username string) (user.Token, error) {
+func (r *UserRepo) GetToken(ctx context.Context, username string) (user.Token, error) {
 	redisKey := fmt.Sprintf(userTokenKey, username)
-	token, err := ur.rdb.Get(ctx, redisKey).Result()
+	token, err := r.rdb.Get(ctx, redisKey).Result()
 	if err != nil && errors.Is(err, redis.Nil) {
 		return user.Token{}, user.ErrTokenNotFound
 	}
@@ -117,7 +165,7 @@ func (ur *UserRepo) GetToken(ctx context.Context, username string) (user.Token, 
 	}, nil
 }
 
-func (ur *UserRepo) DeleteToken(ctx context.Context, username string) error {
+func (r *UserRepo) DeleteToken(ctx context.Context, username string) error {
 	redisKey := fmt.Sprintf(userTokenKey, username)
-	return ur.rdb.Del(ctx, redisKey).Err()
+	return r.rdb.Del(ctx, redisKey).Err()
 }

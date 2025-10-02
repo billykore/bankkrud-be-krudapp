@@ -7,6 +7,8 @@ func (hs *HTTPServer) registerRoutes() {
 
 	v1.POST("/auth/login", hs.ah.Login)
 
+	v1.POST("/users", hs.uh.Create)
+
 	withAuth := v1.Group("", middleware.AuthorizeUser(hs.cfg))
 
 	withAuth.POST("/tapmoney/init", hs.tmh.Initiate)

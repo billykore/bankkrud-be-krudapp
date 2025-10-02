@@ -9,7 +9,6 @@ CREATE TABLE users
     phone_number  VARCHAR(20) UNIQUE  NOT NULL,
     password_hash VARCHAR(255)        NOT NULL,
     date_of_birth DATE                NOT NULL,
-    cif_number    VARCHAR(20) UNIQUE  NOT NULL,
     last_login    TIMESTAMP,
     status        VARCHAR(20)              DEFAULT 'active',
     created_at    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,

@@ -7,7 +7,9 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math/rand"
 	"net/http"
+	"strings"
 
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/account"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/config"
@@ -16,6 +18,7 @@ import (
 const (
 	TransactionTypeInquiry = "inquiry"
 	transferFee            = "0"
+	digits                 = "0123456789"
 )
 
 // AccountAPI is the core banking system service API for getting account information.
@@ -90,5 +93,16 @@ func (ca *AccountAPI) Get(ctx context.Context, accountNumber string) (account.Ac
 		FullName:      apiRes.Data.Name,
 		Type:          apiRes.Data.AccountType,
 		Balance:       apiRes.Data.GetBalance(),
+	}, nil
+}
+
+func (ca *AccountAPI) Create(ctx context.Context, username string) (account.Account, error) {
+	var cifBuilder strings.Builder
+	defer cifBuilder.Reset()
+	for _ = range 10 {
+		cifBuilder.WriteByte(digits[rand.Intn(10)])
+	}
+	return account.Account{
+		CIF: cifBuilder.String(),
 	}, nil
 }
