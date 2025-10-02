@@ -1,8 +1,14 @@
 package model
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type User struct {
+	gorm.Model
 	Username     string `gorm:"unique"`
 	Email        string `gorm:"unique"`
 	CIF          string `gorm:"unique"`
@@ -14,4 +20,12 @@ type User struct {
 	DateOfBirth  time.Time
 	LastLogin    time.Time
 	Status       string
+}
+
+func (u *User) MarshalBinary() ([]byte, error) {
+	return json.Marshal(u)
+}
+
+func (u *User) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, u)
 }

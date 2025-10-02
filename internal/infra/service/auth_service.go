@@ -11,19 +11,21 @@ import (
 )
 
 type AuthService struct {
-	tokenSecret   string
-	tokenDuration time.Duration
+	tokenSecret    string
+	tokenDuration  time.Duration
+	tokenHeaderKid string
 }
 
 func NewAuthService(cfg *config.Configs) *AuthService {
 	return &AuthService{
-		tokenSecret:   cfg.Token.Secret,
-		tokenDuration: cfg.Token.Duration,
+		tokenSecret:    cfg.Token.Secret,
+		tokenDuration:  cfg.Token.Duration,
+		tokenHeaderKid: cfg.Token.HeaderKid,
 	}
 }
 
 func (s *AuthService) HashPassword(password string) (string, error) {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
 	if err != nil {
 		return "", err
 	}
@@ -55,6 +57,8 @@ func (s *AuthService) GenerateToken(u user.User) (user.Token, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	token.Header["kid"] = s.tokenHeaderKid
+
 	strToken, err := token.SignedString([]byte(s.tokenSecret))
 	if err != nil {
 		return user.Token{}, err

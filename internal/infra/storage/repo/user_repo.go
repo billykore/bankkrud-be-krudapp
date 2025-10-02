@@ -19,6 +19,7 @@ import (
 
 const (
 	userTokenKey        = "user:%s:token"
+	userDataKey         = "user:%s:data"
 	duplicateKeyErrCode = "23505"
 )
 
@@ -81,9 +82,30 @@ func getDuplicateKey(detail string) string {
 
 func (r *UserRepo) GetByUsername(ctx context.Context, username string) (user.User, error) {
 	var m model.User
-	err := r.db.WithContext(ctx).
+	// get from redis
+	redisKey := fmt.Sprintf(userDataKey, username)
+	err := r.rdb.Get(ctx, redisKey).Scan(&m)
+	if err == nil {
+		return user.User{
+			Email:       m.Email,
+			Username:    m.Username,
+			Password:    m.PasswordHash,
+			PhoneNumber: m.PhoneNumber,
+			FirstName:   m.FirstName,
+			LastName:    m.LastName,
+			CIF:         m.CIF,
+			Address:     m.Address,
+			LastLogin:   m.LastLogin,
+		}, nil
+	}
+	err = r.db.WithContext(ctx).
 		Where("username = ?", username).
-		First(&m).Error
+		Find(&m).Error
+	if err != nil {
+		return user.User{}, err
+	}
+	// save user data to redis
+	err = r.rdb.Set(ctx, redisKey, &m, time.Hour).Err()
 	if err != nil {
 		return user.User{}, err
 	}
