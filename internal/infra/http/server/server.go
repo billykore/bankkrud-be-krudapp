@@ -9,13 +9,17 @@ import (
 	echomiddleware "github.com/labstack/echo/v4/middleware"
 	"github.com/rs/zerolog/log"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/infra/http/handler"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/infra/http/middleware"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/config"
+	trace "go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/trace"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho"
 )
 
 // HTTPServer represents the main server struct managing configuration, logging, and routing.
 type HTTPServer struct {
 	cfg    *config.Configs
 	router *echo.Echo
+	tracer *trace.Tracer
 	tmh    *handler.TapMoneyHandler
 	tfh    *handler.TransferHandler
 	ah     *handler.AuthenticationHandler
@@ -27,6 +31,7 @@ type HTTPServer struct {
 func NewHTTP(
 	cfg *config.Configs,
 	router *echo.Echo,
+	tracer *trace.Tracer,
 	tmh *handler.TapMoneyHandler,
 	tfh *handler.TransferHandler,
 	ah *handler.AuthenticationHandler,
@@ -36,6 +41,7 @@ func NewHTTP(
 	return &HTTPServer{
 		cfg:    cfg,
 		router: router,
+		tracer: tracer,
 		tmh:    tmh,
 		tfh:    tfh,
 		ah:     ah,
@@ -59,6 +65,8 @@ func (hs *HTTPServer) setupRouter() {
 func (hs *HTTPServer) useMiddlewares() {
 	hs.router.Use(echomiddleware.Logger())
 	hs.router.Use(echomiddleware.Recover())
+	hs.router.Use(otelecho.Middleware(hs.cfg.App.Name))
+	hs.router.Use(middleware.DumpBodyWithTracer(hs.tracer.Tracer()))
 }
 
 func (hs *HTTPServer) run() {

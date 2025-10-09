@@ -1,6 +1,8 @@
 package internal
 
 type App struct {
-	Env  string
-	Port string
+	Name    string
+	Version string
+	Env     string
+	Port    string
 }

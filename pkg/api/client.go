@@ -56,7 +56,12 @@ func (c *Client) doRequest(ctx context.Context, method, url string, requestBody 
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		err := resp.Body.Close()
+		if err != nil {
+			return
+		}
+	}()
 	b, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err

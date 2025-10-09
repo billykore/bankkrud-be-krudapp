@@ -21,6 +21,8 @@ type Configs struct {
 	DBD internal.DBD
 	// Redis defines the redis database configuration.
 	Redis internal.Redis
+	// Tracing defines the tracing configuration.
+	Tracing internal.TracingConfig
 }
 
 // Config holds the application configuration.

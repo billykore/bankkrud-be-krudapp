@@ -13,7 +13,7 @@ type Response struct {
 	Title  string `json:"title,omitempty"`
 	Detail string `json:"detail,omitempty"`
 	Data   any    `json:"data,omitempty"`
-	Errors any    `json:"errors,omitempty"`
+	Errors error  `json:"errors,omitempty"`
 }
 
 // Success returns status code 200 and success response with data.

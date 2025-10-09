@@ -13,6 +13,7 @@ import (
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/config"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/db/postgres"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/log"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/trace"
 	"gorm.io/gorm"
 )
 
@@ -37,6 +38,7 @@ func main() {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+
 	// run http server
 	go a.http.Run()
 
@@ -51,22 +53,27 @@ func main() {
 		"http-server": func(ctx context.Context) error {
 			return a.http.Shutdown(ctx)
 		},
+		"tracer": func(ctx context.Context) error {
+			return a.tracer.Shutdown(ctx)
+		},
 	})
 
 	<-wait
 }
 
 type krudApp struct {
-	http *server.HTTPServer
-	db   *gorm.DB
-	rds  *redis.Client
+	http   *server.HTTPServer
+	db     *gorm.DB
+	rds    *redis.Client
+	tracer *trace.Tracer
 }
 
-func newKrudApp(http *server.HTTPServer, db *gorm.DB, rds *redis.Client) *krudApp {
+func newKrudApp(http *server.HTTPServer, db *gorm.DB, rds *redis.Client, tracer *trace.Tracer) *krudApp {
 	return &krudApp{
-		http: http,
-		db:   db,
-		rds:  rds,
+		http:   http,
+		db:     db,
+		rds:    rds,
+		tracer: tracer,
 	}
 }
 

@@ -1,6 +1,8 @@
 package server
 
-import "go.bankkrud.com/bankkrud/backend/krudapp/internal/infra/http/middleware"
+import (
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/infra/http/middleware"
+)
 
 func (hs *HTTPServer) registerRoutes() {
 	v1 := hs.router.Group("/v1")

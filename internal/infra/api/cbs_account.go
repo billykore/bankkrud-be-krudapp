@@ -30,7 +30,7 @@ func (api *CBSAccountAPI) Get(ctx context.Context, accountNumber string) (accoun
 func (api *CBSAccountAPI) Create(ctx context.Context, username string) (account.Account, error) {
 	var cifBuilder strings.Builder
 	defer cifBuilder.Reset()
-	for _ = range 10 {
+	for range 10 {
 		cifBuilder.WriteByte(digits[rand.Intn(10)])
 	}
 	return account.Account{
