@@ -4,23 +4,51 @@ import (
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/infra/http/middleware"
 )
 
+// Register all routes.
 func (hs *HTTPServer) registerRoutes() {
-	v1 := hs.router.Group("/v1")
+	hs.authRoutes()
+	hs.userRoutes()
+	hs.tapMoneyRoutes()
+	hs.transferRoutes()
+	hs.transactionRoutes()
+}
 
-	v1.POST("/auth/login", hs.ah.Login)
+// Define authentication routes.
+func (hs *HTTPServer) authRoutes() {
+	ar := hs.router.Group("/v1/auth")
+	ar.POST("/login", hs.ah.Login)
+}
 
-	v1.POST("/users", hs.uh.Create)
+// Define user routes.
+func (hs *HTTPServer) userRoutes() {
+	r := hs.router.Group("/v1/users")
+	r.POST("", hs.uh.Create)
+	r.GET("/me", hs.uh.GetByUsername, middleware.AuthorizeUser(hs.cfg))
+}
 
-	withAuth := v1.Group("", middleware.AuthorizeUser(hs.cfg))
+// Define TapMoney routes.
+func (hs *HTTPServer) tapMoneyRoutes() {
+	r := hs.router.Group("/v1/tapmoney")
+	r.Use(middleware.AuthorizeUser(hs.cfg))
 
-	withAuth.POST("/tapmoney/init", hs.tmh.Initiate)
-	withAuth.POST("/tapmoney/:uuid/process", hs.tmh.Process)
+	r.POST("/init", hs.tmh.Initiate)
+	r.POST("/:uuid/process", hs.tmh.Process)
+}
 
-	withAuth.POST("/transfers/init", hs.tfh.Initiate)
-	withAuth.POST("/transfers/:uuid/process", hs.tfh.Process)
+// Define transfer routes.
+func (hs *HTTPServer) transferRoutes() {
+	r := hs.router.Group("/v1/transfers")
+	r.Use(middleware.AuthorizeUser(hs.cfg))
 
-	withAuth.GET("/transactions", hs.txh.GetTransactions)
-	withAuth.GET("/transactions/:uuid", hs.txh.GetTransaction)
+	r.POST("/init", hs.tfh.Initiate)
+	r.POST("/:uuid/process", hs.tfh.Process)
+}
 
-	withAuth.GET("/users/me", hs.uh.GetByUsername)
+// Define transaction routes.
+func (hs *HTTPServer) transactionRoutes() {
+	r := hs.router.Group("/v1/transactions")
+	r.Use(middleware.AuthorizeUser(hs.cfg))
+
+	r.GET("", hs.txh.GetTransactions)
+	r.GET("/:uuid", hs.txh.GetTransaction)
 }

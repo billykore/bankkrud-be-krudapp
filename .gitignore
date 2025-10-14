@@ -28,3 +28,12 @@ configs.yaml
 # Goland
 .idea
 .DS_Store
+
+# Zed
+.zed
+
+# Test coverage
+coverage.out
+
+# Logs
+logs

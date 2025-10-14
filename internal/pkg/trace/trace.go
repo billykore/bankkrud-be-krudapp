@@ -7,8 +7,8 @@ import (
 
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/config"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploghttp"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
-	"go.opentelemetry.io/otel/exporters/stdout/stdoutlog"
 	"go.opentelemetry.io/otel/exporters/stdout/stdoutmetric"
 	"go.opentelemetry.io/otel/log/global"
 	"go.opentelemetry.io/otel/propagation"
@@ -103,7 +103,7 @@ func setupOTelSDK(ctx context.Context, cfg *config.Configs) (func(context.Contex
 	otel.SetMeterProvider(meterProvider)
 
 	// Set up logger provider.
-	loggerProvider, err := newLoggerProvider()
+	loggerProvider, err := newLoggerProvider(ctx, cfg.Tracing.OTLPLogHttpEndpoint)
 	if err != nil {
 		handleErr(err)
 		return shutdown, err
@@ -164,8 +164,12 @@ func newMeterProvider(metricReaderInterval time.Duration) (*metric.MeterProvider
 	return meterProvider, nil
 }
 
-func newLoggerProvider() (*log.LoggerProvider, error) {
-	logExporter, err := stdoutlog.New()
+func newLoggerProvider(ctx context.Context, endpoint string) (*log.LoggerProvider, error) {
+	logExporter, err := otlploghttp.New(
+		ctx,
+		otlploghttp.WithEndpoint(endpoint),
+		otlploghttp.WithInsecure(),
+	)
 	if err != nil {
 		return nil, err
 	}

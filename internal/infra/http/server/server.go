@@ -11,7 +11,7 @@ import (
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/infra/http/handler"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/infra/http/middleware"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/config"
-	trace "go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/trace"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/trace"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho"
 )
 
@@ -75,7 +75,7 @@ func (hs *HTTPServer) run() {
 	if err != nil && errors.Is(err, http.ErrServerClosed) {
 		log.Info().Msgf("http server closed")
 	} else {
-		log.Panic().Err(err).Msg("Failed to start server")
+		log.Panic().Msgf("Failed to start server: %v", err)
 	}
 }
 
