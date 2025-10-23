@@ -12,6 +12,7 @@ import (
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/pkgerror"
 )
 
+// Usecase represents the schedule usecase for schedule operations.
 type Usecase struct {
 	scheduleRepo schedule.Repository
 }
@@ -38,6 +39,7 @@ func (uc *Usecase) GetSchedules(ctx context.Context, req *GetSchedulesRequest) (
 			"username":         userFromCtx.Username,
 			"transaction_type": req.TransactionType,
 			"status":           req.Status,
+			"period":           req.Period,
 		},
 	})
 	if err != nil {

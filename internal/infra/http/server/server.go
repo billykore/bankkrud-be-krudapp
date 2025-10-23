@@ -11,7 +11,7 @@ import (
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/infra/http/handler"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/infra/http/middleware"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/config"
-	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/trace"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/telemetry"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho"
 )
 
@@ -19,7 +19,7 @@ import (
 type HTTPServer struct {
 	cfg    *config.Configs
 	router *echo.Echo
-	tracer *trace.Tracer
+	tracer *telemetry.Telemetry
 	tmh    *handler.TapMoneyHandler
 	tfh    *handler.TransferHandler
 	ah     *handler.AuthenticationHandler
@@ -32,7 +32,7 @@ type HTTPServer struct {
 func NewHTTP(
 	cfg *config.Configs,
 	router *echo.Echo,
-	tracer *trace.Tracer,
+	tracer *telemetry.Telemetry,
 	tmh *handler.TapMoneyHandler,
 	tfh *handler.TransferHandler,
 	ah *handler.AuthenticationHandler,

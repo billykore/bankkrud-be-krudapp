@@ -1,10 +1,11 @@
 package schedule
 
 type GetSchedulesRequest struct {
-	TransactionType string `query:"transaction_type"`
-	Status          string `query:"status" json:"status" validate:"omitempty,oneof=active inactive"`
 	Offset          int    `query:"offset"`
 	Limit           int    `query:"limit" json:"limit" validate:"omitempty,lte=50"`
+	TransactionType string `query:"transaction_type"`
+	Status          string `query:"status" json:"status" validate:"omitempty,oneof=active inactive"`
+	Period          string `query:"period" json:"period" validate:"omitempty,oneof=daily weekly monthly"`
 }
 
 type GetScheduleByUUIDRequest struct {

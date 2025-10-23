@@ -1,4 +1,4 @@
-package trace
+package telemetry
 
 import (
 	"context"
@@ -19,20 +19,20 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-// Tracer wraps the OpenTelemetry tracer.
-type Tracer struct {
+// Telemetry wraps the OpenTelemetry.
+type Telemetry struct {
 	cfg        *config.Configs
 	tracer     trace.Tracer
 	shutdownFn func(context.Context) error
 }
 
-// NewTracer creates a new Tracer instance.
-func NewTracer(cfg *config.Configs) *Tracer {
+// New creates a new Telemetry instance.
+func New(cfg *config.Configs) *Telemetry {
 	shutdownFn, err := setupOTelSDK(context.Background(), cfg)
 	if err != nil {
 		panic(err)
 	}
-	return &Tracer{
+	return &Telemetry{
 		cfg:        cfg,
 		tracer:     otel.Tracer(cfg.App.Name),
 		shutdownFn: shutdownFn,
@@ -40,12 +40,12 @@ func NewTracer(cfg *config.Configs) *Tracer {
 }
 
 // Tracer returns the tracer instance.
-func (t *Tracer) Tracer() trace.Tracer {
+func (t *Telemetry) Tracer() trace.Tracer {
 	return t.tracer
 }
 
 // Shutdown shuts down the tracer.
-func (t *Tracer) Shutdown(ctx context.Context) error {
+func (t *Telemetry) Shutdown(ctx context.Context) error {
 	return t.shutdownFn(ctx)
 }
 
@@ -102,7 +102,7 @@ func setupOTelSDK(ctx context.Context, cfg *config.Configs) (func(context.Contex
 	otel.SetMeterProvider(meterProvider)
 
 	// Set up logger provider.
-	loggerProvider, err := newLoggerProvider(ctx, cfg.Tracing.OTLPLogHttpEndpoint)
+	loggerProvider, err := newLoggerProvider(ctx, cfg.Tracing.OTLPLogHTTPEndpoint)
 	if err != nil {
 		handleErr(err)
 		return shutdown, err

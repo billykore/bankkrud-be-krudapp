@@ -4,6 +4,6 @@ import "time"
 
 type TracingConfig struct {
 	OTLPHttpEndpoint     string
-	OTLPLogHttpEndpoint  string
+	OTLPLogHTTPEndpoint  string
 	MetricReaderInterval time.Duration
 }

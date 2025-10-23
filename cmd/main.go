@@ -13,7 +13,7 @@ import (
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/config"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/db/postgres"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/log"
-	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/trace"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/telemetry"
 	"gorm.io/gorm"
 )
 
@@ -65,10 +65,10 @@ type krudApp struct {
 	http   *server.HTTPServer
 	db     *gorm.DB
 	rds    *redis.Client
-	tracer *trace.Tracer
+	tracer *telemetry.Telemetry
 }
 
-func newKrudApp(http *server.HTTPServer, db *gorm.DB, rds *redis.Client, tracer *trace.Tracer) *krudApp {
+func newKrudApp(http *server.HTTPServer, db *gorm.DB, rds *redis.Client, tracer *telemetry.Telemetry) *krudApp {
 	return &krudApp{
 		http:   http,
 		db:     db,

@@ -9,11 +9,16 @@ var (
 	ErrNotFound = errors.New("schedule not found")
 )
 
+// Filter represents filtering criteria for querying schedules.
 type Filter map[string]string
 
+// Query encapsulates parameters for querying schedules.
 type Query struct {
-	Limit  int
+	// Limit specifies the maximum number of schedules to retrieve.
+	Limit int
+	// Offset specifies the starting point for retrieval.
 	Offset int
+	// Filter contains the filtering criteria.
 	Filter Filter
 }
 
@@ -28,7 +33,7 @@ type Repository interface {
 	// Create adds a new schedule.
 	Create(ctx context.Context, schedule Schedule) error
 
-	//UpdateStatus modifies the status of an existing schedule.
+	// UpdateStatus modifies the status of an existing schedule.
 	UpdateStatus(ctx context.Context, uuid string, status string) error
 
 	// Delete removes a schedule by its UUID.

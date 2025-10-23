@@ -17,7 +17,7 @@ import (
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/db/postgres"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/db/redis"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/httpclient"
-	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/trace"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/telemetry"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/validation"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/authentication"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/schedule"
@@ -31,7 +31,7 @@ import (
 
 func initKrudApp(cfg *config.Configs) *krudApp {
 	echoEcho := echo.New()
-	tracer := trace.NewTracer(cfg)
+	telemetryTelemetry := telemetry.New(cfg)
 	validator := validation.New()
 	cbsStatusAPI := api.NewCBSStatusAPI()
 	db := postgres.New(cfg)
@@ -56,7 +56,7 @@ func initKrudApp(cfg *config.Configs) *krudApp {
 	scheduleRepo := repo.NewScheduleRepo(db)
 	scheduleUsecase := schedule.NewUsecase(scheduleRepo)
 	scheduleHandler := handler.NewScheduleHandler(validator, scheduleUsecase)
-	httpServer := server.NewHTTP(cfg, echoEcho, tracer, tapMoneyHandler, transferHandler, authenticationHandler, userHandler, transactionHandler, scheduleHandler)
-	mainKrudApp := newKrudApp(httpServer, db, redisClient, tracer)
+	httpServer := server.NewHTTP(cfg, echoEcho, telemetryTelemetry, tapMoneyHandler, transferHandler, authenticationHandler, userHandler, transactionHandler, scheduleHandler)
+	mainKrudApp := newKrudApp(httpServer, db, redisClient, telemetryTelemetry)
 	return mainKrudApp
 }

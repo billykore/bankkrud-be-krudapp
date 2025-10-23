@@ -5,7 +5,7 @@ import (
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/db/postgres"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/db/redis"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/httpclient"
-	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/trace"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/telemetry"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/validation"
 )
 
@@ -14,5 +14,5 @@ var ProviderSet = wire.NewSet(
 	postgres.New,
 	httpclient.New,
 	redis.New,
-	trace.NewTracer,
+	telemetry.New,
 )
