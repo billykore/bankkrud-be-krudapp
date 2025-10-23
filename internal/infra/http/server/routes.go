@@ -11,6 +11,7 @@ func (hs *HTTPServer) registerRoutes() {
 	hs.tapMoneyRoutes()
 	hs.transferRoutes()
 	hs.transactionRoutes()
+	hs.scheduleRoutes()
 }
 
 // Define authentication routes.
@@ -51,4 +52,16 @@ func (hs *HTTPServer) transactionRoutes() {
 
 	r.GET("", hs.txh.GetTransactions)
 	r.GET("/:uuid", hs.txh.GetTransaction)
+}
+
+// Define schedule routes.
+func (hs *HTTPServer) scheduleRoutes() {
+	r := hs.router.Group("/v1/schedules")
+	r.Use(middleware.AuthorizeUser(hs.cfg))
+
+	r.GET("", hs.sh.GetSchedules)
+	r.GET("/:uuid", hs.sh.GetSchedule)
+	r.POST("", hs.sh.CreateSchedule)
+	r.PATCH("/:uuid", hs.sh.UpdateScheduleStatus)
+	r.DELETE("/:uuid", hs.sh.DeleteSchedule)
 }

@@ -21,7 +21,7 @@ import (
 //
 //	@title			API Specification
 //	@version		1.0
-//	@description	Bankfrud service API specification.
+//	@description	Bankkrud service API specification.
 //	@termsOfService	https://swagger.io/terms/
 //	@contact.name	Billy Kore
 //	@contact.url	https://www.swagger.io/support

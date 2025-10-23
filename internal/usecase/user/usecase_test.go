@@ -42,6 +42,7 @@ func TestGetByUsername_Success(t *testing.T) {
 	assert.NotNil(t, res)
 	assert.Equal(t, "johndoe", res.Username)
 	assert.Equal(t, "John Doe", res.FullName)
+
 	userRepo.AssertExpectations(t)
 }
 

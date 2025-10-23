@@ -20,6 +20,7 @@ import (
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/trace"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/validation"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/authentication"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/schedule"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/tapmoney"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/transaction"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/usecase/transfer"
@@ -52,7 +53,10 @@ func initKrudApp(cfg *config.Configs) *krudApp {
 	userHandler := handler.NewUserHandler(validator, userUsecase)
 	transactionUsecase := transaction.NewUsecase(transactionRepo)
 	transactionHandler := handler.NewTransactionHandler(validator, transactionUsecase)
-	httpServer := server.NewHTTP(cfg, echoEcho, tracer, tapMoneyHandler, transferHandler, authenticationHandler, userHandler, transactionHandler)
+	scheduleRepo := repo.NewScheduleRepo(db)
+	scheduleUsecase := schedule.NewUsecase(scheduleRepo)
+	scheduleHandler := handler.NewScheduleHandler(validator, scheduleUsecase)
+	httpServer := server.NewHTTP(cfg, echoEcho, tracer, tapMoneyHandler, transferHandler, authenticationHandler, userHandler, transactionHandler, scheduleHandler)
 	mainKrudApp := newKrudApp(httpServer, db, redisClient, tracer)
 	return mainKrudApp
 }

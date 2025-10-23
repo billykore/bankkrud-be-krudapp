@@ -25,6 +25,7 @@ type HTTPServer struct {
 	ah     *handler.AuthenticationHandler
 	uh     *handler.UserHandler
 	txh    *handler.TransactionHandler
+	sh     *handler.ScheduleHandler
 }
 
 // NewHTTP returns new Router.
@@ -37,6 +38,7 @@ func NewHTTP(
 	ah *handler.AuthenticationHandler,
 	uh *handler.UserHandler,
 	txh *handler.TransactionHandler,
+	sh *handler.ScheduleHandler,
 ) *HTTPServer {
 	return &HTTPServer{
 		cfg:    cfg,
@@ -47,6 +49,7 @@ func NewHTTP(
 		ah:     ah,
 		uh:     uh,
 		txh:    txh,
+		sh:     sh,
 	}
 }
 

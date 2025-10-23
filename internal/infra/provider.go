@@ -5,6 +5,7 @@ import (
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/account"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/cbs"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/payment"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/schedule"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/transaction"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/transfer"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/user"
@@ -22,11 +23,13 @@ var ProviderSet = wire.NewSet(
 	api.NewPaymentGateway, wire.Bind(new(payment.Service), new(*api.PaymentGateway)),
 	repo.NewTransactionRepo, wire.Bind(new(transaction.Repository), new(*repo.TransactionRepo)),
 	repo.NewUserRepo, wire.Bind(new(user.Repository), new(*repo.UserRepo)),
+	repo.NewScheduleRepo, wire.Bind(new(schedule.Repository), new(*repo.ScheduleRepo)),
 	service.NewAuthService, wire.Bind(new(user.AuthService), new(*service.AuthService)),
 	handler.NewTransferHandler,
 	handler.NewTapMoneyHandler,
 	handler.NewAuthenticationHandler,
 	handler.NewUserHandler,
 	handler.NewTransactionHandler,
+	handler.NewScheduleHandler,
 	server.NewHTTP,
 )

@@ -16,6 +16,7 @@ var tagMessages = map[string]string{
 	"lte":         "%s must be less than or equal to %s",
 	"phonenumber": "%s is not a valid phone number",
 	"only":        "%s must contain only: %s",
+	"oneof":       "%s must contain only one of: %s",
 }
 
 func (v *Validator) JSONTagFunc() {

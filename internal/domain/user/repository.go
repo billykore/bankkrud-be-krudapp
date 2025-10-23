@@ -18,7 +18,7 @@ var (
 
 // Repository defines the interface for user data persistence.
 type Repository interface {
-	// CreateUser creates a new user.
+	// Create creates a new user.
 	Create(ctx context.Context, user User) error
 
 	// GetByUsername retrieves a user by their username.

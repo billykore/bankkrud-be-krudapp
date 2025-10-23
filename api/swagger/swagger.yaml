@@ -23,6 +23,36 @@ definitions:
       title:
         type: string
     type: object
+  schedule.CreateScheduleRequest:
+    properties:
+      amount:
+        type: integer
+      destination_number:
+        type: string
+      name:
+        type: string
+      period:
+        type: string
+      source_account:
+        type: string
+      transaction_type:
+        type: string
+      username:
+        type: string
+    type: object
+  schedule.UpdateScheduleStatusRequest:
+    properties:
+      status:
+        enum:
+        - active
+        - inactive
+        type: string
+      uuid:
+        type: string
+    required:
+    - status
+    - uuid
+    type: object
   tapmoney.InitiateRequest:
     properties:
       amount:
@@ -137,7 +167,7 @@ info:
     email: billyimmcul2010@gmail.com
     name: Billy Kore
     url: https://www.swagger.io/support
-  description: Bankfrud service API specification.
+  description: Bankkrud service API specification.
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
@@ -179,6 +209,208 @@ paths:
       summary: User login
       tags:
       - authentication
+  /schedules:
+    get:
+      consumes:
+      - application/json
+      description: Get list of schedules for the authenticated user
+      parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Transaction type
+        in: query
+        name: transaction_type
+        type: string
+      - description: Schedule status
+        in: query
+        name: status
+        type: string
+      - description: Limit number of schedules to return
+        in: query
+        name: limit
+        type: integer
+      - description: Offset for pagination
+        in: query
+        name: offset
+        type: integer
+      - description: Transaction UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get schedules
+      tags:
+      - schedule
+    post:
+      consumes:
+      - application/json
+      description: Create a new schedule for the authenticated user
+      parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Schedule to create
+        in: body
+        name: CreateScheduleRequest
+        required: true
+        schema:
+          $ref: '#/definitions/schedule.CreateScheduleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Create a new schedule
+      tags:
+      - schedule
+  /schedules/{uuid}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a schedule by its UUID
+      parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Schedule UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Delete schedule by UUID
+      tags:
+      - schedule
+    get:
+      consumes:
+      - application/json
+      description: Get schedule by UUID
+      parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Schedule UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get schedule by UUID
+      tags:
+      - schedule
+    patch:
+      consumes:
+      - application/json
+      description: Activate or deactivate a schedule
+      parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: UUID of schedule to update
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: Status body
+        in: body
+        name: UpdateScheduleStatusRequest
+        required: true
+        schema:
+          $ref: '#/definitions/schedule.UpdateScheduleStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Update a schedule status
+      tags:
+      - schedule
   /tapmoney/{uuid}/process:
     post:
       consumes:

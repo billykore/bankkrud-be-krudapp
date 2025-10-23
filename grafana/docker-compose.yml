@@ -24,10 +24,19 @@ services:
       - grafana-network
   prometheus:
     container_name: grafana-prometheus
-    image: prom/prometheus:v2.47.0
+    image: prom/prometheus:v3.7.2
+    environment:
+      - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+      - OTEL_EXPORTER_OTLP_METRICS_ENDPOINT=http://localhost:9090/api/v1/otlp/v1/metrics
+      - OTEL_TRACES_EXPORTER=none
+      - OTEL_LOGS_EXPORTER=none
+      - OTEL_METRIC_EXPORT_INTERVAL=15000
+    volumes:
+      - ${BANKKRUD_BE_KRUDAPP_PATH}/grafana/prometheus.yml:/etc/prometheus/prometheus.yml
     command:
-      - --web.enable-remote-write-receiver
       - --config.file=/etc/prometheus/prometheus.yml
+      - --web.enable-remote-write-receiver
+      - --web.enable-otlp-receiver
     ports:
       - "9090:9090"
     networks:
@@ -70,3 +79,7 @@ services:
       - "3000:3000"
     networks:
       - grafana-network
+
+networks:
+  grafana-network:
+    driver: bridge

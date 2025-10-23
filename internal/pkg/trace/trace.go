@@ -3,13 +3,12 @@ package trace
 import (
 	"context"
 	"errors"
-	"time"
 
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/config"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploghttp"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
-	"go.opentelemetry.io/otel/exporters/stdout/stdoutmetric"
+	"go.opentelemetry.io/otel/exporters/prometheus"
 	"go.opentelemetry.io/otel/log/global"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/log"
@@ -94,7 +93,7 @@ func setupOTelSDK(ctx context.Context, cfg *config.Configs) (func(context.Contex
 	otel.SetTracerProvider(tracerProvider)
 
 	// Set up meter provider.
-	meterProvider, err := newMeterProvider(cfg.Tracing.MetricReaderInterval)
+	meterProvider, err := newMeterProvider(cfg.App.Name)
 	if err != nil {
 		handleErr(err)
 		return shutdown, err
@@ -150,17 +149,19 @@ func newTracerProvider(ctx context.Context, serviceName string, serviceVersion s
 	), nil
 }
 
-func newMeterProvider(metricReaderInterval time.Duration) (*metric.MeterProvider, error) {
-	metricExporter, err := stdoutmetric.New()
+func newMeterProvider(appName string) (*metric.MeterProvider, error) {
+	metricExporter, err := prometheus.New()
 	if err != nil {
 		return nil, err
 	}
-
 	meterProvider := metric.NewMeterProvider(
-		metric.WithReader(metric.NewPeriodicReader(metricExporter,
-			// Default is 1m. Set to 3s for demonstrative purposes.
-			metric.WithInterval(metricReaderInterval))),
+		metric.WithReader(metricExporter),
+		metric.WithResource(resource.NewWithAttributes(
+			semconv.SchemaURL,
+			semconv.ServiceName(appName),
+		)),
 	)
+	meterProvider.Meter(appName)
 	return meterProvider, nil
 }
 

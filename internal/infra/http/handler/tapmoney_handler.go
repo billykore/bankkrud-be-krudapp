@@ -50,7 +50,7 @@ func (h *TapMoneyHandler) Initiate(ctx echo.Context) error {
 	return ctx.JSON(response.Success(resp))
 }
 
-// Payment swaggo annotation.
+// Process swaggo annotation.
 //
 //	@Summary		Process TapMoney transaction
 //	@Description	Process TapMoney transaction
