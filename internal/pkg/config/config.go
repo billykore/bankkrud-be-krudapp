@@ -35,7 +35,7 @@ type Config struct {
 // Load loads application configuration from a YAML file using Viper.
 func Load() *Configs {
 	viper.SetConfigName("configs")
-	viper.SetConfigType("yaml")
+	viper.SetConfigType("yml")
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("..")
 

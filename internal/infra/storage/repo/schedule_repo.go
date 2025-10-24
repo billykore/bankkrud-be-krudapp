@@ -6,6 +6,7 @@ import (
 
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/schedule"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/infra/storage/model"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/cron"
 	"gorm.io/gorm"
 )
 
@@ -47,6 +48,8 @@ func (r *ScheduleRepo) GetAll(ctx context.Context, query schedule.Query) ([]sche
 			Amount:            s.Amount,
 			Period:            s.Period,
 			Status:            s.Status,
+			Day:               cron.GetWeekday(s.CronExpression),
+			Date:              cron.GetDate(s.CronExpression),
 		})
 	}
 	return schedules, nil
@@ -73,6 +76,8 @@ func (r *ScheduleRepo) GetByUUID(ctx context.Context, uuid string) (schedule.Sch
 		Amount:            m.Amount,
 		Period:            m.Period,
 		Status:            m.Status,
+		Day:               cron.GetWeekday(m.CronExpression),
+		Date:              cron.GetDate(m.CronExpression),
 	}, nil
 }
 
