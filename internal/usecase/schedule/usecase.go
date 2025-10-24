@@ -114,6 +114,8 @@ func (uc *Usecase) CreateSchedule(ctx context.Context, req *CreateScheduleReques
 		Amount:            req.Amount,
 		Period:            req.Period,
 		Status:            schedule.StatusActive,
+		Day:               req.Day,
+		Date:              req.Date,
 	}
 
 	err = uc.scheduleRepo.Create(ctx, s)

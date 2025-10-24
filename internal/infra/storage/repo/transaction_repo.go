@@ -19,9 +19,9 @@ func NewTransactionRepo(db *gorm.DB) *TransactionRepo {
 	}
 }
 
-func (r *TransactionRepo) GetByUUID(ctx context.Context, tfuuid string) (transaction.Transaction, error) {
+func (r *TransactionRepo) GetByUUID(ctx context.Context, tfUUID string) (transaction.Transaction, error) {
 	var m model.Transaction
-	id, err := uuid.Parse(tfuuid)
+	id, err := uuid.Parse(tfUUID)
 	if err != nil {
 		return transaction.Transaction{}, err
 	}

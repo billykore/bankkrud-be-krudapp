@@ -34,6 +34,8 @@ type CreateScheduleRequest struct {
 	DestinationNumber string `json:"destination_number"`
 	Amount            int64  `json:"amount"`
 	Period            string `json:"period"`
+	Day               string `json:"day"`
+	Date              int    `json:"date"`
 }
 
 type CreateScheduleResponse struct {
