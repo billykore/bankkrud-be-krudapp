@@ -81,18 +81,27 @@ func (r *ScheduleRepo) GetByUUID(ctx context.Context, uuid string) (schedule.Sch
 	}, nil
 }
 
-func (r *ScheduleRepo) Create(ctx context.Context, schedule schedule.Schedule) error {
+func (r *ScheduleRepo) Create(ctx context.Context, entity schedule.Schedule) error {
+	var cronExpr string
+	switch entity.Period {
+	case schedule.DailyPeriod:
+		cronExpr = cron.DailyExpression()
+	case schedule.WeeklyPeriod:
+		cronExpr = cron.WeeklyExpression(entity.Day)
+	case schedule.MonthlyPeriod:
+		cronExpr = cron.MonthlyExpression(entity.Date)
+	}
 	res := r.db.WithContext(ctx).Create(&model.Schedule{
-		UUID:              schedule.UUID,
-		Username:          schedule.Username,
-		Name:              schedule.Name,
-		TransactionType:   schedule.TransactionType,
-		SourceAccount:     schedule.SourceAccount,
-		DestinationNumber: schedule.DestinationNumber,
-		Amount:            schedule.Amount,
-		Period:            schedule.Period,
-		Status:            schedule.Status,
-		CronExpression:    "",
+		UUID:              entity.UUID,
+		Username:          entity.Username,
+		Name:              entity.Name,
+		TransactionType:   entity.TransactionType,
+		SourceAccount:     entity.SourceAccount,
+		DestinationNumber: entity.DestinationNumber,
+		Amount:            entity.Amount,
+		Period:            entity.Period,
+		Status:            entity.Status,
+		CronExpression:    cronExpr,
 	})
 	return res.Error
 }

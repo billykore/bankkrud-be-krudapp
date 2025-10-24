@@ -36,4 +36,4 @@ configs.yaml
 coverage.out
 
 # Logs
-logs
+.logs
