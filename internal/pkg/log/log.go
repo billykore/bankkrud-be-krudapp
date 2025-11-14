@@ -18,7 +18,7 @@ func Configure(env string) {
 	// Add stack trace hook
 	log.Logger = log.Logger.Hook(StackHook{})
 	// Add output hook
-	logfile, err := os.OpenFile("./logs/app.log", os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
+	logfile, err := os.OpenFile("./.logs/app.log", os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to open log file")
 	}
