@@ -11,6 +11,7 @@ import (
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/cbs"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/transaction"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/transfer"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/user"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/log"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/pkgerror"
 )
@@ -200,6 +201,13 @@ func TestInitiate_GetDestinationAccountFailed(t *testing.T) {
 
 func TestInitiate_CreateTransactionFailed(t *testing.T) {
 	var (
+		ctx = context.WithValue(context.Background(), user.ContextKey, user.User{
+			Username:    "johndoe",
+			Email:       "johndoe@example.com",
+			PhoneNumber: "1234567890",
+			FirstName:   "John",
+			LastName:    "Doe",
+		})
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
 		accountRepo = account.NewMockRepository(t)
@@ -235,7 +243,7 @@ func TestInitiate_CreateTransactionFailed(t *testing.T) {
 	txRepo.EXPECT().Create(mock.Anything, mock.Anything).
 		Return(errors.New("mock error"))
 
-	res, err := uc.Initiate(context.Background(), &InitiateRequest{
+	res, err := uc.Initiate(ctx, &InitiateRequest{
 		SourceAccount:      "123",
 		DestinationAccount: "456",
 		Amount:             10000,
@@ -252,6 +260,13 @@ func TestInitiate_CreateTransactionFailed(t *testing.T) {
 
 func TestInitiate_Success(t *testing.T) {
 	var (
+		ctx = context.WithValue(context.Background(), user.ContextKey, user.User{
+			Username:    "johndoe",
+			Email:       "johndoe@example.com",
+			PhoneNumber: "1234567890",
+			FirstName:   "John",
+			LastName:    "Doe",
+		})
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
 		accountRepo = account.NewMockRepository(t)
@@ -287,7 +302,7 @@ func TestInitiate_Success(t *testing.T) {
 	txRepo.EXPECT().Create(mock.Anything, mock.Anything).
 		Return(nil)
 
-	res, err := uc.Initiate(context.Background(), &InitiateRequest{
+	res, err := uc.Initiate(ctx, &InitiateRequest{
 		SourceAccount:      "123",
 		DestinationAccount: "456",
 		Amount:             10000,
@@ -296,7 +311,7 @@ func TestInitiate_Success(t *testing.T) {
 	assert.NotNil(t, res)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, res.UUID)
-	assert.Equal(t, "inq-success", res.Status)
+	assert.Equal(t, "initiated", res.Status)
 
 	cbsService.AssertExpectations(t)
 	txRepo.AssertExpectations(t)
@@ -404,7 +419,7 @@ func TestProcess_GetTransactionFailed(t *testing.T) {
 	accountRepo.AssertExpectations(t)
 }
 
-func TestProcess_TransactionStatusNotInquirySuccess(t *testing.T) {
+func TestProcess_TransactionStatusNotInitiated(t *testing.T) {
 	var (
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
@@ -468,7 +483,7 @@ func TestProcess_TransferFailed(t *testing.T) {
 	txRepo.EXPECT().GetByUUID(mock.Anything, "tx-123").
 		Return(transaction.Transaction{
 			UUID:               "tx-123",
-			Status:             transaction.StatusCompleted,
+			Status:             transaction.StatusInitiated,
 			SourceAccount:      "123",
 			DestinationAccount: "456",
 		}, nil)
@@ -519,7 +534,7 @@ func TestProcess_UpdateTransactionFailed(t *testing.T) {
 	txRepo.EXPECT().GetByUUID(mock.Anything, "tx-123").
 		Return(transaction.Transaction{
 			UUID:               "tx-123",
-			Status:             transaction.StatusCompleted,
+			Status:             transaction.StatusInitiated,
 			SourceAccount:      "121",
 			DestinationAccount: "454",
 		}, nil)
@@ -576,7 +591,7 @@ func TestProcess_Success(t *testing.T) {
 	txRepo.EXPECT().GetByUUID(mock.Anything, "tx-123").
 		Return(transaction.Transaction{
 			UUID:               "tx-123",
-			Status:             transaction.StatusCompleted,
+			Status:             transaction.StatusInitiated,
 			SourceAccount:      "121",
 			DestinationAccount: "454",
 		}, nil)
@@ -605,7 +620,7 @@ func TestProcess_Success(t *testing.T) {
 	assert.NotNil(t, res)
 	assert.NoError(t, err)
 	assert.Equal(t, "tx-123", res.UUID)
-	assert.Equal(t, "success", res.Status)
+	assert.Equal(t, "completed", res.Status)
 
 	cbsService.AssertExpectations(t)
 	txRepo.AssertExpectations(t)

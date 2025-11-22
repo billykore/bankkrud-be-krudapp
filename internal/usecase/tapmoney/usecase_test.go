@@ -11,12 +11,20 @@ import (
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/cbs"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/payment"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/transaction"
+	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/user"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/log"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/pkg/pkgerror"
 )
 
 func TestInitiate_Success(t *testing.T) {
 	var (
+		ctx = context.WithValue(context.Background(), user.ContextKey, user.User{
+			Username:    "johndoe",
+			Email:       "johndoe@example.com",
+			PhoneNumber: "1234567890",
+			FirstName:   "John",
+			LastName:    "Doe",
+		})
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
 		paymentSvc  = payment.NewMockService(t)
@@ -42,7 +50,7 @@ func TestInitiate_Success(t *testing.T) {
 	txRepo.EXPECT().Create(mock.Anything, mock.Anything).
 		Return(nil)
 
-	resp, err := uc.Initiate(context.Background(), &InitiateRequest{
+	resp, err := uc.Initiate(ctx, &InitiateRequest{
 		CardNumber:    "6013501000500719",
 		SourceAccount: "123",
 		Amount:        10000,
@@ -50,7 +58,7 @@ func TestInitiate_Success(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)
-	assert.Equal(t, "inq-success", resp.Status)
+	assert.Equal(t, "initiated", resp.Status)
 
 	t.Log(resp)
 
@@ -62,6 +70,13 @@ func TestInitiate_Success(t *testing.T) {
 
 func TestInitiate_GetCbsFailed(t *testing.T) {
 	var (
+		ctx = context.WithValue(context.Background(), user.ContextKey, user.User{
+			Username:    "johndoe",
+			Email:       "johndoe@example.com",
+			PhoneNumber: "1234567890",
+			FirstName:   "John",
+			LastName:    "Doe",
+		})
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
 		paymentSvc  = payment.NewMockService(t)
@@ -74,7 +89,7 @@ func TestInitiate_GetCbsFailed(t *testing.T) {
 	cbsService.EXPECT().GetStatus(mock.Anything).
 		Return(cbs.Status{}, errors.New("get cbs status failed"))
 
-	resp, err := uc.Initiate(context.Background(), &InitiateRequest{
+	resp, err := uc.Initiate(ctx, &InitiateRequest{
 		CardNumber:    "6013501000500719",
 		SourceAccount: "123",
 		Amount:        10000,
@@ -90,6 +105,13 @@ func TestInitiate_GetCbsFailed(t *testing.T) {
 
 func TestInitiate_CbsNotReady(t *testing.T) {
 	var (
+		ctx = context.WithValue(context.Background(), user.ContextKey, user.User{
+			Username:    "johndoe",
+			Email:       "johndoe@example.com",
+			PhoneNumber: "1234567890",
+			FirstName:   "John",
+			LastName:    "Doe",
+		})
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
 		paymentSvc  = payment.NewMockService(t)
@@ -106,7 +128,7 @@ func TestInitiate_CbsNotReady(t *testing.T) {
 			IsStandIn:  false,
 		}, nil)
 
-	resp, err := uc.Initiate(context.Background(), &InitiateRequest{
+	resp, err := uc.Initiate(ctx, &InitiateRequest{
 		CardNumber:    "6013501000500719",
 		SourceAccount: "123",
 		Amount:        10000,
@@ -122,6 +144,13 @@ func TestInitiate_CbsNotReady(t *testing.T) {
 
 func TestInitiate_GetAccountFailed(t *testing.T) {
 	var (
+		ctx = context.WithValue(context.Background(), user.ContextKey, user.User{
+			Username:    "johndoe",
+			Email:       "johndoe@example.com",
+			PhoneNumber: "1234567890",
+			FirstName:   "John",
+			LastName:    "Doe",
+		})
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
 		paymentSvc  = payment.NewMockService(t)
@@ -139,7 +168,7 @@ func TestInitiate_GetAccountFailed(t *testing.T) {
 	accountRepo.EXPECT().Get(mock.Anything, mock.Anything).
 		Return(account.Account{}, errors.New("account not found"))
 
-	resp, err := uc.Initiate(context.Background(), &InitiateRequest{
+	resp, err := uc.Initiate(ctx, &InitiateRequest{
 		CardNumber:    "6013501000500719",
 		SourceAccount: "123",
 		Amount:        10000,
@@ -157,6 +186,13 @@ func TestInitiate_GetAccountFailed(t *testing.T) {
 
 func TestInitiate_AccountInsufficientBalance(t *testing.T) {
 	var (
+		ctx = context.WithValue(context.Background(), user.ContextKey, user.User{
+			Username:    "johndoe",
+			Email:       "johndoe@example.com",
+			PhoneNumber: "1234567890",
+			FirstName:   "John",
+			LastName:    "Doe",
+		})
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
 		paymentSvc  = payment.NewMockService(t)
@@ -176,7 +212,7 @@ func TestInitiate_AccountInsufficientBalance(t *testing.T) {
 			AccountNumber: "123",
 		}, nil)
 
-	resp, err := uc.Initiate(context.Background(), &InitiateRequest{
+	resp, err := uc.Initiate(ctx, &InitiateRequest{
 		CardNumber:    "6013501000500719",
 		SourceAccount: "321",
 		Amount:        10000,
@@ -194,6 +230,13 @@ func TestInitiate_AccountInsufficientBalance(t *testing.T) {
 
 func TestInitiate_FailedToInitiatePayment(t *testing.T) {
 	var (
+		ctx = context.WithValue(context.Background(), user.ContextKey, user.User{
+			Username:    "johndoe",
+			Email:       "johndoe@example.com",
+			PhoneNumber: "1234567890",
+			FirstName:   "John",
+			LastName:    "Doe",
+		})
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
 		paymentSvc  = payment.NewMockService(t)
@@ -217,7 +260,7 @@ func TestInitiate_FailedToInitiatePayment(t *testing.T) {
 	paymentSvc.EXPECT().Inquiry(mock.Anything, mock.Anything, mock.Anything).
 		Return(payment.Payment{}, errors.New("Initiate failed"))
 
-	resp, err := uc.Initiate(context.Background(), &InitiateRequest{
+	resp, err := uc.Initiate(ctx, &InitiateRequest{
 		CardNumber:    "6013501000500719",
 		SourceAccount: "321",
 		Amount:        10000,
@@ -235,6 +278,13 @@ func TestInitiate_FailedToInitiatePayment(t *testing.T) {
 
 func TestInitiate_FailedCreateTransaction(t *testing.T) {
 	var (
+		ctx = context.WithValue(context.Background(), user.ContextKey, user.User{
+			Username:    "johndoe",
+			Email:       "johndoe@example.com",
+			PhoneNumber: "1234567890",
+			FirstName:   "John",
+			LastName:    "Doe",
+		})
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
 		paymentSvc  = payment.NewMockService(t)
@@ -260,7 +310,7 @@ func TestInitiate_FailedCreateTransaction(t *testing.T) {
 	txRepo.EXPECT().Create(mock.Anything, mock.Anything).
 		Return(errors.New("failed to create transaction"))
 
-	resp, err := uc.Initiate(context.Background(), &InitiateRequest{
+	resp, err := uc.Initiate(ctx, &InitiateRequest{
 		CardNumber:    "6013501000500719",
 		SourceAccount: "123",
 		Amount:        10000,
@@ -278,6 +328,13 @@ func TestInitiate_FailedCreateTransaction(t *testing.T) {
 
 func TestPayment_Success(t *testing.T) {
 	var (
+		ctx = context.WithValue(context.Background(), user.ContextKey, user.User{
+			Username:    "johndoe",
+			Email:       "johndoe@example.com",
+			PhoneNumber: "1234567890",
+			FirstName:   "John",
+			LastName:    "Doe",
+		})
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
 		paymentSvc  = payment.NewMockService(t)
@@ -297,7 +354,7 @@ func TestPayment_Success(t *testing.T) {
 			SourceAccount:      "001201001479315",
 			DestinationAccount: "6013501000500719",
 			Amount:             10000,
-			Status:             "pending",
+			Status:             "initiated",
 			Note:               "test",
 			Fee:                1500,
 		}, nil)
@@ -313,7 +370,7 @@ func TestPayment_Success(t *testing.T) {
 	txRepo.EXPECT().Update(mock.Anything, mock.Anything).
 		Return(nil)
 
-	resp, err := uc.Process(context.Background(), &ProcessRequest{
+	resp, err := uc.Process(ctx, &ProcessRequest{
 		UUID:   "trx-123",
 		Amount: 10000,
 		Notes:  "test",
@@ -323,7 +380,7 @@ func TestPayment_Success(t *testing.T) {
 	assert.NotNil(t, resp)
 	assert.Equal(t, "6013501000500719", resp.CardNumber)
 	assert.Equal(t, "trx-123", resp.UUID)
-	assert.Equal(t, "inq-success", resp.Status)
+	assert.Equal(t, "completed", resp.Status)
 	assert.Equal(t, "Payment successful", resp.Message)
 	assert.Equal(t, int64(10000), resp.Amount)
 	assert.Equal(t, int64(1500), resp.Fee)
@@ -339,6 +396,13 @@ func TestPayment_Success(t *testing.T) {
 
 func TestPayment_GetCbsFailed(t *testing.T) {
 	var (
+		ctx = context.WithValue(context.Background(), user.ContextKey, user.User{
+			Username:    "johndoe",
+			Email:       "johndoe@example.com",
+			PhoneNumber: "1234567890",
+			FirstName:   "John",
+			LastName:    "Doe",
+		})
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
 		paymentSvc  = payment.NewMockService(t)
@@ -351,7 +415,7 @@ func TestPayment_GetCbsFailed(t *testing.T) {
 	cbsService.EXPECT().GetStatus(mock.Anything).
 		Return(cbs.Status{}, errors.New("get cbs status failed"))
 
-	resp, err := uc.Process(context.Background(), &ProcessRequest{
+	resp, err := uc.Process(ctx, &ProcessRequest{
 		UUID:   "trx-123",
 		Amount: 10000,
 		Notes:  "test",
@@ -367,6 +431,13 @@ func TestPayment_GetCbsFailed(t *testing.T) {
 
 func TestPayment_CbsNotReady(t *testing.T) {
 	var (
+		ctx = context.WithValue(context.Background(), user.ContextKey, user.User{
+			Username:    "johndoe",
+			Email:       "johndoe@example.com",
+			PhoneNumber: "1234567890",
+			FirstName:   "John",
+			LastName:    "Doe",
+		})
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
 		paymentSvc  = payment.NewMockService(t)
@@ -383,7 +454,7 @@ func TestPayment_CbsNotReady(t *testing.T) {
 			IsStandIn:  false,
 		}, nil)
 
-	resp, err := uc.Process(context.Background(), &ProcessRequest{
+	resp, err := uc.Process(ctx, &ProcessRequest{
 		UUID:   "trx-123",
 		Amount: 10000,
 		Notes:  "test",
@@ -399,6 +470,13 @@ func TestPayment_CbsNotReady(t *testing.T) {
 
 func TestPayment_TransactionNotFound(t *testing.T) {
 	var (
+		ctx = context.WithValue(context.Background(), user.ContextKey, user.User{
+			Username:    "johndoe",
+			Email:       "johndoe@example.com",
+			PhoneNumber: "1234567890",
+			FirstName:   "John",
+			LastName:    "Doe",
+		})
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
 		paymentSvc  = payment.NewMockService(t)
@@ -415,7 +493,7 @@ func TestPayment_TransactionNotFound(t *testing.T) {
 	txRepo.EXPECT().GetByUUID(mock.Anything, mock.Anything).
 		Return(transaction.Transaction{}, errors.New("transaction not found"))
 
-	resp, err := uc.Process(context.Background(), &ProcessRequest{
+	resp, err := uc.Process(ctx, &ProcessRequest{
 		UUID:   "trx-123",
 		Amount: 10000,
 		Notes:  "test",
@@ -433,6 +511,13 @@ func TestPayment_TransactionNotFound(t *testing.T) {
 
 func TestPayment_TransactionAlreadyProcessed(t *testing.T) {
 	var (
+		ctx = context.WithValue(context.Background(), user.ContextKey, user.User{
+			Username:    "johndoe",
+			Email:       "johndoe@example.com",
+			PhoneNumber: "1234567890",
+			FirstName:   "John",
+			LastName:    "Doe",
+		})
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
 		paymentSvc  = payment.NewMockService(t)
@@ -457,7 +542,7 @@ func TestPayment_TransactionAlreadyProcessed(t *testing.T) {
 			Fee:                1500,
 		}, nil)
 
-	resp, err := uc.Process(context.Background(), &ProcessRequest{
+	resp, err := uc.Process(ctx, &ProcessRequest{
 		UUID:   "trx-123",
 		Amount: 10000,
 		Notes:  "test",
@@ -475,6 +560,13 @@ func TestPayment_TransactionAlreadyProcessed(t *testing.T) {
 
 func TestPayment_FailedToGetSourceAccount(t *testing.T) {
 	var (
+		ctx = context.WithValue(context.Background(), user.ContextKey, user.User{
+			Username:    "johndoe",
+			Email:       "johndoe@example.com",
+			PhoneNumber: "1234567890",
+			FirstName:   "John",
+			LastName:    "Doe",
+		})
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
 		paymentSvc  = payment.NewMockService(t)
@@ -495,7 +587,7 @@ func TestPayment_FailedToGetSourceAccount(t *testing.T) {
 			SourceAccount:      "001201001479315",
 			DestinationAccount: "6013501000500719",
 			Amount:             10000,
-			Status:             "pending",
+			Status:             "initiated",
 			Note:               "test",
 			Fee:                1500,
 		}, nil)
@@ -503,7 +595,7 @@ func TestPayment_FailedToGetSourceAccount(t *testing.T) {
 	accountRepo.EXPECT().Get(mock.Anything, mock.Anything).
 		Return(account.Account{}, errors.New("account not found"))
 
-	resp, err := uc.Process(context.Background(), &ProcessRequest{
+	resp, err := uc.Process(ctx, &ProcessRequest{
 		UUID:   "trx-123",
 		Amount: 10000,
 		Notes:  "test",
@@ -521,6 +613,13 @@ func TestPayment_FailedToGetSourceAccount(t *testing.T) {
 
 func TestPayment_InsufficientBalance(t *testing.T) {
 	var (
+		ctx = context.WithValue(context.Background(), user.ContextKey, user.User{
+			Username:    "johndoe",
+			Email:       "johndoe@example.com",
+			PhoneNumber: "1234567890",
+			FirstName:   "John",
+			LastName:    "Doe",
+		})
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
 		paymentSvc  = payment.NewMockService(t)
@@ -541,7 +640,7 @@ func TestPayment_InsufficientBalance(t *testing.T) {
 			SourceAccount:      "001201001479315",
 			DestinationAccount: "6013501000500719",
 			Amount:             10000,
-			Status:             "pending",
+			Status:             "initiated",
 			Note:               "test",
 			Fee:                1500,
 		}, nil)
@@ -552,7 +651,7 @@ func TestPayment_InsufficientBalance(t *testing.T) {
 			AccountNumber: "001201001479315",
 		}, nil)
 
-	resp, err := uc.Process(context.Background(), &ProcessRequest{
+	resp, err := uc.Process(ctx, &ProcessRequest{
 		UUID:   "trx-123",
 		Amount: 10000,
 		Notes:  "test",
@@ -570,6 +669,13 @@ func TestPayment_InsufficientBalance(t *testing.T) {
 
 func TestPayment_FailedToProcessPayment(t *testing.T) {
 	var (
+		ctx = context.WithValue(context.Background(), user.ContextKey, user.User{
+			Username:    "johndoe",
+			Email:       "johndoe@example.com",
+			PhoneNumber: "1234567890",
+			FirstName:   "John",
+			LastName:    "Doe",
+		})
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
 		paymentSvc  = payment.NewMockService(t)
@@ -590,7 +696,7 @@ func TestPayment_FailedToProcessPayment(t *testing.T) {
 			SourceAccount:      "001201001479315",
 			DestinationAccount: "6013501000500719",
 			Amount:             10000,
-			Status:             "pending",
+			Status:             "initiated",
 			Note:               "test",
 		}, nil)
 
@@ -603,7 +709,7 @@ func TestPayment_FailedToProcessPayment(t *testing.T) {
 	paymentSvc.EXPECT().Payment(mock.Anything, mock.Anything).
 		Return(payment.Payment{}, errors.New("payment failed"))
 
-	resp, err := uc.Process(context.Background(), &ProcessRequest{
+	resp, err := uc.Process(ctx, &ProcessRequest{
 		UUID:   "trx-123",
 		Amount: 10000,
 		Notes:  "test",
@@ -621,6 +727,13 @@ func TestPayment_FailedToProcessPayment(t *testing.T) {
 
 func TestPayment_FailedToUpdateTransaction(t *testing.T) {
 	var (
+		ctx = context.WithValue(context.Background(), user.ContextKey, user.User{
+			Username:    "johndoe",
+			Email:       "johndoe@example.com",
+			PhoneNumber: "1234567890",
+			FirstName:   "John",
+			LastName:    "Doe",
+		})
 		cbsService  = cbs.NewMockService(t)
 		txRepo      = transaction.NewMockRepository(t)
 		paymentSvc  = payment.NewMockService(t)
@@ -641,7 +754,7 @@ func TestPayment_FailedToUpdateTransaction(t *testing.T) {
 			SourceAccount:      "001201001479315",
 			DestinationAccount: "6013501000500719",
 			Amount:             10000,
-			Status:             "pending",
+			Status:             "initiated",
 			Note:               "test",
 			Fee:                1500,
 		}, nil)
@@ -660,7 +773,7 @@ func TestPayment_FailedToUpdateTransaction(t *testing.T) {
 	txRepo.EXPECT().Update(mock.Anything, mock.Anything).
 		Return(errors.New("failed to update transaction"))
 
-	resp, err := uc.Process(context.Background(), &ProcessRequest{
+	resp, err := uc.Process(ctx, &ProcessRequest{
 		UUID:   "trx-123",
 		Amount: 10000,
 		Notes:  "test",

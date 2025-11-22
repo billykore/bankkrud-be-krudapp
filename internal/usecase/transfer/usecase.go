@@ -134,7 +134,7 @@ func (uc *Usecase) Process(ctx context.Context, req *ProcessRequest) (*ProcessRe
 			Str("uuid", req.UUID).
 			Str("status", tx.Status).
 			Msg("Transaction is not in a valid state to be processed")
-		return nil, pkgerror.Conflict().SetMsg("Transaction is not in a valid state to be processed")
+		return nil, pkgerror.BadRequest().SetMsg("Transaction is not in a valid state to be processed")
 	}
 
 	res, err := uc.transferSvc.Transfer(

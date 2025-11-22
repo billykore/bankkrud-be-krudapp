@@ -82,7 +82,7 @@ func (uc *Usecase) Initiate(ctx context.Context, req *InitiateRequest) (*Initiat
 	})
 	if err != nil {
 		l.Error().Err(err).Msg("Inquiry to payment service failed")
-		return nil, pkgerror.BadRequest().SetMsg("Inquiry failed")
+		return nil, pkgerror.BadRequest().SetMsg("Initiate failed")
 	}
 
 	user, err := user.FromContext(ctx)
