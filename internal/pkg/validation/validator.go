@@ -50,16 +50,16 @@ func joinValidationErrors(validationErrors validator.ValidationErrors) error {
 // validationMessage formats and returns error messages based on the field validation error type.
 func validationMessage(fe validator.FieldError) string {
 	if messageTemplate, exists := tagMessages[fe.Tag()]; exists {
-		return formatMessage(messageTemplate, fe.Field(), fe.Param())
+		return formatMessage(messageTemplate, fe.Param())
 	}
-	return formatMessage("%s format is invalid", fe.Field())
+	return formatMessage("the format is invalid")
 }
 
 // formatMessage is a helper function to format messages with parameters.
-func formatMessage(template, field string, param ...string) string {
+func formatMessage(template string, param ...string) string {
 	if len(param) > 0 && param[0] != "" {
 		param[0] = strings.ReplaceAll(param[0], " ", ", ")
-		return fmt.Sprintf(template, field, param[0])
+		return fmt.Sprintf(template, param[0])
 	}
-	return fmt.Sprintf(template, field)
+	return fmt.Sprintf(template, param)
 }

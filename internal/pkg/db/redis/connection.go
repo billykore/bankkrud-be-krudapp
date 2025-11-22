@@ -13,7 +13,3 @@ func New(cfg *config.Configs) *redis.Client {
 		DB:       cfg.Redis.DB,
 	})
 }
-
-func Close(client *redis.Client) error {
-	return client.Close()
-}

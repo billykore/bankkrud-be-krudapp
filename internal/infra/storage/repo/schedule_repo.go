@@ -23,8 +23,8 @@ func NewScheduleRepo(db *gorm.DB) *ScheduleRepo {
 func (r *ScheduleRepo) GetAll(ctx context.Context, query schedule.Query) ([]schedule.Schedule, error) {
 	m := make([]model.Schedule, 0, query.Limit)
 	res := r.db.WithContext(ctx).
-		Limit(query.Limit).
-		Offset(query.Offset)
+		Limit(query.Limit+1).
+		Where("id >= ?", query.StartID)
 	// apply query params
 	for k, v := range query.Filter {
 		if v != "" {
@@ -39,6 +39,7 @@ func (r *ScheduleRepo) GetAll(ctx context.Context, query schedule.Query) ([]sche
 	schedules := make([]schedule.Schedule, 0, query.Limit)
 	for _, s := range m {
 		schedules = append(schedules, schedule.Schedule{
+			ID:                int(s.ID),
 			UUID:              s.UUID,
 			Username:          s.Username,
 			Name:              s.Name,

@@ -10,10 +10,24 @@ import (
 
 // Response represents the response structure for HTTP responses.
 type Response struct {
-	Title  string `json:"title,omitempty"`
-	Detail string `json:"detail,omitempty"`
-	Data   any    `json:"data,omitempty"`
-	Errors error  `json:"errors,omitempty"`
+	Title      string      `json:"title,omitempty"`
+	Detail     string      `json:"detail,omitempty"`
+	Data       any         `json:"data,omitempty"`
+	Errors     error       `json:"errors,omitempty"`
+	Pagination *Pagination `json:"pagination,omitempty"`
+}
+
+func (r Response) SetPagination(pagination *Pagination) Response {
+	r.Pagination = pagination
+	return r
+}
+
+// Pagination represents pagination information in the response.
+
+type Pagination struct {
+	Limit   int `json:"limit,omitempty"`
+	StartID int `json:"start_id,omitempty"`
+	NextID  int `json:"next_id,omitempty"`
 }
 
 // Success returns status code 200 and success response with data.
@@ -38,6 +52,8 @@ func Error(err error) (int, Response) {
 			return BadRequest(err)
 		case codes.Conflict:
 			return Conflict(err)
+		default:
+			return InternalServerError(err)
 		}
 	}
 	return InternalServerError(err)

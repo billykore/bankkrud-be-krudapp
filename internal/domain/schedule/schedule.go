@@ -13,6 +13,7 @@ const (
 
 // Schedule represents a scheduled transaction.
 type Schedule struct {
+	ID                int
 	UUID              string
 	Username          string
 	Name              string

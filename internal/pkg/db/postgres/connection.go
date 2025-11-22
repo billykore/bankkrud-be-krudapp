@@ -17,6 +17,15 @@ func New(cfg *config.Configs) *gorm.DB {
 	if cfg.App.Env == "production" {
 		db.Logger = db.Logger.LogMode(logger.Silent)
 	}
+
+	sqlDB, err := db.DB()
+	if err != nil {
+		panic(err)
+	}
+	if err = sqlDB.Ping(); err != nil {
+		panic(err)
+	}
+
 	return db
 }
 

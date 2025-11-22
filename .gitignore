@@ -23,7 +23,7 @@ go.work.sum
 
 # env & configs file
 .env
-configs.yaml
+configs.yml
 
 # Goland
 .idea

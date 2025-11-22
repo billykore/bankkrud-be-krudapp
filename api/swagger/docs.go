@@ -117,8 +117,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "Offset for pagination",
-                        "name": "offset",
+                        "description": "Start id for pagination",
+                        "name": "startID",
                         "in": "query"
                     },
                     {
@@ -892,6 +892,12 @@ const docTemplate = `{
             "properties": {
                 "amount": {
                     "type": "integer"
+                },
+                "date": {
+                    "type": "integer"
+                },
+                "day": {
+                    "type": "string"
                 },
                 "destination_number": {
                     "type": "string"

@@ -16,8 +16,8 @@ type Filter map[string]string
 type Query struct {
 	// Limit specifies the maximum number of schedules to retrieve.
 	Limit int
-	// Offset specifies the starting point for retrieval.
-	Offset int
+	// StartID indicates the starting point for pagination.
+	StartID int
 	// Filter contains the filtering criteria.
 	Filter Filter
 }

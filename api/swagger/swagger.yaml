@@ -27,6 +27,10 @@ definitions:
     properties:
       amount:
         type: integer
+      date:
+        type: integer
+      day:
+        type: string
       destination_number:
         type: string
       name:
@@ -232,9 +236,9 @@ paths:
         in: query
         name: limit
         type: integer
-      - description: Offset for pagination
+      - description: Start id for pagination
         in: query
-        name: offset
+        name: startID
         type: integer
       - description: Transaction UUID
         in: path

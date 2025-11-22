@@ -13,7 +13,7 @@ const digits = "0123456789"
 // CBSAccountAPI is the core banking system service API for getting account information.
 type CBSAccountAPI struct{}
 
-// NewAccountAPI creates a new instance of the AccountAPI.
+// NewCBSAccountAPI creates a new instance of the AccountAPI.
 func NewCBSAccountAPI() *CBSAccountAPI {
 	return &CBSAccountAPI{}
 }

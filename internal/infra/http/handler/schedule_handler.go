@@ -30,7 +30,7 @@ func NewScheduleHandler(va *validation.Validator, uc *schedule.Usecase) *Schedul
 //	@Param			transaction_type	query		string	false	"Transaction type"
 //	@Param			status				query		string	false	"Schedule status"
 //	@Param			limit				query		integer	false	"Limit number of schedules to return"
-//	@Param			offset				query		integer	false	"Offset for pagination"
+//	@Param			startID				query		integer	false	"Start id for pagination"
 //	@Param			uuid				path		string	true	"Transaction UUID"
 //	@Success		200					{object}	response.Response
 //	@Failure		400					{object}	response.Response
@@ -51,7 +51,12 @@ func (h *ScheduleHandler) GetSchedules(ctx echo.Context) error {
 	if err != nil {
 		return ctx.JSON(response.Error(err))
 	}
-	return ctx.JSON(response.Success(resp))
+	code, res := response.Success(resp.Schedules)
+	return ctx.JSON(code, res.SetPagination(&response.Pagination{
+		Limit:   req.Limit,
+		StartID: req.StartID,
+		NextID:  resp.NextID,
+	}))
 }
 
 // GetSchedule swaggo annotation.

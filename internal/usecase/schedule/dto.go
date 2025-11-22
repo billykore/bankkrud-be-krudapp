@@ -1,11 +1,17 @@
 package schedule
 
 type GetSchedulesRequest struct {
-	Offset          int    `query:"offset"`
+	StartID         int    `query:"start_id"`
 	Limit           int    `query:"limit" json:"limit" validate:"omitempty,lte=50"`
 	TransactionType string `query:"transaction_type"`
 	Status          string `query:"status" json:"status" validate:"omitempty,oneof=active inactive"`
 	Period          string `query:"period" json:"period" validate:"omitempty,oneof=daily weekly monthly"`
+}
+
+type GetSchedulesResponse struct {
+	Schedules []*GetScheduleResponse
+	StartID   int
+	NextID    int
 }
 
 type GetScheduleByUUIDRequest struct {

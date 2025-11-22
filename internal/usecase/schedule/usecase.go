@@ -23,7 +23,7 @@ func NewUsecase(scheduleRepo schedule.Repository) *Usecase {
 	}
 }
 
-func (uc *Usecase) GetSchedules(ctx context.Context, req *GetSchedulesRequest) ([]*GetScheduleResponse, error) {
+func (uc *Usecase) GetSchedules(ctx context.Context, req *GetSchedulesRequest) (*GetSchedulesResponse, error) {
 	l := log.WithContext(ctx, "GetSchedules")
 
 	userFromCtx, err := user.FromContext(ctx)
@@ -33,8 +33,8 @@ func (uc *Usecase) GetSchedules(ctx context.Context, req *GetSchedulesRequest) (
 	}
 
 	schedules, err := uc.scheduleRepo.GetAll(ctx, schedule.Query{
-		Limit:  req.Limit,
-		Offset: req.Offset,
+		Limit:   req.Limit,
+		StartID: req.StartID,
 		Filter: schedule.Filter{
 			"username":         userFromCtx.Username,
 			"transaction_type": req.TransactionType,
@@ -48,7 +48,10 @@ func (uc *Usecase) GetSchedules(ctx context.Context, req *GetSchedulesRequest) (
 	}
 
 	resp := make([]*GetScheduleResponse, 0, req.Limit)
-	for _, s := range schedules {
+	for i, s := range schedules {
+		if i >= req.Limit {
+			break
+		}
 		resp = append(resp, &GetScheduleResponse{
 			UUID:              s.UUID,
 			Name:              s.Name,
@@ -64,7 +67,21 @@ func (uc *Usecase) GetSchedules(ctx context.Context, req *GetSchedulesRequest) (
 		})
 	}
 
-	return resp, nil
+	var nextID int
+	if len(schedules) > req.Limit {
+		nextID = schedules[len(schedules)-1].ID
+	}
+
+	startID := 0
+	if len(schedules) > 0 {
+		startID = schedules[0].ID
+	}
+
+	return &GetSchedulesResponse{
+		Schedules: resp,
+		StartID:   startID,
+		NextID:    nextID,
+	}, nil
 }
 
 func (uc *Usecase) GetScheduleByUUID(ctx context.Context, req *GetScheduleByUUIDRequest) (*GetScheduleResponse, error) {
