@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 echo "Run linter..."
-golangci-lint run --config .golangci.yml
+golangci-lint run --config=.golangci.yml --verbose
