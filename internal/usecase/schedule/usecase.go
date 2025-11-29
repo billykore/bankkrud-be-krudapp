@@ -3,7 +3,6 @@ package schedule
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/google/uuid"
 	"go.bankkrud.com/bankkrud/backend/krudapp/internal/domain/schedule"
@@ -156,7 +155,7 @@ func (uc *Usecase) UpdateScheduleStatus(ctx context.Context, req *UpdateSchedule
 	}
 
 	return &UpdateScheduleStatusResponse{
-		Message: fmt.Sprintf("Success update schedule status to %s", req.Status),
+		Message: "Success update schedule status to " + req.Status,
 	}, nil
 }
 
