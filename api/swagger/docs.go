@@ -874,6 +874,20 @@ const docTemplate = `{
                 }
             }
         },
+        "response.Pagination": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "next_id": {
+                    "type": "integer"
+                },
+                "start_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "response.Response": {
             "type": "object",
             "properties": {
@@ -882,6 +896,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "errors": {},
+                "pagination": {
+                    "$ref": "#/definitions/response.Pagination"
+                },
                 "title": {
                     "type": "string"
                 }

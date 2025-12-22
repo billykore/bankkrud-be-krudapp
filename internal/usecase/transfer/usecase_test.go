@@ -496,6 +496,8 @@ func TestProcess_TransferFailed(t *testing.T) {
 		"TRF 123 456 BNKKRD tx-123",
 	).Return(transfer.Transfer{}, errors.New("mock error"))
 
+	txRepo.EXPECT().Update(mock.Anything, mock.Anything).Return(nil)
+
 	res, err := uc.Process(context.Background(), &ProcessRequest{
 		UUID:               "tx-123",
 		SourceAccount:      "123",

@@ -69,6 +69,11 @@ test-coverage:
 	@./scripts/test_coverage.sh
 
 # Example:
-# make generate
-.PHONY: generate
-generate: generate-wire generate-swagger generate-mocks
+# make generate-all
+.PHONY: generate-all
+generate-all: generate-wire generate-swagger generate-mocks
+
+# Example:
+# make check
+.PHONY: check
+check: lint run-test test-coverage

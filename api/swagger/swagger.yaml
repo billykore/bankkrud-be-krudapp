@@ -14,12 +14,23 @@ definitions:
     - password
     - username
     type: object
+  response.Pagination:
+    properties:
+      limit:
+        type: integer
+      next_id:
+        type: integer
+      start_id:
+        type: integer
+    type: object
   response.Response:
     properties:
       data: {}
       detail:
         type: string
       errors: {}
+      pagination:
+        $ref: '#/definitions/response.Pagination'
       title:
         type: string
     type: object

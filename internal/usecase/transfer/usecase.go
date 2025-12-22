@@ -129,7 +129,8 @@ func (uc *Usecase) Process(ctx context.Context, req *ProcessRequest) (*ProcessRe
 		l.Error().Err(err).Msg("Failed to get transaction")
 		return nil, pkgerror.InternalServerError()
 	}
-	if tx.Status != transaction.StatusInitiated {
+
+	if !tx.IsProcessable() {
 		l.Error().
 			Str("uuid", req.UUID).
 			Str("status", tx.Status).
@@ -146,12 +147,21 @@ func (uc *Usecase) Process(ctx context.Context, req *ProcessRequest) (*ProcessRe
 	)
 	if err != nil {
 		l.Error().Err(err).Msg("Failed to transfer amount")
+		if failErr := tx.Fail(); failErr != nil {
+			l.Error().Err(failErr).Msg("Failed to mark transaction as failed")
+		}
+		_ = uc.txRepo.Update(ctx, tx)
 		return nil, pkgerror.InternalServerError()
 	}
 
-	// Update transaction status to success
-	tx.Status = transaction.StatusCompleted
-	tx.TransactionReference = res.TransactionReference
+	err = tx.Complete(res.TransactionReference)
+	if err != nil {
+		l.Error().Err(err).
+			Str("uuid", req.UUID).
+			Str("status", tx.Status).
+			Msg("Failed to complete transaction domain state")
+		return nil, pkgerror.BadRequest().SetMsg(err.Error())
+	}
 
 	err = uc.txRepo.Update(ctx, tx)
 	if err != nil {
